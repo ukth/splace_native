@@ -18,12 +18,19 @@ const Tag = styled.TouchableOpacity`
   border-width: ${pixelScaler(0.8)}px;
   border-radius: ${pixelScaler(10)}px;
   border-color: ${({ theme }: { theme: themeType }) => theme.tagGreyBorder};
+  margin-right: ${pixelScaler(10)}px;
   padding: 0 ${pixelScaler(10)}px;
   align-items: center;
   justify-content: center;
 `;
 
-const SeriesTag = ({ series }: { series: { id: number; title: string } }) => {
+const SeriesTag = ({
+  series,
+  pressMoreSeries,
+}: {
+  series: { id: number; title: string }[];
+  pressMoreSeries: () => void;
+}) => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const theme = useContext(ThemeContext);
 
@@ -32,13 +39,22 @@ const SeriesTag = ({ series }: { series: { id: number; title: string } }) => {
       <Tag
         onPress={() =>
           navigation.push("Series", {
-            seriesId: series.id,
-            title: series.title,
+            seriesId: series[0].id,
+            title: series[0].title,
           })
         }
       >
-        <RegText13 style={{ color: theme.greyText }}>{series.title}</RegText13>
+        <RegText13 style={{ color: theme.greyText }}>
+          {series[0].title}
+        </RegText13>
       </Tag>
+      {series.length > 1 ? (
+        <Tag onPress={pressMoreSeries}>
+          <RegText13 style={{ color: theme.greyText }}>
+            +{series.length - 1}
+          </RegText13>
+        </Tag>
+      ) : null}
     </Container>
   );
 };

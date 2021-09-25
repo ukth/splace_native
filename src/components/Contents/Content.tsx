@@ -66,9 +66,9 @@ const Content = ({ item }: { item: PhotologType }) => {
           </RegText13>
         ) : null}
       </RegText13>
-      {shortText || showFullText ? (
+      {/* {shortText || showFullText ? (
         <Tags address={item.splace.address} tags={item.hashtags} />
-      ) : null}
+      ) : null} */}
     </ContentContainer>
   );
 };

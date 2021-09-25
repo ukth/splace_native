@@ -19,8 +19,11 @@ import {
   Payment,
   Chatrooms,
   Chatroom,
-  ChatMembers,
+  Members,
+  AddMembers,
   MomentView,
+  Folders,
+  Folder,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -186,7 +189,10 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
         <Stack.Screen name="Market" component={Market} />
       ) : null}
       {screenName === "Moment" ? (
-        <Stack.Screen name="Moment" component={Moment} />
+        <Stack.Screen name="Folders" component={Folders} />
+      ) : null}
+      {screenName === "Moment" ? (
+        <Stack.Screen name="Folder" component={Folder} />
       ) : null}
       <Stack.Screen name="Splace" component={Splace} />
       <Stack.Screen
@@ -198,7 +204,8 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="Payment" component={Payment} />
       <Stack.Screen name="Chatrooms" component={Chatrooms} />
       <Stack.Screen name="Chatroom" component={Chatroom} />
-      <Stack.Screen name="ChatMembers" component={ChatMembers} />
+      <Stack.Screen name="Members" component={Members} />
+      <Stack.Screen name="AddMembers" component={AddMembers} />
       <Stack.Screen name="MomentView" component={MomentView} />
     </Stack.Navigator>
   );

@@ -1,44 +1,18 @@
 // import { feed } from "../../data";
 
 import React, { useEffect, useContext, useMemo } from "react";
-import {
-  Dimensions,
-  View,
-  RefreshControl,
-  TouchableOpacity,
-  Alert,
-  FlatList,
-} from "react-native";
+import { Dimensions, FlatList } from "react-native";
 
 import { GET_FEED, LIKE_PHOTOLOG, UNLIKE_PHOTOLOG } from "../queries";
 
 import { ScrollView } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 import { ThemeContext } from "styled-components";
-import {
-  BldText13,
-  BldText20,
-  BldText33,
-  RegText13,
-  RegText20,
-} from "../components/Text";
-import { convertLike, pixelScaler } from "../utils";
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import {
-  HashTagType,
-  PhotologType,
-  SeriesType,
-  StackGeneratorParamList,
-  themeType,
-} from "../types";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useMutation, useQuery } from "@apollo/client";
-import Image from "../components/Image";
-import { useNavigation } from "@react-navigation/native";
-import BottomSheetModal from "../components/BottomSheetModal";
+import { PhotologType, SeriesType, themeType } from "../types";
+
+import { useQuery } from "@apollo/client";
 import PhotoLog from "../components/Contents/Photolog";
-import client, { isLoggedInVar, tokenVar, userIdVar } from "../apollo";
 import Series from "../components/Contents/Series";
 import useMe from "../hooks/useMe";
 

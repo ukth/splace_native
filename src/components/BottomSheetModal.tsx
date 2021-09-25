@@ -19,6 +19,7 @@ const BottomSheetModal = ({
   children: any;
   modalVisible: boolean;
   setModalVisible: any;
+  style?: any;
   // height: number;
 }) => {
   const { modalVisible, setModalVisible } = props;
@@ -94,6 +95,7 @@ const BottomSheetModal = ({
           style={{
             // height: props.height,
             ...styles.bottomSheetContainer,
+            ...props.style,
             transform: [{ translateY: translateY }],
           }}
           {...panResponders.panHandlers}
@@ -119,9 +121,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
-    borderTopLeftRadius: pixelScaler(20),
-    borderTopRightRadius: pixelScaler(20),
-    paddingBottom: pixelScaler(44),
   },
 });
 

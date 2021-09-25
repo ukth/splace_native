@@ -6,7 +6,73 @@ export const USER_FRAGMENT = gql`
     username
     name
     profileImageUrl
+    isFollowing
   }
+`;
+
+export const MESSAGE_FRAGMENT = gql`
+  fragment MessageFragement on Message {
+    id
+    text
+    unreadCount
+    createdAt
+  }
+  ${USER_FRAGMENT}
+`;
+
+export const ROOM_FRAGMENT = gql`
+  fragment RoomFragement on Chatroom {
+    id
+    title
+    updatedAt
+    createdAt
+    members {
+      isFollowing
+      ...UserFragement
+    }
+    lastMessage {
+      ...MessageFragement
+    }
+    chatroomReaded {
+      id
+      user {
+        ...UserFragement
+      }
+      readedAt
+    }
+  }
+  ${USER_FRAGMENT}
+  ${MESSAGE_FRAGMENT}
+`;
+
+export const SPLACE_FRAGMENT = gql`
+  fragment SplaceFragment on Splace {
+    id
+    name
+    address
+    thumbnail
+  }
+`;
+
+export const FOLDER_FRAGMENT = gql`
+  fragment FolderFragement on Folder {
+    id
+    title
+    createdAt
+    updatedAt
+    members {
+      ...UserFragement
+    }
+    saves {
+      id
+      createdAt
+      splace {
+        ...SplaceFragment
+      }
+    }
+  }
+  ${USER_FRAGMENT}
+  ${SPLACE_FRAGMENT}
 `;
 
 export const LOGIN = gql`
@@ -24,9 +90,13 @@ export const LOGIN = gql`
 export const GET_ME = gql`
   query getMe {
     getMe {
-      id
-      username
-      profileImageUrl
+      ok
+      error
+      me {
+        id
+        username
+        profileImageUrl
+      }
     }
   }
 `;
@@ -40,7 +110,7 @@ export const GET_FEED = gql`
         id
         photoSize
         text
-        hashtags {
+        categories {
           name
         }
         totalLiked
@@ -58,7 +128,7 @@ export const GET_FEED = gql`
           id
           name
           address
-          hashtags {
+          categories {
             name
           }
         }
@@ -132,6 +202,32 @@ export const GET_PROFILE = gql`
   }
 `;
 
+export const GET_FOLLOWERS = gql`
+  query seeFollowers($userId: Int!, $keyword: String, $lastId: Int) {
+    seeFollowers(userId: $userId, keyword: $keyword, lastId: $lastId) {
+      ok
+      error
+      followers {
+        ...UserFragement
+      }
+    }
+  }
+  ${USER_FRAGMENT}
+`;
+
+export const GET_FOLLOWINGS = gql`
+  query seeFollowings($userId: Int!, $keyword: String, $lastId: Int) {
+    seeFollowings(userId: $userId, keyword: $keyword, lastId: $lastId) {
+      ok
+      error
+      followings {
+        ...UserFragement
+      }
+    }
+  }
+  ${USER_FRAGMENT}
+`;
+
 export const FOLLOW = gql`
   mutation followUser($targetId: Int!) {
     followUser(targetId: $targetId) {
@@ -156,30 +252,12 @@ export const GET_ROOMS = gql`
       ok
       error
       myRooms {
-        id
-        title
-        members {
-          isFollowing
-          ...UserFragement
-        }
-        lastMessage {
-          id
-          text
-          createdAt
-        }
-        chatroomReaded {
-          id
-          user {
-            ...UserFragement
-          }
-          readedAt
-        }
-        updatedAt
-        createdAt
+        ...RoomFragement
       }
     }
   }
   ${USER_FRAGMENT}
+  ${ROOM_FRAGMENT}
 `;
 
 export const GET_MESSAGES = gql`
@@ -219,6 +297,10 @@ export const SEND_MESSAGE = gql`
         createdAt
         isMine
       }
+      readedRecord {
+        id
+        readedAt
+      }
     }
   }
   ${USER_FRAGMENT}
@@ -231,6 +313,25 @@ export const READ_CHATROOM = gql`
       error
     }
   }
+`;
+
+export const GET_ROOM_INFO = gql`
+  query getRoomInfo($chatroomId: Int!) {
+    getRoomInfo(chatroomId: $chatroomId) {
+      ok
+      error
+      room {
+        id
+        title
+        members {
+          ...UserFragement
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  }
+  ${USER_FRAGMENT}
 `;
 
 export const NEW_MESSAGE = gql`
@@ -267,3 +368,47 @@ export const ROOM_UPDATE = gql`
   }
   ${USER_FRAGMENT}
 `;
+
+export const LEAVE_CHATROOM = gql`
+  mutation quitChatroom($chatroomId: Int!) {
+    quitChatroom(chatroomId: $chatroomId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const ADD_CHAT_MEMBERS = gql`
+  mutation addChatMembers($chatroomId: Int!, $memberIds: [Int]!) {
+    addChatMembers(chatroomId: $chatroomId, memberIds: $memberIds) {
+      ok
+      error
+    }
+  }
+`;
+
+export const GET_FOLDERS = gql`
+  query getFolders($lastId: Int) {
+    getFolders(lastId: $lastId) {
+      ok
+      error
+      folders {
+        ...FolderFragement
+      }
+    }
+  }
+  ${FOLDER_FRAGMENT}
+`;
+
+// export const GET_FOLDER_INFO = gql`
+//   query getFolders($lastId: Int) {
+//     getFolders(lastId: $lastId) {
+//       ok
+//       error
+//       folders {
+//         ...FolderFragement
+//       }
+//     }
+//   }
+//   ${FOLDER_FRAGMENT}
+// `;

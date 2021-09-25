@@ -3,11 +3,24 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+import {
+  ApolloCache,
+  DefaultContext,
+  MutationFunctionOptions,
+  OperationVariables,
+} from "@apollo/client";
 import { Text } from "react-native";
 
 export type AuthStackParamList = {
   LogIn: undefined;
   SignUp: undefined;
+};
+
+export type SplaceType = {
+  id: number;
+  name: string;
+  address: string;
+  thumbnail?: string;
 };
 
 export type UserType = {
@@ -32,6 +45,21 @@ export type UserType = {
   totalLogsNumber: number;
   phone: string;
   url: string;
+};
+
+export type SaveType = {
+  id: number;
+  createdAt: string;
+  splace: SplaceType;
+};
+
+export type FolderType = {
+  id: number;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  members: UserType[];
+  saves: SaveType[];
 };
 
 export type StackGeneratorParamList = {
@@ -59,9 +87,32 @@ export type StackGeneratorParamList = {
     room: RoomType;
   };
   Chatrooms: undefined;
-  ChatMembers: {
-    room: RoomType;
+  Members: {
+    vars: any;
+    membersData: any;
+    refetchMembers: any;
+    inviteMutation: any;
+    leaveMutation: any;
   };
+  AddMembers: {
+    vars: any;
+    members: UserType[];
+    inviteMutation: any;
+    // (
+    //   options?:
+    //     | MutationFunctionOptions<
+    //         {
+    //           addChatMembers: { ok: boolean; error: string };
+    //         },
+    //         OperationVariables,
+    //         DefaultContext,
+    //         ApolloCache<any>
+    //       >
+    //     | undefined
+    // ) => Promise<any>;
+  };
+  Folders: undefined;
+  Folder: { folder: FolderType };
 };
 
 export interface StackGeneratorProps {
@@ -175,6 +226,7 @@ export type themeType = {
   chatPreviewTextRead: string;
   chatPreviewUnreadMark: string;
   chatPreviewTimeText: string;
+  searchHistorySeperator: string;
 
   chatRoomBackground: string;
 
@@ -200,6 +252,21 @@ export type themeType = {
   chatMemberName: string;
   followButton: string;
   followButtonText: string;
+
+  greyButton: string;
+  greyButtonContext: string;
+
+  entry: string;
+  entryPlaceholder: string;
+
+  chatInviteSelect: string;
+  chatInviteSelected: string;
+  chatInviteConfirmText: string;
+  headerConfirmText: string;
+
+  folderDeleteButtonBackground: string;
+  folderNoticeBadgeBackground: string;
+  folderDeleteMinus: string;
 
   white: string;
 };

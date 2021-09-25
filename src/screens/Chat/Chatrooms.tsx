@@ -1,4 +1,4 @@
-import { useQuery, useSubscription } from "@apollo/client";
+import { useQuery, useSubscription, gql } from "@apollo/client";
 import {
   getFocusedRouteNameFromRoute,
   useNavigation,
@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import { tokenVar, userIdVar } from "../../apollo";
+import client, { tokenVar, userIdVar } from "../../apollo";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText13, RegText13, RegText9 } from "../../components/Text";
@@ -61,7 +61,7 @@ const UnreadMark = styled.View`
 const RoomItem = ({ room }: { room: RoomType }) => {
   const me = useMe();
   useEffect(() => {
-    console.log("chatrooms! idvar:", userIdVar());
+    // console.log("chatrooms! idvar:", userIdVar());
   }, []);
   const navigation = useNavigation<any>();
   const theme = useContext<themeType>(ThemeContext);
@@ -86,6 +86,9 @@ const RoomItem = ({ room }: { room: RoomType }) => {
   //   room?.chatroomReaded?.filter((readed) => readed?.user?.id === me?.id)[0]
   //     ?.readedAt
   // );
+  if (room?.id === 61) {
+    // console.log(room);
+  }
 
   let readed = false;
   if (room?.lastMessage) {
@@ -197,15 +200,18 @@ const Chatrooms = () => {
 
   const navigation = useNavigation();
 
-  navigation.addListener("focus", refetch);
+  navigation.addListener("focus", () => {
+    refetch();
+    // console.log(data2, data4, "$$$$$$$$");
+  });
 
   useEffect(() => {
     refetch();
-    console.log(updatedRoomData?.chatroomUpdated?.id);
+    // console.log(updatedRoomData?.chatroomUpdated?.id);
   }, [updatedRoomData]);
 
   useEffect(() => {
-    console.log(tokenVar(), "!!");
+    // console.log(tokenVar(), "!!");
   }, []);
 
   const [refreshing, setRefreshing] = useState(false);

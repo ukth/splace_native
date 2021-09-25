@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { View } from "react-native";
 import { ThemeContext } from "styled-components/native";
 
-const ScreenContainer = ({ children }: { children: any }) => {
+const ScreenContainer = ({ children }: { children?: any }) => {
   const theme = useContext(ThemeContext);
   return (
     <View

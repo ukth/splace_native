@@ -8,10 +8,6 @@ import {
   useWindowDimensions,
   Animated,
 } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
-import QRCode from "react-native-qrcode-svg";
-import ImageZoom from "react-native-image-pan-zoom";
-import { Dimensions } from "react-native";
 import { pixelScaler } from "../utils";
 import styled from "styled-components/native";
 import { RegText13, RegText20 } from "../components/Text";

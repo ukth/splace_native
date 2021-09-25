@@ -11,6 +11,7 @@ import { BldText13, BldText20, RegText20 } from "../Text";
 import Content from "./Content";
 import Header from "./Header";
 import Liked from "./Liked";
+import ModalButtonBox from "../ModalButtonBox";
 import SeriesTag from "./SeriesTag";
 import Swiper from "./Swiper";
 
@@ -44,16 +45,6 @@ const BottomHeaderRight = styled.View`
   /* background-color: #36ffff; */
 `;
 
-const ModalButtonBox = styled.TouchableOpacity`
-  border-radius: ${pixelScaler(10)}px;
-  background-color: #f2f2f7;
-  margin-bottom: ${pixelScaler(3)}px;
-  height: ${pixelScaler(60)}px;
-  width: ${pixelScaler(315)}px;
-  justify-content: center;
-  align-items: center;
-`;
-
 const ModalUpBox = styled.View``;
 const ModalDownBox = styled.View`
   margin-top: ${pixelScaler(30)}px;
@@ -63,9 +54,19 @@ const PhotoLog = ({ item }: { item: PhotologType }) => {
   const theme = useContext(ThemeContext);
   const navigation = useNavigation<StackNavigationProp<any>>();
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState("dots");
   // const [liked, setLiked] = useState<boolean>(false);
 
   const pressThreeDots = () => {
+    showModal("dots");
+  };
+
+  const pressMoreSeries = () => {
+    showModal("series");
+  };
+
+  const showModal = (content: string) => {
+    setModalContent(content);
     setModalVisible(true);
   };
 
@@ -93,40 +94,63 @@ const PhotoLog = ({ item }: { item: PhotologType }) => {
         <Liked item={item} />
       </BottomHeader>
       {item?.series?.length !== 0 ? (
-        <SeriesTag series={item?.series[0]} />
+        <SeriesTag series={item?.series} pressMoreSeries={pressMoreSeries} />
       ) : null}
       <Content item={item} />
       <BottomSheetModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
+        style={{
+          borderTopLeftRadius: pixelScaler(20),
+          borderTopRightRadius: pixelScaler(20),
+          paddingBottom: pixelScaler(44),
+        }}
       >
-        <ModalUpBox>
-          <ModalButtonBox>
-            <RegText20>링크 복사</RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox>
-            <RegText20>공유</RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox>
-            <RegText20 style={{ color: "#00A4B7" }}>
-              저장된 게시물에 추가
-            </RegText20>
-          </ModalButtonBox>
-        </ModalUpBox>
-        <ModalDownBox>
-          <ModalButtonBox>
-            <RegText20>
-              {item.author.username === "dreamost_heo"
-                ? "게시물 수정"
-                : "숨기기"}
-            </RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox>
-            <RegText20 style={{ color: "#FF0000" }}>
-              {item.author.username === "dreamost_heo" ? "게시물 삭제" : "차단"}
-            </RegText20>
-          </ModalButtonBox>
-        </ModalDownBox>
+        {modalContent === "dots" ? (
+          <>
+            <ModalButtonBox>
+              <RegText20>링크 복사</RegText20>
+            </ModalButtonBox>
+            <ModalButtonBox>
+              <RegText20>공유</RegText20>
+            </ModalButtonBox>
+            <ModalButtonBox>
+              <RegText20 style={{ color: "#00A4B7" }}>
+                저장된 게시물에 추가
+              </RegText20>
+            </ModalButtonBox>
+
+            <ModalButtonBox>
+              <RegText20>
+                {item.author.username === "dreamost_heo"
+                  ? "게시물 수정"
+                  : "숨기기"}
+              </RegText20>
+            </ModalButtonBox>
+            <ModalButtonBox>
+              <RegText20 style={{ color: "#FF0000" }}>
+                {item.author.username === "dreamost_heo"
+                  ? "게시물 삭제"
+                  : "차단"}
+              </RegText20>
+            </ModalButtonBox>
+          </>
+        ) : (
+          <>
+            {item.series.map((series) => (
+              <ModalButtonBox
+                onPress={() =>
+                  navigation.push("Series", {
+                    seriesId: series.id,
+                    title: series.title,
+                  })
+                }
+              >
+                <RegText20>{series.title}</RegText20>
+              </ModalButtonBox>
+            ))}
+          </>
+        )}
       </BottomSheetModal>
     </Container>
   );

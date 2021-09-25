@@ -23,7 +23,7 @@ export const userIdVar = makeVar<number | null>(null);
 const TOKEN = "token";
 
 export const logUserIn = async (token: string, userId: number) => {
-  // await AsyncStorage.setItem(TOKEN, token);
+  await AsyncStorage.setItem(TOKEN, token);
   console.log("input:", userId, token);
   isLoggedInVar(true);
   tokenVar(token);
@@ -35,7 +35,7 @@ export const logUserIn = async (token: string, userId: number) => {
 };
 
 export const logUserOut = async () => {
-  // await AsyncStorage.setItem(TOKEN, "");
+  await AsyncStorage.setItem(TOKEN, "");
   console.log("log out!");
   isLoggedInVar(false);
   tokenVar("a");
@@ -44,7 +44,7 @@ export const logUserOut = async () => {
 };
 
 const httpLink = createHttpLink({
-  uri: "http://3.37.199.95:5000/graphql",
+  uri: "http://3.35.138.95:4000/graphql",
 });
 
 // const uploadHttpLink = createUploadLink({
@@ -52,7 +52,7 @@ const httpLink = createHttpLink({
 // });
 
 const wsLink = new WebSocketLink({
-  uri: "ws://3.37.199.95:5000/graphql",
+  uri: "ws://3.35.138.95:4000/graphql",
   options: {
     connectionParams: () => ({
       token: tokenVar(),
@@ -132,6 +132,26 @@ export const cache = new InMemoryCache({
             return {
               ...existing,
               myRooms: [...existing.myRooms, ...incoming.myRooms],
+            };
+          },
+        },
+        seeFollowers: {
+          keyArgs: ["keyword", "userId"],
+          merge(existing, incoming) {
+            // console.log(existing);
+            // console.log("existing", existing);
+            // console.log("incoming", incoming);
+
+            if (!existing) {
+              return incoming;
+            }
+            if (!incoming || !incoming.ok) {
+              return existing;
+            }
+
+            return {
+              ...existing,
+              followers: [...existing.followers, ...incoming.followers],
             };
           },
         },

@@ -1,10 +1,6 @@
 import React, { useRef, useState } from "react";
-
-import IMP from "iamport-react-native";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { isLoggedInVar, logUserOut, tokenVar } from "../apollo";
-import { Video } from "expo-av";
-import { withDecay } from "react-native-reanimated";
 
 export default function Market({ navigation }: { navigation: any }) {
   return (

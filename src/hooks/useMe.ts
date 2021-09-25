@@ -20,8 +20,9 @@ const GET_ME = gql`
 const useMe = () => {
   const loggedIn = isLoggedInVar();
   const { data } = useQuery(GET_ME, { skip: !loggedIn });
+
   useEffect(() => {
-    if (data?.me?.getMe === null) {
+    if (data?.getMe?.ok && !data.getMe.ok) {
       logUserOut();
     }
   }, [data]);

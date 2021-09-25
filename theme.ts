@@ -18,7 +18,7 @@ const colors = {
   grey_e5: "#e5e5ea",
   grey_f2: "#f2f2f7",
   theme: "#00a4b7",
-  chatTheme: "#00bcd1",
+  darkTheme: "#00bcd1",
   apple_grey: "rgba(60, 60, 67, 0.6)",
   grey_border: "rgba(0, 0, 0, 0.6)",
 };
@@ -46,14 +46,14 @@ export const theme = {
 
     chatRoomItemBorder: colors.grey_c4,
     chatPreviewTextRead: colors.grey_ae,
-    chatPreviewUnreadMark: colors.chatTheme,
+    chatPreviewUnreadMark: colors.darkTheme,
     chatPreviewTimeText: colors.grey_ae,
 
     chatRoomBackground: colors.white,
 
     chatDateText: colors.grey_c7,
 
-    myChatBubble: colors.chatTheme,
+    myChatBubble: colors.darkTheme,
     otherChatBubble: colors.grey_f2,
     chatTimeText: colors.grey_c7,
 
@@ -72,8 +72,27 @@ export const theme = {
     chatMemberUsername: colors.black,
     chatMemberName: colors.grey_ae,
 
-    followButton: colors.chatTheme,
+    searchHistorySeperator: colors.grey_e5,
+
+    followButton: colors.darkTheme,
     followButtonText: colors.white,
+
+    greyButton: colors.grey_e5,
+
+    greyButtonContext: colors.black,
+
+    entry: colors.grey_f2,
+    entryPlaceholder: colors.grey_c7,
+
+    chatInviteSelect: colors.grey_f2,
+    chatInviteSelected: colors.darkTheme,
+    chatInviteConfirmText: colors.theme,
+
+    headerConfirmText: colors.theme,
+
+    folderDeleteButtonBackground: colors.grey_e5,
+    folderDeleteMinus: colors.black,
+    folderNoticeBadgeBackground: colors.theme,
 
     white: colors.white,
   },

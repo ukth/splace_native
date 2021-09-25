@@ -102,6 +102,7 @@ const LogIn = ({
           <StyledTextInput
             autoCapitalize={"none"}
             onChangeText={(text) => setPw(text)}
+            secureTextEntry={true}
           />
           <Button onPress={_handleLogInButtonPress}>
             <Text

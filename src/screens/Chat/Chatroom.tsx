@@ -8,32 +8,21 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  ScrollView,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import {
-  BldText16,
-  RegText13,
-  RegText16,
-  RegText9,
-} from "../../components/Text";
-import {
-  MessageType,
-  StackGeneratorParamList,
-  themeType,
-  UserType,
-} from "../../types";
-import { getHour, getMinute, isSameDay, pixelScaler } from "../../utils";
+import { BldText16, RegText13, RegText9 } from "../../components/Text";
+import { MessageType, StackGeneratorParamList, themeType } from "../../types";
+import { pixelScaler } from "../../utils";
 import * as Clipboard from "expo-clipboard";
 import { StackNavigationProp } from "@react-navigation/stack";
-import client, { logUserIn, userIdVar } from "../../apollo";
+import client, { userIdVar } from "../../apollo";
 import {
+  ADD_CHAT_MEMBERS,
   GET_MESSAGES,
-  GET_ROOMS,
+  GET_ROOM_INFO,
+  LEAVE_CHATROOM,
   NEW_MESSAGE,
   READ_CHATROOM,
   SEND_MESSAGE,
@@ -48,16 +37,7 @@ import {
   useMutation,
   useQuery,
 } from "@apollo/client";
-import useMe from "../../hooks/useMe";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-
-const Container = styled.KeyboardAvoidingView`
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
-  flex: 1;
-`;
-const ChatContainer = styled.ScrollView`
-  width: 100%;
-`;
 
 const Entry = styled.View`
   width: 100%;
@@ -70,12 +50,6 @@ const Entry = styled.View`
     theme.chatEntryBorderTop}; */
   border-top-color: rgba(60, 60, 67, 0.2);
   margin-bottom: ${pixelScaler(30)}px;
-`;
-
-const EntryLeftContainer = styled.View`
-  width: ${pixelScaler(60)}px;
-  align-items: center;
-  justify-content: flex-end;
 `;
 
 const EntryTextInputContainer = styled.View`
@@ -160,9 +134,7 @@ const Chatroom = ({
   route: RouteProp<StackGeneratorParamList, "Chatroom">;
 }) => {
   const chatroom = route.params.room;
-  const me = useMe();
 
-  // const [messages, setMessages] = useState<any[]>([]);
   const [reloaded, setReloaded] = useState<boolean>(false);
 
   const textInputRef = useRef<any>();
@@ -182,10 +154,58 @@ const Chatroom = ({
     variables: {
       chatroomId: chatroom.id,
     },
-    // onCompleted: onGetMessagesCompleted,
   });
 
   const [read_chatroom, { loading }] = useMutation(READ_CHATROOM);
+
+  const onInviteCompleted = (data: {
+    addChatMembers: {
+      ok: boolean;
+      error: string;
+    };
+  }) => {
+    const {
+      addChatMembers: { ok, error },
+    } = data;
+    if (ok) {
+      navigation.pop();
+    } else {
+      // console.log(data);
+      Alert.alert("초대에 실패하였습니다.\n", error);
+    }
+  };
+
+  const [inviteMutation, { loading: inviteMutationLoading }] = useMutation(
+    ADD_CHAT_MEMBERS,
+    {
+      onCompleted: onInviteCompleted,
+    }
+  );
+
+  const onLeaveCompleted = (data: any) => {
+    const {
+      quitChatroom: { ok, error },
+    } = data;
+    if (ok) {
+      navigation.navigate("Chatrooms");
+    } else {
+      Alert.alert("채팅방을 나갈 수 없습니다.\n", error);
+    }
+  };
+  const [leaveMutation, { loading: leaveMutationLoading }] = useMutation(
+    LEAVE_CHATROOM,
+    {
+      onCompleted: onLeaveCompleted,
+    }
+  );
+
+  const {
+    data: roomInfo,
+    loading: roomInfoLoading,
+    refetch: refetchMembers,
+  } = useQuery(GET_ROOM_INFO, {
+    variables: { chatroomId: chatroom.id },
+  });
 
   useEffect(() => {
     navigation.dangerouslyGetParent()?.setOptions({
@@ -201,29 +221,35 @@ const Chatroom = ({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerRight: () => (
         <TouchableOpacity
-          onPress={() => navigation.push("ChatMembers", { room: chatroom })}
+          onPress={() =>
+            navigation.push("Members", {
+              vars: {
+                chatroomId: chatroom.id,
+              },
+              membersData: roomInfo?.getRoomInfo?.room?.members,
+              refetchMembers,
+              inviteMutation,
+              leaveMutation,
+            })
+          }
         >
           <Ionicons name="menu" size={25} style={{ marginRight: 10 }} />
         </TouchableOpacity>
       ),
     });
-    // console.log("refetch!", messageData?.getRoomMessages?.messages.length);
+
     if (!reloaded) {
       refetch();
       setReloaded(true);
-      console.log("refetch!");
+      // console.log("refetch!");
     }
     if (!loading) {
       read_chatroom({
         variables: { chatroomId: chatroom.id },
       });
-      console.log("read!");
+      // console.log("read!");
     }
-  }, []);
-
-  // useEffect(() => {
-
-  // }, [loading]);
+  }, [roomInfoLoading]);
 
   useEffect(() => {
     if (myMessage.trim() !== "") {
@@ -233,11 +259,9 @@ const Chatroom = ({
     }
   }, [myMessage]);
 
-  const onGetMessagesCompleted = async (data: any) => {};
-
   const onSendMessageCompleted = async (data: any) => {
     const {
-      sendMessage: { ok, error, message },
+      sendMessage: { ok, error, message, readedRecord },
     } = data;
 
     if (!ok) {
@@ -288,7 +312,6 @@ const Chatroom = ({
       id: `Chatroom:${chatroom.id}`,
       fields: {
         lastMessage(prev) {
-          // console.log(prev);
           const newRef = { __ref: `Message:${message.id}` };
           return newRef;
         },
@@ -318,93 +341,31 @@ const Chatroom = ({
         }
       | any
   ) => {
-    // console.log(cache.data);
-    // console.log(result);
     const {
       data: {
         sendMessage: { ok, message },
       },
     } = result;
     if (ok) {
-      // console.log(cache);
-
-      // const newMessage = cache.writeFragment({
-      //   fragment: gql`
-      //     fragment NewMessage on Message {
-      //       id
-      //       text
-      //       __typename
-      //       author {
-      //         __typename
-      //         name
-      //         id
-      //         username
-      //       }
-      //       createdAt
-      //       isMine
-      //       unreadCount
-      //     }
-      //   `,
-      //   data: {
-      //     ...message,
-      //     text: myMessage.trim(),
-      //     __typename: "Message",
-      //     author: {
-      //       __typename: "User",
-      //       name: me.name,
-      //       id: me.id,
-      //       username: me.username,
-      //     },
-      //     isMine: true,
-      //   },
-      // });
-      // console.log(message);
-
-      // console.log(newMessage);
       updateCache(message);
       // refetch();
-      console.log("cache mod!");
+      // console.log("cache mod!");
       setMyMessage("");
-      // console.log(cache);
+      read_chatroom({
+        variables: { chatroomId: chatroom.id },
+      });
     }
   };
 
   const updateQuery = (prev: any, options: any) => {
     const { newMessage: message } = options.subscriptionData.data;
-    // console.log(message.id);
-    // console.log(message);
-    // const newMessage = client.cache.writeFragment({
-    //   fragment: gql`
-    //     fragment NewMessage on Message {
-    //       id
-    //       text
-    //       __typename
-    //       author {
-    //         __typename
-    //         name
-    //         id
-    //         username
-    //       }
-    //       createdAt
-    //       isMine
-    //       unreadCount
-    //     }
-    //   `,
-    //   data: {
-    //     ...message,
-    //   },
-    // });
-    // console.log(message);
-
-    // // console.log(newMessage);
     updateCache(message);
     if (!loading) {
       read_chatroom({
         variables: { chatroomId: chatroom.id },
       });
     }
-    // refetch();
-    console.log("sub mod!");
+    // console.log("sub mod!");
   };
 
   useEffect(() => {
@@ -443,8 +404,6 @@ const Chatroom = ({
   };
 
   const messages = [...(messageData?.getRoomMessages?.messages ?? [])];
-
-  console.log("reload!");
 
   return (
     <KeyboardAvoidingView
@@ -573,7 +532,7 @@ const Chatroom = ({
             </SendButton>
           ) : (
             <SendButton
-              onPress={_handlePressSendButton}
+              // onPress={_handlePressSendButton}
               hitSlop={{ top: 10, bottom: 10, left: 15, right: 15 }}
             >
               <BldText16 style={{ color: theme.chatSendText }}>??</BldText16>

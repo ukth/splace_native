@@ -9,8 +9,11 @@ import SignUp from "./SignUp";
 import Market from "./Market";
 import Payment from "./Payment";
 import Moment from "./Moment";
-import { Chatroom, Chatrooms, ChatMembers } from "./Chat";
+import { Chatroom, Chatrooms } from "./Chat";
+import Members from "./Members";
+import AddMembers from "./AddMembers";
 import MomentView from "./MomentView";
+import { Folders, Folder } from "./Keep";
 
 export {
   LogIn,
@@ -26,6 +29,9 @@ export {
   Moment,
   Chatroom,
   Chatrooms,
-  ChatMembers,
+  Members,
+  AddMembers,
   MomentView,
+  Folders,
+  Folder,
 };

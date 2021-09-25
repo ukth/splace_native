@@ -4,18 +4,14 @@ export const convertLike = (n: number) => {
   if (n === 0) {
     return "0";
   }
-  if (n < 10) {
-    return "1+";
-  }
-  if (n < 100) {
-    return "10+";
-  }
   if (n < 1000) {
-    return "100+";
+    return 10 ** Math.floor(Math.log10(n)) + "+";
   }
-  if (n < 10000) {
-    return "1k+";
+  if (n < 1000000) {
+    return 10 ** (Math.floor(Math.log10(n)) - 3) + "k+";
   }
+
+  return 10 ** (Math.floor(Math.log10(n)) - 6) + "m+";
 };
 
 const { width, height } = Dimensions.get("window");
@@ -36,4 +32,14 @@ export const isSameDay = (timestamp1: number, timestamp2: number) => {
     Math.floor((timestamp1 + 3600 * GMT) / 86400) ===
     Math.floor((timestamp2 + 3600 * GMT) / 86400)
   );
+};
+
+export const strCmpFunc = (a: string, b: string) => {
+  if (a < b) {
+    return -1;
+  }
+  if (a === b) {
+    return 0;
+  }
+  return 1;
 };
