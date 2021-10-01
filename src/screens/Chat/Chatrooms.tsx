@@ -1,12 +1,15 @@
-import { useQuery, useSubscription, gql } from "@apollo/client";
+import { useQuery, useSubscription, gql, useMutation } from "@apollo/client";
+import { Ionicons } from "@expo/vector-icons";
 import {
   getFocusedRouteNameFromRoute,
   useNavigation,
   useRoute,
 } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useContext, useEffect, useState } from "react";
 
 import {
+  Alert,
   FlatList,
   ScrollView,
   Text,
@@ -19,8 +22,13 @@ import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText13, RegText13, RegText9 } from "../../components/Text";
 import useMe from "../../hooks/useMe";
-import { GET_ROOMS, ROOM_UPDATE } from "../../queries";
-import { RoomType, themeType, UserType } from "../../types";
+import { CREATE_ROOM, GET_ROOMS, ROOM_UPDATE } from "../../queries";
+import {
+  RoomType,
+  StackGeneratorParamList,
+  themeType,
+  UserType,
+} from "../../types";
 import { pixelScaler } from "../../utils";
 
 const RoomContainer = styled.TouchableOpacity`
@@ -66,6 +74,8 @@ const RoomItem = ({ room }: { room: RoomType }) => {
   const navigation = useNavigation<any>();
   const theme = useContext<themeType>(ThemeContext);
 
+  // console.log(room);
+
   let timeText = "";
 
   if (room.updatedAt) {
@@ -81,10 +91,10 @@ const RoomItem = ({ room }: { room: RoomType }) => {
 
   const updated =
     room?.chatroomReaded?.filter((readed) => readed?.user?.id === me?.id)[0]
-      ?.readedAt < room?.updatedAt;
+      ?.updatedAt < room?.updatedAt;
   // console.log(
   //   room?.chatroomReaded?.filter((readed) => readed?.user?.id === me?.id)[0]
-  //     ?.readedAt
+  //     ?.updatedAt
   // );
   if (room?.id === 61) {
     // console.log(room);
@@ -95,11 +105,11 @@ const RoomItem = ({ room }: { room: RoomType }) => {
     // console.log("EWRHUQIU!");
     readed =
       room?.chatroomReaded?.filter((readed) => readed?.user?.id === me?.id)[0]
-        ?.readedAt > room?.lastMessage?.createdAt;
+        ?.updatedAt > room?.lastMessage?.createdAt;
   } else {
     readed =
       room?.chatroomReaded?.filter((readed) => readed?.user?.id === me?.id)[0]
-        ?.readedAt > room?.updatedAt;
+        ?.updatedAt > room?.updatedAt;
     // console.log(readed);
   }
 
@@ -112,7 +122,20 @@ const RoomItem = ({ room }: { room: RoomType }) => {
       }
     >
       <InfoContainer>
-        {room.members.length === 2 ? (
+        {room.members.length === 1 ? (
+          <MemberThumbnail>
+            <Image
+              source={{
+                uri: me.profileImageUrl,
+              }}
+              style={{
+                width: pixelScaler(32),
+                height: pixelScaler(32),
+                borderRadius: pixelScaler(32),
+              }}
+            />
+          </MemberThumbnail>
+        ) : room.members.length === 2 ? (
           <MemberThumbnail>
             <Image
               source={{
@@ -198,7 +221,10 @@ const Chatrooms = () => {
   const { data: updatedRoomData, loading: roomUpdateLoading } =
     useSubscription(ROOM_UPDATE);
 
-  const navigation = useNavigation();
+  const me = useMe();
+
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   navigation.addListener("focus", () => {
     refetch();
@@ -207,11 +233,51 @@ const Chatrooms = () => {
 
   useEffect(() => {
     refetch();
-    // console.log(updatedRoomData?.chatroomUpdated?.id);
   }, [updatedRoomData]);
 
+  const onCreateComplete = (data: {
+    createChatroom: {
+      ok: boolean;
+      error: string;
+    };
+  }) => {
+    const {
+      createChatroom: { ok, error },
+    } = data;
+    console.log(data);
+    if (ok) {
+      // navigation.push();
+    } else {
+      Alert.alert("채팅방을 생성할 수 없습니다.");
+    }
+  };
+
+  const [createMutation, { loading: createMutationLoading }] = useMutation(
+    CREATE_ROOM,
+    {
+      onCompleted: onCreateComplete,
+    }
+  );
+
+  console.log(me);
+  useEffect(() => console.log(me), [me]);
   useEffect(() => {
-    // console.log(tokenVar(), "!!");
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() =>
+            createMutation({
+              variables: {
+                title: "",
+                memberIds: [me.id],
+              },
+            })
+          }
+        >
+          <Ionicons name="md-person-add-outline" size={30} />
+        </TouchableOpacity>
+      ),
+    });
   }, []);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -226,7 +292,12 @@ const Chatrooms = () => {
 
   const refresh = async () => {
     setRefreshing(true);
+    const timer = setTimeout(() => {
+      Alert.alert("요청시간 초과");
+      setRefreshing(false);
+    }, 10000);
     await refetch();
+    clearTimeout(timer);
     setRefreshing(false);
   };
 

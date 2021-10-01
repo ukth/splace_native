@@ -80,6 +80,7 @@ const Image = ({
 
   return (
     <DefaultImage
+      resizeMethod="resize"
       {...props}
       source={imgURI !== "" ? { uri: imgURI } : { uri: uri }}
     />

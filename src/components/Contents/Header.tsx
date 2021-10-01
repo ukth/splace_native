@@ -31,7 +31,13 @@ const Header = ({
   const navigation = useNavigation<any>();
   return (
     <Container>
-      <Profile onPress={() => navigation.push("Profile")}>
+      <Profile
+        onPress={() =>
+          navigation.push("Profile", {
+            user,
+          })
+        }
+      >
         {/* <ProfileImage source={{ uri: item.author.profileImageUrl }} /> */}
         <Image
           source={{ uri: user.profileImageUrl }}

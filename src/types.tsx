@@ -77,9 +77,7 @@ export type StackGeneratorParamList = {
     };
   };
   Profile: {
-    user: {
-      id: number;
-    };
+    user: UserType;
   };
   Series: { id: number };
   Payment: undefined;
@@ -98,21 +96,11 @@ export type StackGeneratorParamList = {
     vars: any;
     members: UserType[];
     inviteMutation: any;
-    // (
-    //   options?:
-    //     | MutationFunctionOptions<
-    //         {
-    //           addChatMembers: { ok: boolean; error: string };
-    //         },
-    //         OperationVariables,
-    //         DefaultContext,
-    //         ApolloCache<any>
-    //       >
-    //     | undefined
-    // ) => Promise<any>;
   };
   Folders: undefined;
   Folder: { folder: FolderType };
+  AddSaveFolders: { folder: FolderType };
+  AddSaveFolder: { folder: FolderType };
 };
 
 export interface StackGeneratorProps {
@@ -135,7 +123,7 @@ export type RoomType = {
     id: number;
     user: UserType;
     chatroom: RoomType;
-    readedAt: string;
+    updatedAt: string;
   }[];
 };
 
@@ -145,7 +133,6 @@ export type MessageType = {
   isMine: boolean;
   id: number;
   text: string;
-  unreadCount: number;
 };
 
 // export type PhotologThumbnailType = {
@@ -263,10 +250,17 @@ export type themeType = {
   chatInviteSelected: string;
   chatInviteConfirmText: string;
   headerConfirmText: string;
+  folderMemberCount: string;
 
   folderDeleteButtonBackground: string;
   folderNoticeBadgeBackground: string;
   folderDeleteMinus: string;
+  profileLink: string;
+
+  blankFolderBackground: string;
+  modalHighlight: string;
+  modalInputSubmitButton: string;
+  modalEntry: string;
 
   white: string;
 };

@@ -113,7 +113,8 @@ const Splace = ({
   const splace = route.params.splace;
   const theme = useContext<themeType>(ThemeContext);
   const [fold, setFold] = useState<boolean>(true);
-  const [saved, setSaved] = useState<boolean>(false);
+  const [saved, setSaved] = useState<boolean>(false); // isSaved
+  // const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   return (
     <Container>
@@ -122,7 +123,9 @@ const Splace = ({
           <BldText33>{splace?.name}</BldText33>
           <TouchableOpacity
             onPress={() => {
-              setSaved(!saved);
+              // if (!saved) {
+              //   setModalVisible(true);
+              // }
             }}
           >
             <Ionicons

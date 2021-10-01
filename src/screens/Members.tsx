@@ -173,6 +173,7 @@ const MemberComponent = ({ user }: { user: UserType }) => {
   });
 
   const me = useMe();
+
   // console.log(user);
 
   return (
@@ -255,14 +256,19 @@ const Members = ({
     const { data } = await refetchMembers();
     if (data?.getRoomInfo?.ok) {
       setMembers(data.getRoomInfo.room.members);
-    } else if (true) {
-      console.log("hello");
+    } else if (data?.seeFolder?.ok) {
+      setMembers(data.seeFolder.folder.members);
     }
   };
 
   const refresh = async () => {
     setRefreshing(true);
+    const timer = setTimeout(() => {
+      Alert.alert("요청시간 초과");
+      setRefreshing(false);
+    }, 10000);
     await updateMembers();
+    clearTimeout(timer);
     setRefreshing(false);
   };
 

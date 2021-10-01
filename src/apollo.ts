@@ -44,7 +44,7 @@ export const logUserOut = async () => {
 };
 
 const httpLink = createHttpLink({
-  uri: "http://3.35.138.95:4000/graphql",
+  uri: "http://3.37.199.95:5000/graphql",
 });
 
 // const uploadHttpLink = createUploadLink({
@@ -52,7 +52,7 @@ const httpLink = createHttpLink({
 // });
 
 const wsLink = new WebSocketLink({
-  uri: "ws://3.35.138.95:4000/graphql",
+  uri: "ws://3.37.199.95:5000/graphql",
   options: {
     connectionParams: () => ({
       token: tokenVar(),
@@ -152,6 +152,24 @@ export const cache = new InMemoryCache({
             return {
               ...existing,
               followers: [...existing.followers, ...incoming.followers],
+            };
+          },
+        },
+        getUserLogs: {
+          keyArgs: ["userId"],
+          merge(existing, incoming) {
+            // console.log(existing);
+
+            if (!existing) {
+              return incoming;
+            }
+            if (!incoming || !incoming.ok) {
+              return existing;
+            }
+
+            return {
+              ...incoming,
+              logs: [...existing.logs, ...incoming.logs],
             };
           },
         },

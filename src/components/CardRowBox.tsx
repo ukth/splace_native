@@ -60,6 +60,8 @@ export const CardBox = ({
         style={{
           width: pixelScaler(186),
           height: pixelScaler(186),
+          marginRight: pixelScaler(3),
+          marginBottom: pixelScaler(3),
         }}
       />
       {/* need to fix!!! */}

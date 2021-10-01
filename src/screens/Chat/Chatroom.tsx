@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { RouteProp } from "@react-navigation/native";
+// import { RouteProp } from "@react-navigation/native";
 import React, { Fragment, useRef, useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
@@ -12,32 +12,37 @@ import {
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import { BldText16, RegText13, RegText9 } from "../../components/Text";
-import { MessageType, StackGeneratorParamList, themeType } from "../../types";
+import {
+  BldText13,
+  BldText16,
+  RegText13,
+  RegText9,
+} from "../../components/Text";
+import {
+  MessageType,
+  RoomType,
+  StackGeneratorParamList,
+  themeType,
+} from "../../types";
 import { pixelScaler } from "../../utils";
 import * as Clipboard from "expo-clipboard";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import client, { userIdVar } from "../../apollo";
 import {
-  ADD_CHAT_MEMBERS,
+  ADD_ROOM_MEMBERS,
+  EDIT_ROOM_TITLE,
   GET_MESSAGES,
   GET_ROOM_INFO,
-  LEAVE_CHATROOM,
+  LEAVE_ROOM,
   NEW_MESSAGE,
-  READ_CHATROOM,
+  READ_ROOM,
   SEND_MESSAGE,
 } from "../../queries";
-import {
-  ApolloCache,
-  DefaultContext,
-  gql,
-  MutationUpdaterFunction,
-  OperationVariables,
-  useLazyQuery,
-  useMutation,
-  useQuery,
-} from "@apollo/client";
+import { ApolloCache, gql, useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
+import { BldTextInput16 } from "../../components/TextInput";
+import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 
 const Entry = styled.View`
   width: 100%;
@@ -126,24 +131,21 @@ const ChatBubble = styled.TouchableOpacity`
     isMine ? pixelScaler(15) : pixelScaler(5)}px;
 `;
 
-const Chatroom = ({
-  navigation,
-  route,
-}: {
-  navigation: StackNavigationProp<StackGeneratorParamList>;
-  route: RouteProp<StackGeneratorParamList, "Chatroom">;
-}) => {
-  const chatroom = route.params.room;
-
-  const [reloaded, setReloaded] = useState<boolean>(false);
-
+const Chatroom = () => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+  const route = useRoute<RouteProp<StackGeneratorParamList, "Chatroom">>();
   const textInputRef = useRef<any>();
-
-  const [myMessage, setMyMessage] = useState<string>("");
-
   const theme = useContext<themeType>(ThemeContext);
 
+  const [chatroom, setChatroom] = useState<RoomType>(route.params.room);
+
+  const [reloaded, setReloaded] = useState<boolean>(false);
+  const [myMessage, setMyMessage] = useState<string>("");
   const [sendable, setSendable] = useState<boolean>(false);
+  const [titleEditing, setTitleEditing] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
+  const titleRef = useRef<any>();
 
   const {
     data: messageData,
@@ -156,7 +158,7 @@ const Chatroom = ({
     },
   });
 
-  const [read_chatroom, { loading }] = useMutation(READ_CHATROOM);
+  const [read_chatroom, { loading }] = useMutation(READ_ROOM);
 
   const onInviteCompleted = (data: {
     addChatMembers: {
@@ -176,7 +178,7 @@ const Chatroom = ({
   };
 
   const [inviteMutation, { loading: inviteMutationLoading }] = useMutation(
-    ADD_CHAT_MEMBERS,
+    ADD_ROOM_MEMBERS,
     {
       onCompleted: onInviteCompleted,
     }
@@ -192,8 +194,9 @@ const Chatroom = ({
       Alert.alert("채팅방을 나갈 수 없습니다.\n", error);
     }
   };
+
   const [leaveMutation, { loading: leaveMutationLoading }] = useMutation(
-    LEAVE_CHATROOM,
+    LEAVE_ROOM,
     {
       onCompleted: onLeaveCompleted,
     }
@@ -204,38 +207,101 @@ const Chatroom = ({
     loading: roomInfoLoading,
     refetch: refetchMembers,
   } = useQuery(GET_ROOM_INFO, {
-    variables: { chatroomId: chatroom.id },
+    variables: {
+      chatroomId: chatroom.id,
+    },
   });
+
+  const onEditCompleted = (data: any) => {
+    const {
+      editChatroom: { ok, error },
+    } = data;
+    if (ok) {
+      refetch();
+      setTitleEditing(false);
+      setChatroom({ ...chatroom, title });
+    } else {
+      Alert.alert("채팅방을 나갈 수 없습니다.\n", error);
+    }
+  };
+
+  const [editMutation, { loading: editRoomLoading }] = useMutation(
+    EDIT_ROOM_TITLE,
+    {
+      onCompleted: onEditCompleted,
+    }
+  );
 
   useEffect(() => {
     navigation.dangerouslyGetParent()?.setOptions({
       tabBarVisible: false,
     });
     navigation.setOptions({
-      title:
-        chatroom.title ??
-        (chatroom.members.length === 2
-          ? chatroom.members.filter((member) => member.id !== userIdVar())[0]
-              .username
-          : "no chatroom title"),
+      headerTitle: () => {
+        return titleEditing ? (
+          <View
+            style={{
+              height: 50,
+              alignItems: "center",
+            }}
+          >
+            <BldTextInput16
+              ref={titleRef}
+              // value={title}
+              selectionColor={theme.chatSelection}
+              // placeholder={chatroom.title ? chatroom.title : ""}
+              // placeholderTextColor={theme.text}
+              onChangeText={(text) => setTitle(text.trim())}
+              maxLength={20}
+              textAlign="center"
+            />
+            <View style={{ width: pixelScaler(225) }} />
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              setTitleEditing(true);
+              // console.log(titleRef);
+            }}
+          >
+            <BldText16 numberOfLines={1}>
+              {chatroom.title
+                ? chatroom.title
+                : chatroom.members.map((member) => member.username).join(", ")}
+            </BldText16>
+          </TouchableOpacity>
+        );
+      },
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() =>
-            navigation.push("Members", {
-              vars: {
-                chatroomId: chatroom.id,
-              },
-              membersData: roomInfo?.getRoomInfo?.room?.members,
-              refetchMembers,
-              inviteMutation,
-              leaveMutation,
-            })
-          }
-        >
-          <Ionicons name="menu" size={25} style={{ marginRight: 10 }} />
-        </TouchableOpacity>
-      ),
+      headerRight: () =>
+        titleEditing ? (
+          <HeaderRightConfirm
+            onPress={() => {
+              editMutation({
+                variables: {
+                  chatroomId: chatroom.id,
+                  title,
+                },
+              });
+            }}
+          />
+        ) : (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.push("Members", {
+                vars: {
+                  chatroomId: chatroom.id,
+                },
+                membersData: roomInfo?.getRoomInfo?.room?.members,
+                refetchMembers,
+                inviteMutation,
+                leaveMutation,
+              })
+            }
+          >
+            <Ionicons name="menu" size={25} style={{ marginRight: 10 }} />
+          </TouchableOpacity>
+        ),
     });
 
     if (!reloaded) {
@@ -249,7 +315,13 @@ const Chatroom = ({
       });
       // console.log("read!");
     }
-  }, [roomInfoLoading]);
+  }, [roomInfoLoading, titleEditing, title, chatroom]);
+
+  useEffect(() => {
+    if (titleEditing) {
+      titleRef.current?.focus();
+    }
+  }, [titleRef.current]);
 
   useEffect(() => {
     if (myMessage.trim() !== "") {
@@ -266,6 +338,7 @@ const Chatroom = ({
 
     if (!ok) {
       Alert.alert("메세지 전송에 실패했습니다.");
+      console.log(error);
     }
   };
 
@@ -284,7 +357,6 @@ const Chatroom = ({
           }
           createdAt
           isMine
-          unreadCount
         }
       `,
       data: {
@@ -476,13 +548,9 @@ const Chatroom = ({
                   </UsernameContainer>
                 ) : null}
                 <ChatBubbleContainer isMine={item.isMine}>
-                  <ChatBubble
-                    isMine={item.isMine}
-                    onLongPress={() => {
-                      Clipboard.setString(item.text);
-                    }}
-                  >
+                  <ChatBubble isMine={item.isMine}>
                     <RegText13
+                      selectable={true}
                       style={{
                         color: item.isMine
                           ? theme.myChatText
@@ -508,11 +576,6 @@ const Chatroom = ({
         />
       )}
       <Entry>
-        {/* <EntryLeftContainer>
-          <TouchableOpacity style={{ marginBottom: pixelScaler(4) }}>
-            <Ionicons name="server-outline" size={pixelScaler(25)} />
-          </TouchableOpacity>
-        </EntryLeftContainer> */}
         <EntryTextInputContainer>
           <StyledTextInput
             ref={textInputRef}
@@ -521,6 +584,7 @@ const Chatroom = ({
             selectionColor={theme.chatSelection}
             multiline={true}
             onChangeText={(text) => setMyMessage(text)}
+            maxLength={1000}
           />
 
           {sendable ? (

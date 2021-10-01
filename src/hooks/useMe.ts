@@ -22,6 +22,7 @@ const useMe = () => {
   const { data } = useQuery(GET_ME, { skip: !loggedIn });
 
   useEffect(() => {
+    console.log(data);
     if (data?.getMe?.ok && !data.getMe.ok) {
       logUserOut();
     }

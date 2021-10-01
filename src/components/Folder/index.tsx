@@ -28,6 +28,7 @@ export const Minus = styled.View`
 export const EditButtonsContainer = styled.View`
   flex: 1;
   height: ${pixelScaler(40)}px;
+  width: ${pixelScaler(375 - 17.5)}px;
   flex-direction: row;
   padding: 0 ${pixelScaler(30)}px;
   margin-bottom: ${pixelScaler(5)}px;
@@ -42,7 +43,7 @@ export const SortButton = styled.TouchableOpacity`
 
 export const NewFolderButton = styled.TouchableOpacity`
   position: absolute;
-  left: ${pixelScaler(30)}px;
+  left: ${pixelScaler(12.5)}px;
   bottom: 0;
   justify-content: center;
   padding: 0 ${pixelScaler(10)}px;

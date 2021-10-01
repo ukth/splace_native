@@ -93,6 +93,15 @@ export const theme = {
     folderDeleteButtonBackground: colors.grey_e5,
     folderDeleteMinus: colors.black,
     folderNoticeBadgeBackground: colors.theme,
+    blankFolderBackground: colors.grey_e5,
+
+    folderMemberCount: colors.white,
+
+    profileLink: colors.theme,
+
+    modalHighlight: colors.theme,
+    modalInputSubmitButton: colors.theme,
+    modalEntry: colors.grey_ae,
 
     white: colors.white,
   },

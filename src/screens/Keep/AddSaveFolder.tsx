@@ -92,13 +92,13 @@ const SaveItem = ({
   save,
   folderId,
   index,
-  editing,
+
   refetch,
 }: {
   save: any;
   folderId: number;
   index: number;
-  editing: boolean;
+
   refetch: () => void;
 }) => {
   const navigation =
@@ -130,20 +130,6 @@ const SaveItem = ({
 
   return (
     <SaveItemContainer>
-      {editing ? (
-        <DeleteButton
-          onPress={() => {
-            deleteMutation({
-              variables: {
-                saveId: save.id,
-                folderId,
-              },
-            });
-          }}
-        >
-          <Minus />
-        </DeleteButton>
-      ) : null}
       <Item
         onPress={() => {
           navigation.push("Splace", {
@@ -177,16 +163,14 @@ const SaveItem = ({
   );
 };
 
-const Folder = ({
+const AddSaveFolder = ({
   route,
 }: {
   route: RouteProp<StackGeneratorParamList, "Folder">;
 }) => {
-  const [editing, setEditing] = useState<boolean>(false);
   const [sortMode, setSortMode] = useState<"generated" | "name">("generated");
   const theme = useContext<themeType>(ThemeContext);
   const [folder, setFolder] = useState<FolderType>(route.params.folder);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const [saves, setSaves] = useState<SaveType[]>([]);
 
@@ -212,66 +196,11 @@ const Folder = ({
   useEffect(() => {
     navigation.setOptions({
       title: folder.title,
-      headerRight: () =>
-        editing ? (
-          <HeaderRightConfirm
-            onPress={() => {
-              setEditing(false);
-            }}
-          />
-        ) : (
-          <HeaderRightMenu
-            onPress={() => {
-              setModalVisible(true);
-            }}
-          />
-        ),
+      headerRight: () => <HeaderRightConfirm onPress={() => {}} />,
     });
-  }, [editing]);
+  }, []);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
-
-  const onInviteCompleted = (data: {
-    addFolderMembers: {
-      ok: boolean;
-      error: string;
-    };
-  }) => {
-    const {
-      addFolderMembers: { ok, error },
-    } = data;
-    if (ok) {
-      navigation.pop();
-    } else {
-      // console.log(data);
-      Alert.alert("초대에 실패하였습니다.\n", error);
-    }
-  };
-
-  const [inviteMutation, { loading: inviteMutationLoading }] = useMutation(
-    ADD_FOLDER_MEMBERS,
-    {
-      onCompleted: onInviteCompleted,
-    }
-  );
-
-  const onLeaveCompleted = (data: any) => {
-    const {
-      quitFolder: { ok, error },
-    } = data;
-    if (ok) {
-      navigation.navigate("Folders");
-    } else {
-      Alert.alert("폴더를 나갈 수 없습니다.\n", error);
-    }
-  };
-
-  const [leaveMutation, { loading: leaveMutationLoading }] = useMutation(
-    LEAVE_FOLDER,
-    {
-      onCompleted: onLeaveCompleted,
-    }
-  );
 
   const {
     data: folderInfo,
@@ -313,30 +242,20 @@ const Folder = ({
           onRefresh={refresh}
           ListHeaderComponent={() => (
             <EditButtonsContainer>
-              {editing ? (
-                <NewFolderButton
-                  onPress={() => {
-                    navigation.push("AddSaveFolders", { folder });
-                  }}
-                >
-                  <RegText13>+ 추가하기</RegText13>
-                </NewFolderButton>
-              ) : (
-                <SortButton
-                  onPress={() => {
-                    if (sortMode === "generated") {
-                      setSortMode("name");
-                    } else {
-                      setSortMode("generated");
-                    }
-                  }}
-                >
-                  <RegText13>
-                    {sortMode === "generated" ? "최근 생성 순" : "가나다 순"}
-                  </RegText13>
-                  <Ionicons name="chevron-down" />
-                </SortButton>
-              )}
+              <SortButton
+                onPress={() => {
+                  if (sortMode === "generated") {
+                    setSortMode("name");
+                  } else {
+                    setSortMode("generated");
+                  }
+                }}
+              >
+                <RegText13>
+                  {sortMode === "generated" ? "최근 생성 순" : "가나다 순"}
+                </RegText13>
+                <Ionicons name="chevron-down" />
+              </SortButton>
             </EditButtonsContainer>
           )}
           data={saves}
@@ -345,7 +264,6 @@ const Folder = ({
               folderId={folder.id}
               save={item}
               index={index}
-              editing={editing}
               refetch={refetch}
             />
           )}
@@ -363,47 +281,8 @@ const Folder = ({
           <BldText20>해당 폴더는 비어있습니다</BldText20>
         </View>
       )}
-      <BottomSheetModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        style={{
-          borderTopLeftRadius: pixelScaler(20),
-          borderTopRightRadius: pixelScaler(20),
-          paddingBottom: pixelScaler(44),
-        }}
-      >
-        <ModalButtonBox
-          onPress={() => {
-            setModalVisible(false);
-            navigation.push("Members", {
-              vars: {
-                folderId: folder.id,
-              },
-              membersData: folderInfo?.seeFolder?.folder?.members,
-              refetchMembers: refetch,
-              inviteMutation,
-              leaveMutation,
-            });
-          }}
-        >
-          <RegText20>멤버 관리</RegText20>
-        </ModalButtonBox>
-        <ModalButtonBox
-          onPress={() => {
-            setEditing(true);
-            setModalVisible(false);
-          }}
-        >
-          <RegText20>편집</RegText20>
-        </ModalButtonBox>
-      </BottomSheetModal>
-      {editing ? null : (
-        <FloatingMapButton>
-          <Ionicons name="map-outline" size={30} />
-        </FloatingMapButton>
-      )}
     </ScreenContainer>
   );
 };
 
-export default Folder;
+export default AddSaveFolder;

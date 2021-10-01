@@ -14,7 +14,6 @@ export const MESSAGE_FRAGMENT = gql`
   fragment MessageFragement on Message {
     id
     text
-    unreadCount
     createdAt
   }
   ${USER_FRAGMENT}
@@ -38,7 +37,7 @@ export const ROOM_FRAGMENT = gql`
       user {
         ...UserFragement
       }
-      readedAt
+      updatedAt
     }
   }
   ${USER_FRAGMENT}
@@ -51,6 +50,8 @@ export const SPLACE_FRAGMENT = gql`
     name
     address
     thumbnail
+    geolat
+    geolog
   }
 `;
 
@@ -73,6 +74,22 @@ export const FOLDER_FRAGMENT = gql`
   }
   ${USER_FRAGMENT}
   ${SPLACE_FRAGMENT}
+`;
+
+export const SERIES_FRAGMENT = gql`
+  fragment SeriesFragement on Series {
+    id
+    author {
+      ...UserFragement
+    }
+    title
+    photologs {
+      id
+      imageUrls
+    }
+    createdAt
+  }
+  ${USER_FRAGMENT}
 `;
 
 export const LOGIN = gql`
@@ -122,6 +139,7 @@ export const GET_FEED = gql`
         author {
           id
           username
+          name
           profileImageUrl
         }
         splace {
@@ -136,21 +154,11 @@ export const GET_FEED = gql`
         createdAt
       }
       series {
-        id
-        author {
-          id
-          username
-          profileImageUrl
-        }
-        title
-        photologs {
-          id
-          imageUrls
-        }
-        createdAt
+        ...SeriesFragement
       }
     }
   }
+  ${SERIES_FRAGMENT}
 `;
 
 export const GET_SERIES = gql`
@@ -186,18 +194,24 @@ export const UNLIKE_PHOTOLOG = gql`
 export const GET_PROFILE = gql`
   query seeProfile($userId: Int!) {
     seeProfile(userId: $userId) {
-      isFollowing
-      id
-      name
-      photologs {
+      ok
+      error
+      profile {
+        isFollowing
         id
-        imageUrls
+        name
+        url
+        photologs {
+          id
+          imageUrls
+        }
+        profileImageUrl
+        profileMessage
+        totalFollowers
+        totalFollowing
+        totalLogsNumber
+        username
       }
-      profileImageUrl
-      profileMessage
-      totalFollowers
-      totalFollowing
-      username
     }
   }
 `;
@@ -274,7 +288,6 @@ export const GET_MESSAGES = gql`
           username
           name
         }
-        unreadCount
         createdAt
         isMine
       }
@@ -293,20 +306,32 @@ export const SEND_MESSAGE = gql`
         author {
           ...UserFragement
         }
-        unreadCount
         createdAt
         isMine
       }
       readedRecord {
         id
-        readedAt
+        updatedAt
       }
     }
   }
   ${USER_FRAGMENT}
 `;
 
-export const READ_CHATROOM = gql`
+export const CREATE_ROOM = gql`
+  mutation createChatroom($title: String!, $memberIds: [Int]!) {
+    createChatroom(title: $title, memberIds: $memberIds) {
+      ok
+      error
+      chatroom {
+        ...RoomFragement
+      }
+    }
+  }
+  ${ROOM_FRAGMENT}
+`;
+
+export const READ_ROOM = gql`
   mutation readChatroom($chatroomId: Int!) {
     readChatroom(chatroomId: $chatroomId) {
       ok
@@ -342,7 +367,6 @@ export const NEW_MESSAGE = gql`
       author {
         ...UserFragement
       }
-      unreadCount
       createdAt
       isMine
     }
@@ -369,7 +393,16 @@ export const ROOM_UPDATE = gql`
   ${USER_FRAGMENT}
 `;
 
-export const LEAVE_CHATROOM = gql`
+export const EDIT_ROOM_TITLE = gql`
+  mutation editChatroom($title: String!, $chatroomId: Int!) {
+    editChatroom(title: $title, chatroomId: $chatroomId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LEAVE_ROOM = gql`
   mutation quitChatroom($chatroomId: Int!) {
     quitChatroom(chatroomId: $chatroomId) {
       ok
@@ -378,9 +411,45 @@ export const LEAVE_CHATROOM = gql`
   }
 `;
 
-export const ADD_CHAT_MEMBERS = gql`
+export const ADD_ROOM_MEMBERS = gql`
   mutation addChatMembers($chatroomId: Int!, $memberIds: [Int]!) {
     addChatMembers(chatroomId: $chatroomId, memberIds: $memberIds) {
+      ok
+      error
+    }
+  }
+`;
+
+export const CREATE_FOLDER = gql`
+  mutation createFolder($title: String!) {
+    createFolder(title: $title) {
+      ok
+      error
+    }
+  }
+`;
+
+export const DELETE_FOLDER = gql`
+  mutation deleteFolder($folderId: Int!) {
+    deleteFolder(folderId: $folderId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LEAVE_FOLDER = gql`
+  mutation quitFolder($folderId: Int!) {
+    quitFolder(folderId: $folderId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const ADD_FOLDER_MEMBERS = gql`
+  mutation addFolderMembers($folderId: Int!, $memberIds: [Int]!) {
+    addFolderMembers(folderId: $folderId, memberIds: $memberIds) {
       ok
       error
     }
@@ -400,15 +469,37 @@ export const GET_FOLDERS = gql`
   ${FOLDER_FRAGMENT}
 `;
 
-// export const GET_FOLDER_INFO = gql`
-//   query getFolders($lastId: Int) {
-//     getFolders(lastId: $lastId) {
-//       ok
-//       error
-//       folders {
-//         ...FolderFragement
-//       }
-//     }
-//   }
-//   ${FOLDER_FRAGMENT}
-// `;
+export const GET_FOLDER_INFO = gql`
+  query seeFolder($folderId: Int!) {
+    seeFolder(folderId: $folderId) {
+      ok
+      error
+      folder {
+        ...FolderFragement
+      }
+    }
+  }
+  ${FOLDER_FRAGMENT}
+`;
+
+export const REMOVE_SAVE = gql`
+  mutation removeSave($saveId: Int!, $folderId: Int!) {
+    removeSave(saveId: $saveId, folderId: $folderId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const GET_USER_LOGS = gql`
+  query getUserLogs($userId: Int!, $lastId: Int) {
+    getUserLogs(userId: $userId, lastId: $lastId) {
+      ok
+      error
+      logs {
+        id
+        imageUrls
+      }
+    }
+  }
+`;

@@ -13,7 +13,7 @@ import { Chatroom, Chatrooms } from "./Chat";
 import Members from "./Members";
 import AddMembers from "./AddMembers";
 import MomentView from "./MomentView";
-import { Folders, Folder } from "./Keep";
+import { Folders, Folder, AddSaveFolders, AddSaveFolder } from "./Keep";
 
 export {
   LogIn,
@@ -34,4 +34,6 @@ export {
   MomentView,
   Folders,
   Folder,
+  AddSaveFolders,
+  AddSaveFolder,
 };

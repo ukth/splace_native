@@ -24,6 +24,8 @@ import {
   MomentView,
   Folders,
   Folder,
+  AddSaveFolders,
+  AddSaveFolder,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -194,12 +196,14 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       {screenName === "Moment" ? (
         <Stack.Screen name="Folder" component={Folder} />
       ) : null}
+      {screenName === "Moment" ? (
+        <Stack.Screen name="AddSaveFolders" component={AddSaveFolders} />
+      ) : null}
+      {screenName === "Moment" ? (
+        <Stack.Screen name="AddSaveFolder" component={AddSaveFolder} />
+      ) : null}
       <Stack.Screen name="Splace" component={Splace} />
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
-        initialParams={{ user: { id: 1 } }} // logged in id
-      />
+      <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Series" component={Series} />
       <Stack.Screen name="Payment" component={Payment} />
       <Stack.Screen name="Chatrooms" component={Chatrooms} />

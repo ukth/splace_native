@@ -11,7 +11,12 @@ import {
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
-import { FolderType, StackGeneratorParamList, themeType } from "../../types";
+import {
+  FolderType,
+  SaveType,
+  StackGeneratorParamList,
+  themeType,
+} from "../../types";
 import { pixelScaler, strCmpFunc } from "../../utils";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -19,7 +24,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { BldTextInput16 } from "../../components/TextInput";
 import {
-  BldText13,
   BldText16,
   RegText13,
   RegText16,
@@ -31,17 +35,13 @@ import { abs } from "react-native-reanimated";
 import Navigation from "../../navigation";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import {
-  DeleteButton,
   EditButtonsContainer,
   Item,
-  Minus,
-  NewFolderButton,
   SortButton,
 } from "../../components/Folder";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
-import ModalInput from "../../components/ModalInput";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -49,61 +49,26 @@ const FolderConatiner = styled.View`
   align-items: center;
 `;
 
-const MemberCountContainer = styled.View`
-  position: absolute;
-  right: ${pixelScaler(10)}px;
-  bottom: ${pixelScaler(10)}px;
-  flex-direction: row;
-`;
-
 const Folder = ({
   folder,
   index,
-  editing,
+
   refetch,
 }: {
   folder: FolderType;
   index: number;
-  editing: boolean;
+
   refetch: () => void;
 }) => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   const theme = useContext<themeType>(ThemeContext);
 
-  const onDeleteCompleted = (data: any) => {
-    // console.log(data);
-    const {
-      deleteFolder: { ok, error },
-    } = data;
-    if (ok) {
-      Alert.alert("폴더가 삭제되었습니다.\n", error);
-      refetch();
-    } else {
-      Alert.alert("폴더 삭제에 실패했습니다.\n", error);
-    }
-  };
-
-  const [deleteMutation, { loading: deleteMutationLoading }] = useMutation(
-    DELETE_FOLDER,
-    {
-      onCompleted: onDeleteCompleted,
-    }
-  );
   return (
     <FolderConatiner>
-      {editing ? (
-        <DeleteButton
-          onPress={() => {
-            deleteMutation({ variables: { folderId: folder.id } });
-          }}
-        >
-          <Minus />
-        </DeleteButton>
-      ) : null}
       <Item
         onPress={() => {
-          navigation.push("Folder", { folder });
+          navigation.push("AddSaveFolder", { folder });
         }}
       >
         {folder.saves.length > 0 ? (
@@ -143,14 +108,6 @@ const Folder = ({
             backgroundColor: "#ffffff",
           }}
         />
-        {folder.members.length > 1 ? (
-          <MemberCountContainer>
-            <Ionicons name="person" color={theme.folderMemberCount} />
-            <BldText13 style={{ color: theme.folderMemberCount }}>
-              {folder.members.length}
-            </BldText13>
-          </MemberCountContainer>
-        ) : null}
       </Item>
       <RegText16 style={{ marginTop: pixelScaler(10) }}>
         {folder.title}
@@ -159,12 +116,11 @@ const Folder = ({
   );
 };
 
-const Folders = ({
+const AddSaveFolders = ({
   route,
 }: {
-  route: RouteProp<StackGeneratorParamList, "Folders">;
+  route: RouteProp<StackGeneratorParamList, "AddSaveFolders">;
 }) => {
-  const [editing, setEditing] = useState<boolean>(false);
   const [sortMode, setSortMode] = useState<"edited" | "generated" | "name">(
     "edited"
   );
@@ -175,6 +131,10 @@ const Folders = ({
 
   const [folders, setFolders] = useState<FolderType[]>([]);
 
+  const [folderSaves, setFolderSaves] = useState<SaveType[]>(
+    route.params.folder.saves
+  );
+
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
@@ -184,25 +144,10 @@ const Folders = ({
 
   useEffect(() => {
     navigation.setOptions({
-      title: "저장소",
-      headerRight: () =>
-        editing ? (
-          <HeaderRightConfirm
-            onPress={() => {
-              setEditing(!editing);
-            }}
-          />
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              setEditing(!editing);
-            }}
-          >
-            <Ionicons name="pencil" size={26} />
-          </TouchableOpacity>
-        ),
+      title: "추가하기",
+      headerRight: () => <HeaderRightConfirm onPress={() => {}} />,
     });
-  }, [editing]);
+  }, []);
 
   const updateData = async (data: any) => {
     if (data?.getFolders?.folders) {
@@ -248,24 +193,6 @@ const Folders = ({
     setRefreshing(false);
   };
 
-  const onCreateCompleted = (data: any) => {
-    const {
-      createFolder: { ok, error },
-    } = data;
-    if (ok) {
-      refetch();
-    } else {
-      Alert.alert("폴더 생성에 실패했습니다.\n", error);
-    }
-  };
-
-  const [createMutation, { loading: createMutationLoading }] = useMutation(
-    CREATE_FOLDER,
-    {
-      onCompleted: onCreateCompleted,
-    }
-  );
-
   return (
     <ScreenContainer>
       {loading ? null : (
@@ -275,28 +202,16 @@ const Folders = ({
           onRefresh={refresh}
           ListHeaderComponent={() => (
             <EditButtonsContainer>
-              {editing ? (
-                <NewFolderButton
-                  onPress={() => {
-                    if (editing) {
-                      setModalVisible(true);
-                    }
-                  }}
-                >
-                  <RegText13>+ 새 폴더</RegText13>
-                </NewFolderButton>
-              ) : (
-                <SortButton onPress={() => setModalVisible(true)}>
-                  <RegText13>
-                    {sortMode === "edited"
-                      ? "최근 편집 순"
-                      : sortMode === "generated"
-                      ? "최근 생성 순"
-                      : "가나다 순"}
-                  </RegText13>
-                  <Ionicons name="chevron-down" />
-                </SortButton>
-              )}
+              <SortButton onPress={() => setModalVisible(true)}>
+                <RegText13>
+                  {sortMode === "edited"
+                    ? "최근 편집 순"
+                    : sortMode === "generated"
+                    ? "최근 생성 순"
+                    : "가나다 순"}
+                </RegText13>
+                <Ionicons name="chevron-down" />
+              </SortButton>
             </EditButtonsContainer>
           )}
           data={folders}
@@ -304,96 +219,71 @@ const Folders = ({
             <Folder
               folder={item}
               index={index}
-              editing={editing}
               refetch={refetch}
+              // folderSaves={folderSaves}
+              // setFolderSaves={setFolderSaves}
             />
           )}
           keyExtractor={(item, index) => "" + index}
           numColumns={2}
         />
       )}
-      {editing ? (
-        <BottomSheetModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          style={{
-            borderTopLeftRadius: pixelScaler(20),
-            borderTopRightRadius: pixelScaler(20),
-            paddingBottom: pixelScaler(44),
+
+      <BottomSheetModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        style={{
+          borderTopLeftRadius: pixelScaler(20),
+          borderTopRightRadius: pixelScaler(20),
+          paddingBottom: pixelScaler(44),
+        }}
+      >
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("edited");
+            setModalVisible(false);
           }}
         >
-          {/* <KeyboardAvoidingView
-            
-          > */}
-          <ModalInput
-            onSubmit={(title) => {
-              if (!createMutationLoading && title !== "") {
-                createMutation({ variables: { title } });
-              }
+          <RegText20
+            style={{
+              color: sortMode === "edited" ? theme.modalHighlight : theme.text,
             }}
-            placeholder="새 폴더 이름"
-            setModalVisible={setModalVisible}
-          />
-          {/* </KeyboardAvoidingView> */}
-        </BottomSheetModal>
-      ) : (
-        <BottomSheetModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          style={{
-            borderTopLeftRadius: pixelScaler(20),
-            borderTopRightRadius: pixelScaler(20),
-            paddingBottom: pixelScaler(44),
+          >
+            최근 편집 순
+          </RegText20>
+        </ModalButtonBox>
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("generated");
+            setModalVisible(false);
           }}
         >
-          <ModalButtonBox
-            onPress={() => {
-              setSortMode("edited");
-              setModalVisible(false);
+          <RegText20
+            style={{
+              color:
+                sortMode === "generated" ? theme.modalHighlight : theme.text,
             }}
           >
-            <RegText20
-              style={{
-                color:
-                  sortMode === "edited" ? theme.modalHighlight : theme.text,
-              }}
-            >
-              최근 편집 순
-            </RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox
-            onPress={() => {
-              setSortMode("generated");
-              setModalVisible(false);
+            최근 생성 순
+          </RegText20>
+        </ModalButtonBox>
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("name");
+            setModalVisible(false);
+          }}
+        >
+          <RegText20
+            style={{
+              color: sortMode === "name" ? theme.modalHighlight : theme.text,
             }}
           >
-            <RegText20
-              style={{
-                color:
-                  sortMode === "generated" ? theme.modalHighlight : theme.text,
-              }}
-            >
-              최근 생성 순
-            </RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox
-            onPress={() => {
-              setSortMode("name");
-              setModalVisible(false);
-            }}
-          >
-            <RegText20
-              style={{
-                color: sortMode === "name" ? theme.modalHighlight : theme.text,
-              }}
-            >
-              가나다 순
-            </RegText20>
-          </ModalButtonBox>
-        </BottomSheetModal>
-      )}
+            가나다 순
+          </RegText20>
+        </ModalButtonBox>
+      </BottomSheetModal>
     </ScreenContainer>
   );
 };
 
-export default Folders;
+export default AddSaveFolders;

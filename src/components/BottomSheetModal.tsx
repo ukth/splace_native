@@ -72,12 +72,14 @@ const BottomSheetModal = ({
   };
 
   const ModalDragBar = styled.View`
+    position: absolute;
     width: ${pixelScaler(100)}px;
     height: ${pixelScaler(4)}px;
     border-radius: ${pixelScaler(2)}px;
     background-color: #d1d1d6;
-    margin-top: ${pixelScaler(12)}px;
-    margin-bottom: ${pixelScaler(30)}px;
+    top: ${pixelScaler(12)}px;
+    z-index: 1;
+    /* margin-bottom: ${pixelScaler(30)}px; */
   `;
 
   return (
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomSheetContainer: {
+    paddingTop: pixelScaler(45),
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
