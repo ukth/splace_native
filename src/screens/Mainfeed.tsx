@@ -9,12 +9,20 @@ import { ScrollView } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 import { ThemeContext } from "styled-components";
 import { useState } from "react";
-import { PhotologType, SeriesType, themeType } from "../types";
+import {
+  PhotologType,
+  SeriesType,
+  StackGeneratorParamList,
+  themeType,
+} from "../types";
 
 import { useQuery } from "@apollo/client";
 import PhotoLog from "../components/Contents/Photolog";
 import Series from "../components/Contents/Series";
 import useMe from "../hooks/useMe";
+import * as Linking from "expo-linking";
+import { useNavigation } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const { width } = Dimensions.get("window");
 
@@ -26,6 +34,8 @@ const Container = styled.View`
 const Mainfeed = () => {
   const theme = useContext(ThemeContext);
   // const [loading, setLoading] = useState(true);
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   const me = useMe();
 
@@ -109,6 +119,43 @@ const Mainfeed = () => {
     await refetch();
     setRefreshing(false);
   };
+
+  const url = Linking.useURL();
+
+  const handleUrl = (url: string) => {
+    let { path, queryParams } = Linking.parse(url);
+    if (path === "Profile") {
+      if (Number(queryParams.id)) {
+        navigation.push("Profile", { user: { id: Number(queryParams.id) } });
+      }
+    } else if (path === "Log") {
+      if (Number(queryParams.id)) {
+        navigation.push("Log", { id: Number(queryParams.id) });
+      }
+    }
+  };
+
+  const handleDeepLink = (event: any) => {
+    // console.log("!!", event);
+    if (event.url) {
+      handleUrl(event.url);
+    }
+  };
+
+  useEffect(() => {
+    Linking.addEventListener("url", handleDeepLink);
+
+    (async () => {
+      console.log("async!!");
+      const url = await Linking.getInitialURL();
+      if (url) {
+        handleUrl(url);
+      }
+    })();
+    return () => {
+      Linking.removeEventListener("url", handleDeepLink);
+    };
+  }, []);
 
   return (
     <Container

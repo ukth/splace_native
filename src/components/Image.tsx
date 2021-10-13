@@ -3,6 +3,7 @@ import { Image as DefaultImage } from "react-native";
 import { ThemeContext } from "styled-components/native";
 import * as FileSystem from "expo-file-system";
 import * as Crypto from "expo-crypto";
+import { themeType } from "../types";
 
 type ImageType = DefaultImage["props"];
 
@@ -77,14 +78,16 @@ const Image = ({
   // useEffect(() => {
   //   console.log("########\n", imgURI, "\n", uri, "\n########");
   // }, [imgURI]);
+  const theme = useContext<themeType>(ThemeContext);
+  props.style = { backgroundColor: theme.imageBackground, ...props.style };
 
-  return (
+  return uri !== "" ? (
     <DefaultImage
       resizeMethod="resize"
       {...props}
       source={imgURI !== "" ? { uri: imgURI } : { uri: uri }}
     />
-  );
+  ) : null;
 };
 
 export default Image;

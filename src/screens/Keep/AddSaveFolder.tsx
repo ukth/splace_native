@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, FlatList, Text, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
 
@@ -10,13 +16,12 @@ import {
   StackGeneratorParamList,
   themeType,
 } from "../../types";
-import { RouteProp, useNavigation } from "@react-navigation/core";
-import { HeaderBackButton, StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
 import {
   DeleteButton,
   EditButtonsContainer,
-  Item,
   Minus,
   NewFolderButton,
   SortButton,
@@ -25,9 +30,10 @@ import {
   BldText13,
   BldText20,
   RegText13,
+  RegText16,
   RegText20,
 } from "../../components/Text";
-import { pixelScaler, strCmpFunc } from "../../utils";
+import { BLANK_IMAGE, pixelScaler, strCmpFunc } from "../../utils";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
@@ -35,11 +41,22 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { Splace } from "..";
 import {
   ADD_FOLDER_MEMBERS,
+  ADD_SAVES,
   GET_FOLDER_INFO,
   LEAVE_FOLDER,
   REMOVE_SAVE,
 } from "../../queries";
 import { useMutation, useQuery } from "@apollo/client";
+import { HeaderBackButton } from "../../components/HeaderBackButton";
+
+export const Item = styled.View`
+  width: ${pixelScaler(145)}px;
+  height: ${pixelScaler(145)}px;
+  border-radius: ${pixelScaler(10)}px;
+  margin-top: ${pixelScaler(15)}px;
+  align-items: center;
+  justify-content: center;
+`;
 
 const SaveItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -57,7 +74,7 @@ const BadgesContainer = styled.View`
   margin-top: ${pixelScaler(12)}px;
 `;
 
-const AddressBadge = styled.TouchableOpacity`
+const AddressBadge = styled.View`
   border-width: ${pixelScaler(0.7)}px;
   height: ${pixelScaler(20)}px;
   width: ${pixelScaler(74)}px;
@@ -66,7 +83,7 @@ const AddressBadge = styled.TouchableOpacity`
   margin-right: ${pixelScaler(10)}px;
 `;
 
-const Category = styled.TouchableOpacity`
+const Category = styled.View`
   border-width: ${pixelScaler(0.7)}px;
   height: ${pixelScaler(20)}px;
   padding: 0 ${pixelScaler(10)}px;
@@ -74,80 +91,80 @@ const Category = styled.TouchableOpacity`
   justify-content: center;
 `;
 
-const FloatingMapButton = styled.TouchableOpacity`
+const SelectMark = styled.View`
   position: absolute;
-  right: ${pixelScaler(15)}px;
-  bottom: ${pixelScaler(15)}px;
-  width: ${pixelScaler(60)}px;
-  height: ${pixelScaler(60)}px;
-  border-radius: ${pixelScaler(60)}px;
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  right: 10px;
+  top: 10px;
+  width: ${pixelScaler(20)}px;
+  height: ${pixelScaler(20)}px;
+  border-radius: ${pixelScaler(20)}px;
+  background-color: ${({ theme }: { theme: themeType }) =>
+    theme.addSaveSelectMarkBackground};
   align-items: center;
   justify-content: center;
-  z-index: 0;
+  z-index: 2;
+`;
+
+const SelectedMark = styled.View`
+  width: ${pixelScaler(14)}px;
+  height: ${pixelScaler(14)}px;
+  border-radius: ${pixelScaler(14)}px;
+  background-color: ${({ theme }: { theme: themeType }) =>
+    theme.addSaveSelectMark};
+  z-index: 3;
+`;
+
+const SelectedBackground = styled.View`
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.7);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 `;
 
 const SaveItem = ({
   save,
-  folderId,
-  index,
-
-  refetch,
+  splaceIds,
+  setSplaceIds,
 }: {
-  save: any;
-  folderId: number;
-  index: number;
-
-  refetch: () => void;
+  save: SaveType;
+  splaceIds: number[];
+  setSplaceIds: (_: number[]) => void;
 }) => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
-  const onDeleteCompleted = (data: {
-    removeSave: {
-      ok: boolean;
-      error: string;
-    };
-  }) => {
-    const {
-      removeSave: { ok, error },
-    } = data;
-    if (ok) {
-      Alert.alert("삭제되었습니다.\n", error);
-      refetch();
-    } else {
-      Alert.alert("삭제에 실패했습니다.\n", error);
-    }
-  };
-
-  const [deleteMutation, { loading: deleteMutationLoading }] = useMutation(
-    REMOVE_SAVE,
-    {
-      onCompleted: onDeleteCompleted,
-    }
-  );
-
   return (
     <SaveItemContainer>
-      <Item
+      <TouchableWithoutFeedback
         onPress={() => {
-          navigation.push("Splace", {
-            splace: save.splace,
-          });
+          setSplaceIds([1, 2, 3]);
+
+          if (splaceIds.includes(save.splace.id)) {
+            setSplaceIds(splaceIds.filter((value) => value !== save.splace.id));
+          } else {
+            setSplaceIds([...splaceIds, save.splace.id]);
+          }
         }}
       >
-        <Image
-          source={{
-            uri: save.splace.thumbnail,
-          }}
-          style={{
-            width: pixelScaler(145),
-            height: pixelScaler(145),
-            borderRadius: pixelScaler(10),
-          }}
-        />
-      </Item>
+        <Item>
+          {splaceIds.includes(save.splace.id) ? <SelectedBackground /> : null}
+          <SelectMark>
+            {splaceIds.includes(save.splace.id) ? <SelectedMark /> : null}
+          </SelectMark>
+
+          <Image
+            source={{
+              uri: save.splace.thumbnail ?? BLANK_IMAGE,
+            }}
+            style={{
+              width: pixelScaler(145),
+              height: pixelScaler(145),
+              borderRadius: pixelScaler(10),
+            }}
+          />
+        </Item>
+      </TouchableWithoutFeedback>
       <InfoContainer>
         <BldText13>{save.splace.name}</BldText13>
         <BadgesContainer>
@@ -166,13 +183,15 @@ const SaveItem = ({
 const AddSaveFolder = ({
   route,
 }: {
-  route: RouteProp<StackGeneratorParamList, "Folder">;
+  route: RouteProp<StackGeneratorParamList, "AddSaveFolder">;
 }) => {
   const [sortMode, setSortMode] = useState<"generated" | "name">("generated");
   const theme = useContext<themeType>(ThemeContext);
   const [folder, setFolder] = useState<FolderType>(route.params.folder);
 
-  const [saves, setSaves] = useState<SaveType[]>([]);
+  const [saves, setSaves] = useState<SaveType[]>();
+
+  const [splaceIds, setSplaceIds] = useState<number[]>(route.params.splaceIds);
 
   useEffect(() => {
     if (sortMode === "generated") {
@@ -196,36 +215,26 @@ const AddSaveFolder = ({
   useEffect(() => {
     navigation.setOptions({
       title: folder.title,
-      headerRight: () => <HeaderRightConfirm onPress={() => {}} />,
+      headerLeft: () => (
+        <HeaderBackButton
+          onPress={() => {
+            navigation.navigate("AddSaveFolders", {
+              targetFolderId: route.params.targetFolderId,
+              splaceIds,
+            });
+          }}
+        />
+      ),
     });
-  }, []);
+  }, [splaceIds]);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const {
-    data: folderInfo,
-    loading: folderInfoLoading,
-    refetch,
-  } = useQuery(GET_FOLDER_INFO, {
+  const { data: folderInfo } = useQuery(GET_FOLDER_INFO, {
     variables: {
       folderId: folder.id,
     },
   });
-
-  navigation.addListener("focus", async () => {
-    await refetch();
-  });
-
-  const refresh = async () => {
-    setRefreshing(true);
-    const timer = setTimeout(() => {
-      Alert.alert("요청시간 초과");
-      setRefreshing(false);
-    }, 10000);
-    await refetch();
-    clearTimeout(timer);
-    setRefreshing(false);
-  };
 
   useEffect(() => {
     if (folderInfo?.seeFolder?.ok) {
@@ -233,13 +242,15 @@ const AddSaveFolder = ({
     }
   }, [folderInfo]);
 
+  useEffect(() => {
+    // console.log("saves", saves.length);
+  }, [saves]);
+
   return (
     <ScreenContainer>
-      {saves.length > 0 ? (
+      {!saves || saves.length > 0 ? (
         <FlatList
           style={{ left: pixelScaler(17.5) }}
-          refreshing={refreshing}
-          onRefresh={refresh}
           ListHeaderComponent={() => (
             <EditButtonsContainer>
               <SortButton
@@ -261,10 +272,9 @@ const AddSaveFolder = ({
           data={saves}
           renderItem={({ item, index }) => (
             <SaveItem
-              folderId={folder.id}
               save={item}
-              index={index}
-              refetch={refetch}
+              splaceIds={splaceIds}
+              setSplaceIds={setSplaceIds}
             />
           )}
           keyExtractor={(item, index) => "" + index}
@@ -278,7 +288,7 @@ const AddSaveFolder = ({
             alignItems: "center",
           }}
         >
-          <BldText20>해당 폴더는 비어있습니다</BldText20>
+          <RegText16>해당 폴더는 비어있습니다</RegText16>
         </View>
       )}
     </ScreenContainer>

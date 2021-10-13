@@ -21,30 +21,33 @@ export type SplaceType = {
   name: string;
   address: string;
   thumbnail?: string;
+  lat: number;
+  lon: number;
 };
 
 export type UserType = {
   id: number;
-  username: string;
-  name: string;
-  email: string;
-  password: string;
-  profileMessage: string;
-  profileImageUrl: string;
-  folders: any[];
-  joinedAt: string;
-  updatedAt: string;
-  followers: UserType[];
-  followings: UserType[];
-  photologs: PhotologType[];
-  likedPhotologs: PhotologType[];
-  totalFollowing: number;
-  totalFollowers: number;
-  isMe: boolean;
-  isFollowing: boolean;
-  totalLogsNumber: number;
-  phone: string;
-  url: string;
+  username?: string;
+  name?: string;
+  password?: string;
+  email?: string;
+  phone?: string;
+  birthDay?: string;
+  profileMessage?: string;
+  profileImageUrl?: string;
+  folders?: any[];
+  joinedAt?: string;
+  updatedAt?: string;
+  followers?: UserType[];
+  followings?: UserType[];
+  photologs?: PhotologType[];
+  likedPhotologs?: PhotologType[];
+  totalFollowing?: number;
+  totalFollowers?: number;
+  isMe?: boolean;
+  isFollowing?: boolean;
+  totalLogsNumber?: number;
+  url?: string;
 };
 
 export type SaveType = {
@@ -70,22 +73,21 @@ export type StackGeneratorParamList = {
   Moment: undefined;
   MomentView: undefined;
   Splace: {
-    splace: {
-      id: number;
-      name: string; //
-      market: boolean; //
-    };
+    splace: SplaceType;
   };
   Profile: {
     user: UserType;
   };
-  Series: { id: number };
+  Series: {
+    id: number;
+  };
   Payment: undefined;
   Chatroom: {
     room: RoomType;
   };
   Chatrooms: undefined;
   Members: {
+    title: string;
     vars: any;
     membersData: any;
     refetchMembers: any;
@@ -98,9 +100,46 @@ export type StackGeneratorParamList = {
     inviteMutation: any;
   };
   Folders: undefined;
-  Folder: { folder: FolderType };
-  AddSaveFolders: { folder: FolderType };
-  AddSaveFolder: { folder: FolderType };
+  Folder: {
+    folder: FolderType;
+  };
+  AddSaveFolders: {
+    targetFolderId: number;
+    splaceIds: number[];
+  };
+  AddSaveFolder: {
+    folder: FolderType;
+    targetFolderId: number;
+    splaceIds: number[];
+  };
+  ProfileUsers: {
+    type: "followers" | "followings";
+    user: UserType;
+  };
+  UserLogs: {
+    user: UserType;
+    initialScrollIndex: number;
+    data: any;
+    refetch: any;
+    fetchMore: any;
+  };
+  Log: {
+    id: number;
+  };
+  EditProfile: {
+    me: UserType;
+  };
+  Report: {
+    type: "log" | "user" | "problem";
+    id: number | undefined;
+  };
+  Setting: undefined;
+  ChangePassword: undefined;
+  EditInfo: undefined;
+  BlockedUsers: undefined;
+  ServicePolicy: undefined;
+  TermsOfUse: undefined;
+  Agreement: undefined;
 };
 
 export interface StackGeneratorProps {
@@ -135,13 +174,6 @@ export type MessageType = {
   text: string;
 };
 
-// export type PhotologThumbnailType = {
-//   id: number;
-//   splace: {
-
-//   }
-// }
-
 export type CardBoxPropType = {
   title: string;
   url: string;
@@ -156,12 +188,7 @@ export type PhotologType = {
   author: UserType;
   text: string;
   hashtags: HashTagType[];
-  splace: {
-    id: number;
-    name: string;
-    address: string;
-    hashtags: HashTagType[];
-  };
+  splace: SplaceType;
   liked: any[];
   totalLiked: number;
   series: {
@@ -184,9 +211,9 @@ export type SeriesType = {
 export type BottomTabParamList = {
   Mainfeed: undefined;
   Search: undefined;
-  Saved: undefined;
   Market: undefined;
-  Moment: undefined;
+  Keep: undefined;
+  Profile: undefined;
 };
 
 export type themeType = {
@@ -234,11 +261,16 @@ export type themeType = {
 
   chatSendText: string;
 
+  highlightText: string;
+
   chatMemberSeperator: string;
   chatMemberUsername: string;
   chatMemberName: string;
   followButton: string;
   followButtonText: string;
+
+  profileTabBarBorderBottom: string;
+  profileFocusedTabBorderBottom: string;
 
   greyButton: string;
   greyButtonContext: string;
@@ -257,10 +289,25 @@ export type themeType = {
   folderDeleteMinus: string;
   profileLink: string;
 
+  seriesHeaderGreyText: string;
+
   blankFolderBackground: string;
   modalHighlight: string;
   modalInputSubmitButton: string;
   modalEntry: string;
+
+  editProfileSeperator: string;
+  editProfileTextGrey: string;
+
+  modalButtonRedText: string;
+
+  addSaveSelectMarkBackground: string;
+  addSaveSelectMark: string;
+
+  borderHighlight: string;
+
+  passwordChangeGreyText: string;
+  editInfoGreyText: string;
 
   white: string;
 };

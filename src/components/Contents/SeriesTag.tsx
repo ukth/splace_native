@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import styled, { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { StackGeneratorParamList, themeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText13 } from "../Text";
 
@@ -31,18 +31,18 @@ const SeriesTag = ({
   series: { id: number; title: string }[];
   pressMoreSeries: () => void;
 }) => {
-  const navigation = useNavigation<StackNavigationProp<any>>();
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   const theme = useContext(ThemeContext);
 
   return (
     <Container>
       <Tag
-        onPress={() =>
+        onPress={() => {
           navigation.push("Series", {
-            seriesId: series[0].id,
-            title: series[0].title,
-          })
-        }
+            id: series[0].id,
+          });
+        }}
       >
         <RegText13 style={{ color: theme.greyText }}>
           {series[0].title}

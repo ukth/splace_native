@@ -139,9 +139,10 @@ const RoomItem = ({ room }: { room: RoomType }) => {
           <MemberThumbnail>
             <Image
               source={{
-                uri: room.members.filter(
-                  (member: UserType) => member.id !== me?.id
-                )[0].profileImageUrl,
+                uri:
+                  room.members.filter(
+                    (member: UserType) => member.id !== me?.id
+                  )[0].profileImageUrl ?? "",
               }}
               style={{
                 width: pixelScaler(32),
@@ -154,9 +155,10 @@ const RoomItem = ({ room }: { room: RoomType }) => {
           <MemberThumbnail>
             <Image
               source={{
-                uri: room.members.filter(
-                  (member: UserType) => member.id !== me?.id
-                )[0].profileImageUrl,
+                uri:
+                  room.members.filter(
+                    (member: UserType) => member.id !== me?.id
+                  )[0].profileImageUrl ?? "",
               }}
               style={{
                 position: "absolute",
@@ -169,9 +171,10 @@ const RoomItem = ({ room }: { room: RoomType }) => {
             />
             <Image
               source={{
-                uri: room.members.filter(
-                  (member: UserType) => member.id !== me?.id
-                )[1].profileImageUrl,
+                uri:
+                  room.members.filter(
+                    (member: UserType) => member.id !== me?.id
+                  )[1].profileImageUrl ?? "",
               }}
               style={{
                 position: "absolute",
@@ -270,6 +273,7 @@ const Chatrooms = () => {
               variables: {
                 title: "",
                 memberIds: [me.id],
+                isPersonal: false,
               },
             })
           }

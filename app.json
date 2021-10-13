@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "splace_app",
-    "slug": "splace_app",
+    "name": "splace",
+    "slug": "splace",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "splace",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "contain",  
       "backgroundColor": "#ffffff"
     },
     "updates": {

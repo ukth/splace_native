@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, FlatList, Text, View } from "react-native";
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
 
@@ -11,7 +11,7 @@ import {
   themeType,
 } from "../../types";
 import { RouteProp, useNavigation } from "@react-navigation/core";
-import { HeaderBackButton, StackNavigationProp } from "@react-navigation/stack";
+import { HeaderTitle, StackNavigationProp } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
 import {
   DeleteButton,
@@ -23,8 +23,10 @@ import {
 } from "../../components/Folder";
 import {
   BldText13,
+  BldText16,
   BldText20,
   RegText13,
+  RegText16,
   RegText20,
 } from "../../components/Text";
 import { pixelScaler, strCmpFunc } from "../../utils";
@@ -35,11 +37,15 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { Splace } from "..";
 import {
   ADD_FOLDER_MEMBERS,
+  EDIT_FOLDER,
   GET_FOLDER_INFO,
   LEAVE_FOLDER,
   REMOVE_SAVE,
 } from "../../queries";
-import { useMutation, useQuery } from "@apollo/client";
+import { fromPromise, useMutation, useQuery } from "@apollo/client";
+import ModalMapView from "../ModalMapView";
+import { FloatingMapButton } from "../../components/FloatingMapButton";
+import { HeaderBackButton } from "../../components/HeaderBackButton";
 
 const SaveItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -72,20 +78,6 @@ const Category = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(20)}px;
   justify-content: center;
-`;
-
-const FloatingMapButton = styled.TouchableOpacity`
-  position: absolute;
-  right: ${pixelScaler(15)}px;
-  bottom: ${pixelScaler(15)}px;
-  width: ${pixelScaler(60)}px;
-  height: ${pixelScaler(60)}px;
-  border-radius: ${pixelScaler(60)}px;
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  align-items: center;
-  justify-content: center;
-  z-index: 0;
 `;
 
 const SaveItem = ({
@@ -133,12 +125,25 @@ const SaveItem = ({
       {editing ? (
         <DeleteButton
           onPress={() => {
-            deleteMutation({
-              variables: {
-                saveId: save.id,
-                folderId,
+            Alert.alert("해당 공간을 삭제하시겠습니까?", "", [
+              // 버튼 배열
+              {
+                text: "취소", // 버튼 제목
+                style: "cancel",
               },
-            });
+              {
+                text: "확인",
+                onPress: () => {
+                  deleteMutation({
+                    variables: {
+                      saveId: save.id,
+                      folderId,
+                    },
+                  });
+                },
+              }, //버튼 제목
+              // 이벤트 발생시 로그를 찍는다
+            ]);
           }}
         >
           <Minus />
@@ -187,8 +192,9 @@ const Folder = ({
   const theme = useContext<themeType>(ThemeContext);
   const [folder, setFolder] = useState<FolderType>(route.params.folder);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [showMap, setShowMap] = useState(false);
 
-  const [saves, setSaves] = useState<SaveType[]>([]);
+  const [saves, setSaves] = useState<SaveType[]>();
 
   useEffect(() => {
     if (sortMode === "generated") {
@@ -207,11 +213,28 @@ const Folder = ({
     }
   }, [sortMode, folder]);
 
+  const onEditCompleted = (data: {
+    editFolder: {
+      ok: boolean;
+      error: string;
+    };
+  }) => {
+    const { ok, error } = data.editFolder;
+    if (ok) {
+      Alert.alert("폴더 이름이 변경되었습니다.");
+    } else {
+      Alert.alert("폴더 이름을 변경할 수 없습니다.\n", error);
+    }
+  };
+
+  const [editMutation, { loading: editLoading }] = useMutation(EDIT_FOLDER, {
+    onCompleted: onEditCompleted,
+  });
+
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   useEffect(() => {
     navigation.setOptions({
-      title: folder.title,
       headerRight: () =>
         editing ? (
           <HeaderRightConfirm
@@ -226,8 +249,48 @@ const Folder = ({
             }}
           />
         ),
+      headerTitle: () =>
+        editing ? (
+          <TouchableOpacity
+            style={{ flexDirection: "row" }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            onPress={() => {
+              Alert.prompt(
+                "폴더 이름 변경",
+                "새로운 폴더의 이름을 입력하세요",
+                (text) => {
+                  if (text.trim() !== "") {
+                    editMutation({
+                      variables: {
+                        folderId: folder.id,
+                        title: text.trim(),
+                      },
+                    });
+                    setFolder({
+                      ...folder,
+                      title: text.trim(),
+                    });
+                  } else {
+                    Alert.alert(
+                      "폴더 이름에는 한 글자 이상의 문자가 들어가야 합니다."
+                    );
+                  }
+                },
+                "plain-text"
+              );
+            }}
+          >
+            <BldText16>{folder.title}</BldText16>
+            <Ionicons name="pencil" size={20} />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ flexDirection: "row" }}>
+            <BldText16>{folder.title}</BldText16>
+          </View>
+        ),
+      headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
-  }, [editing]);
+  }, [editing, folder]);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -304,63 +367,79 @@ const Folder = ({
     }
   }, [folderInfo]);
 
+  // console.log(saves);
+
   return (
     <ScreenContainer>
-      {saves.length > 0 ? (
-        <FlatList
-          style={{ left: pixelScaler(17.5) }}
-          refreshing={refreshing}
-          onRefresh={refresh}
-          ListHeaderComponent={() => (
-            <EditButtonsContainer>
-              {editing ? (
-                <NewFolderButton
-                  onPress={() => {
-                    navigation.push("AddSaveFolders", { folder });
-                  }}
-                >
-                  <RegText13>+ 추가하기</RegText13>
-                </NewFolderButton>
-              ) : (
-                <SortButton
-                  onPress={() => {
-                    if (sortMode === "generated") {
-                      setSortMode("name");
-                    } else {
-                      setSortMode("generated");
-                    }
-                  }}
-                >
-                  <RegText13>
-                    {sortMode === "generated" ? "최근 생성 순" : "가나다 순"}
-                  </RegText13>
-                  <Ionicons name="chevron-down" />
-                </SortButton>
-              )}
-            </EditButtonsContainer>
-          )}
-          data={saves}
-          renderItem={({ item, index }) => (
-            <SaveItem
-              folderId={folder.id}
-              save={item}
-              index={index}
-              editing={editing}
-              refetch={refetch}
-            />
-          )}
-          keyExtractor={(item, index) => "" + index}
-          numColumns={2}
-        />
-      ) : (
+      <FlatList
+        style={{ left: pixelScaler(17.5) }}
+        refreshing={refreshing}
+        onRefresh={refresh}
+        ListHeaderComponent={() => (
+          <EditButtonsContainer>
+            {editing ? (
+              <NewFolderButton
+                onPress={() => {
+                  navigation.push("AddSaveFolders", {
+                    targetFolderId: folder.id,
+                    splaceIds: [],
+                  });
+                }}
+              >
+                <RegText13>+ 추가하기</RegText13>
+              </NewFolderButton>
+            ) : !saves || saves.length > 0 ? (
+              <SortButton
+                onPress={() => {
+                  if (sortMode === "generated") {
+                    setSortMode("name");
+                  } else {
+                    setSortMode("generated");
+                  }
+                }}
+              >
+                <RegText13>
+                  {sortMode === "generated" ? "최근 생성 순" : "가나다 순"}
+                </RegText13>
+                <Ionicons name="chevron-down" />
+              </SortButton>
+            ) : null}
+          </EditButtonsContainer>
+        )}
+        data={saves}
+        renderItem={({ item, index }) => (
+          <SaveItem
+            folderId={folder.id}
+            save={item}
+            index={index}
+            editing={editing}
+            refetch={refetch}
+          />
+        )}
+        keyExtractor={(item, index) => "" + index}
+        numColumns={2}
+      />
+      {!saves || saves.length > 0 ? null : (
         <View
           style={{
-            flex: 1,
-            justifyContent: "center",
+            flex: 1.3,
             alignItems: "center",
           }}
         >
-          <BldText20>해당 폴더는 비어있습니다</BldText20>
+          <RegText16 style={{ lineHeight: pixelScaler(23) }}>
+            해당 폴더는 비어있습니다
+          </RegText16>
+          <RegText16
+            onPress={() => {
+              navigation.push("AddSaveFolders", {
+                targetFolderId: folder.id,
+                splaceIds: [],
+              });
+            }}
+            style={{ color: theme.textHighlight }}
+          >
+            장소 추가하기
+          </RegText16>
         </View>
       )}
       <BottomSheetModal
@@ -376,6 +455,7 @@ const Folder = ({
           onPress={() => {
             setModalVisible(false);
             navigation.push("Members", {
+              title: folder.title,
               vars: {
                 folderId: folder.id,
               },
@@ -397,8 +477,15 @@ const Folder = ({
           <RegText20>편집</RegText20>
         </ModalButtonBox>
       </BottomSheetModal>
+      {folder.saves.length > 0 ? (
+        <ModalMapView
+          showMap={showMap}
+          setShowMap={setShowMap}
+          splaces={folder.saves.map((save) => save.splace)}
+        />
+      ) : null}
       {editing ? null : (
-        <FloatingMapButton>
+        <FloatingMapButton onPress={() => setShowMap(true)}>
           <Ionicons name="map-outline" size={30} />
         </FloatingMapButton>
       )}

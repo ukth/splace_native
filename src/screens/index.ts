@@ -1,10 +1,21 @@
 import LogIn from "./LogIn";
 import Mainfeed from "./Mainfeed";
 import Search from "./Search";
-import Profile from "./Profile";
+import {
+  Profile,
+  ProfileUsers,
+  UserLogs,
+  EditProfile,
+  Setting,
+  ChangePassword,
+  EditInfo,
+  BlockedUsers,
+  ServicePolicy,
+  TermsOfUse,
+  Agreement,
+} from "./Profile";
 import Splace from "./Splace";
 import Series from "./Series";
-import Saved from "./Saved";
 import SignUp from "./SignUp";
 import Market from "./Market";
 import Payment from "./Payment";
@@ -14,6 +25,8 @@ import Members from "./Members";
 import AddMembers from "./AddMembers";
 import MomentView from "./MomentView";
 import { Folders, Folder, AddSaveFolders, AddSaveFolder } from "./Keep";
+import Log from "./Log";
+import Report from "./Report";
 
 export {
   LogIn,
@@ -22,7 +35,6 @@ export {
   Profile,
   Splace,
   Series,
-  Saved,
   SignUp,
   Market,
   Payment,
@@ -36,4 +48,16 @@ export {
   Folder,
   AddSaveFolders,
   AddSaveFolder,
+  ProfileUsers,
+  UserLogs,
+  EditProfile,
+  Log,
+  Report,
+  Setting,
+  ChangePassword,
+  EditInfo,
+  BlockedUsers,
+  ServicePolicy,
+  TermsOfUse,
+  Agreement,
 };

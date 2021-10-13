@@ -20,6 +20,8 @@ export const isLoggedInVar = makeVar<boolean>(false);
 export const tokenVar = makeVar<string | null>("");
 export const userIdVar = makeVar<number | null>(null);
 
+export const API_URL = "3.37.199.95:5000";
+
 const TOKEN = "token";
 
 export const logUserIn = async (token: string, userId: number) => {
@@ -44,7 +46,7 @@ export const logUserOut = async () => {
 };
 
 const httpLink = createHttpLink({
-  uri: "http://3.37.199.95:5000/graphql",
+  uri: "http://" + API_URL + "/graphql",
 });
 
 // const uploadHttpLink = createUploadLink({
@@ -52,7 +54,7 @@ const httpLink = createHttpLink({
 // });
 
 const wsLink = new WebSocketLink({
-  uri: "ws://3.37.199.95:5000/graphql",
+  uri: "ws://" + API_URL + "/graphql",
   options: {
     connectionParams: () => ({
       token: tokenVar(),
@@ -166,6 +168,19 @@ export const cache = new InMemoryCache({
             if (!incoming || !incoming.ok) {
               return existing;
             }
+
+            for (let i = 0; i < incoming.logs.length; i++) {
+              for (let j = 0; j < existing.logs.length; j++) {
+                if (
+                  incoming.logs[i] &&
+                  existing.logs[j] &&
+                  incoming.logs[i].__ref === existing.logs[j].__ref
+                ) {
+                  return existing;
+                }
+              }
+            }
+            // console.log("not included");
 
             return {
               ...incoming,

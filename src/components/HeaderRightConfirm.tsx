@@ -12,7 +12,10 @@ export const HeaderRightConfirm = ({
 }) => {
   const theme = useContext(ThemeContext);
   return (
-    <TouchableOpacity onPress={onPress} style={{ marginLeft: pixelScaler(18) }}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={{ marginRight: pixelScaler(27) }}
+    >
       <BldText16 style={{ color: theme.headerConfirmText }}>완료</BldText16>
     </TouchableOpacity>
   );

@@ -289,6 +289,7 @@ const Chatroom = () => {
           <TouchableOpacity
             onPress={() =>
               navigation.push("Members", {
+                title: roomInfo.title,
                 vars: {
                   chatroomId: chatroom.id,
                 },
@@ -585,6 +586,7 @@ const Chatroom = () => {
             multiline={true}
             onChangeText={(text) => setMyMessage(text)}
             maxLength={1000}
+            autoCapitalize="none"
           />
 
           {sendable ? (

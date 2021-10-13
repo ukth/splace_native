@@ -7,7 +7,7 @@ import Tags from "./Tags";
 
 const Content = ({ item }: { item: PhotologType }) => {
   const [showFullText, setShowFullText] = useState<boolean>(false);
-  const text = item.text;
+  const text = item.text ?? "";
   const theme = useContext(ThemeContext);
 
   useEffect(() => {

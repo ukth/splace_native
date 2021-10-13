@@ -10,8 +10,6 @@ import * as React from "react";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import TabOneScreen from "../screens/TabOneScreen";
-import TabTwoScreen from "../screens/TabTwoScreen";
 import { BottomTabParamList } from "../types";
 import { pixelScaler } from "../utils";
 import StackGenerator from "./StackGenerator";
@@ -66,20 +64,6 @@ export default function MainTab() {
           return <StackGenerator screenName="Search" />;
         }}
       </BottomTab.Screen>
-
-      <BottomTab.Screen
-        name="Saved"
-        options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
-          ),
-        }}
-      >
-        {() => {
-          return <StackGenerator screenName="Saved" />;
-        }}
-      </BottomTab.Screen>
-
       <BottomTab.Screen
         name="Market"
         options={{
@@ -92,8 +76,9 @@ export default function MainTab() {
           return <StackGenerator screenName="Market" />;
         }}
       </BottomTab.Screen>
+
       <BottomTab.Screen
-        name="Moment"
+        name="Keep"
         options={{
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="ios-code" color={color} />
@@ -101,7 +86,19 @@ export default function MainTab() {
         }}
       >
         {() => {
-          return <StackGenerator screenName="Moment" />;
+          return <StackGenerator screenName="Keep" />;
+        }}
+      </BottomTab.Screen>
+      <BottomTab.Screen
+        name="Profile"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="ios-code" color={color} />
+          ),
+        }}
+      >
+        {() => {
+          return <StackGenerator screenName="Profile" />;
         }}
       </BottomTab.Screen>
     </BottomTab.Navigator>

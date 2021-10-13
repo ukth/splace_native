@@ -3,6 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
+import { useContext } from "react";
 import { useReactiveVar } from "@apollo/client";
 import {
   NavigationContainer,
@@ -15,13 +16,30 @@ import { ColorSchemeName } from "react-native";
 import { isLoggedInVar } from "../apollo";
 import MainTab from "./MainTab";
 import AuthStack from "./AuthStack";
+import * as Linking from "expo-linking";
+import { ProgressContext } from "../contexts/Progress";
+import Spinner from "../components/Spinner";
+
+// const prefix = Linking.makeUrl("/");
 
 const Navigation = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const { inProgress } = useContext(ProgressContext);
+
+  // const linking = {
+  //   prefixes: [prefix],
+  //   config: {
+  //     screens: {
+  //       Profile: "Profile",
+  //       Settings: "settings",
+  //     },
+  //   },
+  // };
 
   return (
     <NavigationContainer>
       {isLoggedIn ? <MainTab /> : <AuthStack />}
+      {inProgress && <Spinner />}
       {/* <RootNavigator /> */}
     </NavigationContainer>
   );

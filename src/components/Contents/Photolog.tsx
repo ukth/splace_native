@@ -1,13 +1,12 @@
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useContext, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import React, { useContext, useState, PureComponent } from "react";
+import { Alert, Share, TouchableOpacity } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import { PhotologType, themeType } from "../../types";
+import { PhotologType } from "../../types";
 import { pixelScaler } from "../../utils";
 import BottomSheetModal from "../BottomSheetModal";
-import Image from "../Image";
-import { BldText13, BldText20, RegText20 } from "../Text";
+import { BldText20, RegText20 } from "../Text";
 import Content from "./Content";
 import Header from "./Header";
 import Liked from "./Liked";
@@ -17,13 +16,6 @@ import Swiper from "./Swiper";
 
 const Container = styled.View`
   margin-bottom: ${pixelScaler(30)}px;
-`;
-
-const ProfileImage = styled.Image`
-  width: ${pixelScaler(26)}px;
-  height: ${pixelScaler(26)}px;
-  border-radius: ${pixelScaler(13)}px;
-  margin-right: ${pixelScaler(10)}px;
 `;
 
 const SwiperContainer = styled.View`
@@ -38,24 +30,38 @@ const BottomHeader = styled.View`
   justify-content: space-between;
   /* background-color: #458693; */
 `;
-const BottomHeaderRight = styled.View`
-  right: 0;
-  flex-direction: row;
-  align-items: center;
-  /* background-color: #36ffff; */
-`;
 
-const ModalUpBox = styled.View``;
-const ModalDownBox = styled.View`
-  margin-top: ${pixelScaler(30)}px;
-`;
-
-const PhotoLog = ({ item }: { item: PhotologType }) => {
+const PhotoLog = ({
+  item,
+  type,
+}: {
+  item: PhotologType;
+  type?: "Series" | undefined;
+}) => {
   const theme = useContext(ThemeContext);
   const navigation = useNavigation<StackNavigationProp<any>>();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState("dots");
   // const [liked, setLiked] = useState<boolean>(false);
+
+  const onShare = async (id: number) => {
+    try {
+      const result = await Share.share({
+        url: "https://splace.co.kr/share.php?type=Log&id=" + id,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          setModalVisible(false);
+        } else {
+          Alert.alert("공유에 실패했습니다.");
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   const pressThreeDots = () => {
     showModal("dots");
@@ -72,7 +78,9 @@ const PhotoLog = ({ item }: { item: PhotologType }) => {
 
   return (
     <Container>
-      <Header user={item.author} pressThreeDots={pressThreeDots} />
+      {type !== "Series" ? (
+        <Header user={item.author} pressThreeDots={pressThreeDots} />
+      ) : null}
       <SwiperContainer
         style={{
           height:
@@ -89,7 +97,7 @@ const PhotoLog = ({ item }: { item: PhotologType }) => {
         <TouchableOpacity
           onPress={() => navigation.push("Splace", { splace: item.splace })}
         >
-          <BldText20>{item.splace.name}</BldText20>
+          <BldText20>{item.splace?.name ?? "Splace"}</BldText20>
         </TouchableOpacity>
         <Liked item={item} />
       </BottomHeader>
@@ -107,44 +115,64 @@ const PhotoLog = ({ item }: { item: PhotologType }) => {
         }}
       >
         {modalContent === "dots" ? (
-          <>
-            <ModalButtonBox>
-              <RegText20>링크 복사</RegText20>
-            </ModalButtonBox>
-            <ModalButtonBox>
-              <RegText20>공유</RegText20>
-            </ModalButtonBox>
-            <ModalButtonBox>
-              <RegText20 style={{ color: "#00A4B7" }}>
-                저장된 게시물에 추가
-              </RegText20>
-            </ModalButtonBox>
+          item.author.isMe ? (
+            <>
+              <ModalButtonBox>
+                <RegText20>링크 복사</RegText20>
+              </ModalButtonBox>
+              <ModalButtonBox onPress={() => onShare(item.id)}>
+                <RegText20>공유</RegText20>
+              </ModalButtonBox>
 
-            <ModalButtonBox>
-              <RegText20>
-                {item.author.username === "dreamost_heo"
-                  ? "게시물 수정"
-                  : "숨기기"}
-              </RegText20>
-            </ModalButtonBox>
-            <ModalButtonBox>
-              <RegText20 style={{ color: "#FF0000" }}>
-                {item.author.username === "dreamost_heo"
-                  ? "게시물 삭제"
-                  : "차단"}
-              </RegText20>
-            </ModalButtonBox>
-          </>
+              <ModalButtonBox>
+                <RegText20>게시물 수정</RegText20>
+              </ModalButtonBox>
+              <ModalButtonBox>
+                <RegText20 style={{ color: "#FF0000" }}>게시물 삭제</RegText20>
+              </ModalButtonBox>
+            </>
+          ) : (
+            <>
+              <ModalButtonBox>
+                <RegText20>링크 복사</RegText20>
+              </ModalButtonBox>
+              <ModalButtonBox onPress={() => onShare(item.id)}>
+                <RegText20>공유</RegText20>
+              </ModalButtonBox>
+              <ModalButtonBox>
+                <RegText20 style={{ color: "#00A4B7" }}>스크랩하기</RegText20>
+              </ModalButtonBox>
+
+              <ModalButtonBox>
+                <RegText20>게시물 숨기기</RegText20>
+              </ModalButtonBox>
+              <ModalButtonBox
+                onPress={() => {
+                  setModalVisible(false);
+                  navigation.push("Report", {
+                    type: "log",
+                    id: item.id,
+                  });
+                }}
+              >
+                <RegText20>신고</RegText20>
+              </ModalButtonBox>
+              <ModalButtonBox>
+                <RegText20 style={{ color: "#FF0000" }}>차단</RegText20>
+              </ModalButtonBox>
+            </>
+          )
         ) : (
           <>
             {item.series.map((series) => (
               <ModalButtonBox
-                onPress={() =>
+                key={series.id}
+                onPress={() => {
+                  setModalVisible(false);
                   navigation.push("Series", {
-                    seriesId: series.id,
-                    title: series.title,
-                  })
-                }
+                    id: series.id,
+                  });
+                }}
               >
                 <RegText20>{series.title}</RegText20>
               </ModalButtonBox>

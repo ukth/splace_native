@@ -18,7 +18,7 @@ import {
   themeType,
 } from "../../types";
 import { pixelScaler, strCmpFunc } from "../../utils";
-import { useNavigation } from "@react-navigation/core";
+import { useNavigation, useRoute } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
@@ -29,7 +29,12 @@ import {
   RegText16,
   RegText20,
 } from "../../components/Text";
-import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDERS } from "../../queries";
+import {
+  ADD_SAVES,
+  CREATE_FOLDER,
+  DELETE_FOLDER,
+  GET_FOLDERS,
+} from "../../queries";
 import Image from "../../components/Image";
 import { abs } from "react-native-reanimated";
 import Navigation from "../../navigation";
@@ -42,6 +47,7 @@ import {
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
+import { ProgressContext } from "../../contexts/Progress";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -51,24 +57,25 @@ const FolderConatiner = styled.View`
 
 const Folder = ({
   folder,
-  index,
-
-  refetch,
+  splaceIds,
 }: {
   folder: FolderType;
-  index: number;
-
-  refetch: () => void;
+  splaceIds: number[];
 }) => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   const theme = useContext<themeType>(ThemeContext);
+  const route = useRoute<RouteProp<StackGeneratorParamList, "AddSaveFolder">>();
 
   return (
     <FolderConatiner>
       <Item
         onPress={() => {
-          navigation.push("AddSaveFolder", { folder });
+          navigation.push("AddSaveFolder", {
+            folder,
+            splaceIds,
+            targetFolderId: route.params.targetFolderId,
+          });
         }}
       >
         {folder.saves.length > 0 ? (
@@ -131,23 +138,45 @@ const AddSaveFolders = ({
 
   const [folders, setFolders] = useState<FolderType[]>([]);
 
-  const [folderSaves, setFolderSaves] = useState<SaveType[]>(
-    route.params.folder.saves
-  );
+  const [splaceIds, setSplaceIds] = useState<number[]>([]);
+
+  const { spinner } = useContext(ProgressContext);
 
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   navigation.addListener("focus", async () => {
-    await refetch();
+    setSplaceIds(route.params.splaceIds);
   });
+
+  const onCompleted = (data: any) => {
+    spinner.stop();
+    if (!data?.addSaves?.ok) {
+      Alert.alert("폴더 편집에 실패했습니다.");
+    }
+    navigation.pop();
+  };
+
+  const [mutation, _] = useMutation(ADD_SAVES, { onCompleted });
 
   useEffect(() => {
     navigation.setOptions({
-      title: "추가하기",
-      headerRight: () => <HeaderRightConfirm onPress={() => {}} />,
+      headerTitle: () => <BldText16>추가하기</BldText16>,
+      headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
+      headerRight: () => (
+        <HeaderRightConfirm
+          onPress={() => {
+            if (route.params.targetFolderId + 1) {
+              spinner.start();
+              mutation({
+                variables: { folderId: route.params.targetFolderId, splaceIds },
+              });
+            }
+          }}
+        />
+      ),
     });
-  }, []);
+  }, [splaceIds]);
 
   const updateData = async (data: any) => {
     if (data?.getFolders?.folders) {
@@ -179,27 +208,11 @@ const AddSaveFolders = ({
     updateData(data);
   }, [sortMode, data]);
 
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-
-  const refresh = async () => {
-    setRefreshing(true);
-    const timer = setTimeout(() => {
-      Alert.alert("요청시간 초과");
-      setRefreshing(false);
-    }, 10000);
-    const data = await refetch();
-    clearTimeout(timer);
-    updateData(data);
-    setRefreshing(false);
-  };
-
   return (
     <ScreenContainer>
       {loading ? null : (
         <FlatList
           style={{ left: pixelScaler(17.5) }}
-          refreshing={refreshing}
-          onRefresh={refresh}
           ListHeaderComponent={() => (
             <EditButtonsContainer>
               <SortButton onPress={() => setModalVisible(true)}>
@@ -216,13 +229,7 @@ const AddSaveFolders = ({
           )}
           data={folders}
           renderItem={({ item, index }) => (
-            <Folder
-              folder={item}
-              index={index}
-              refetch={refetch}
-              // folderSaves={folderSaves}
-              // setFolderSaves={setFolderSaves}
-            />
+            <Folder folder={item} splaceIds={splaceIds} />
           )}
           keyExtractor={(item, index) => "" + index}
           numColumns={2}

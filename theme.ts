@@ -4,6 +4,8 @@ const colors = {
   white: "#ffffff",
   black: "#000000",
   red: "#e84118",
+  red_ff: "#ff1a1a",
+  grey_8e: "#8e8e93",
   grey_a: "#a0a0a0",
   grey_b: "#b0b0b0",
   grey_c: "#c0c0c0",
@@ -36,13 +38,19 @@ export const theme = {
     searchBarPlaceholder: colors.grey_c7,
     dots: colors.black,
 
-    imageBackground: colors.grey_f8,
+    seriesHeaderGreyText: colors.grey_8e,
+
+    passwordChangeGreyText: colors.grey_ae,
+    editInfoGreyText: colors.grey_ae,
+
+    imageBackground: colors.grey_e5,
     tabActive: colors.black,
     tabInactive: colors.black,
     searchedItemBorder: colors.grey_c4,
 
     ratingTag: colors.theme,
     textHighlight: colors.theme,
+    borderHighlight: colors.theme,
 
     chatRoomItemBorder: colors.grey_c4,
     chatPreviewTextRead: colors.grey_ae,
@@ -77,6 +85,9 @@ export const theme = {
     followButton: colors.darkTheme,
     followButtonText: colors.white,
 
+    profileTabBarBorderBottom: colors.grey_ae,
+    profileFocusedTabBorderBottom: colors.black,
+
     greyButton: colors.grey_e5,
 
     greyButtonContext: colors.black,
@@ -95,13 +106,20 @@ export const theme = {
     folderNoticeBadgeBackground: colors.theme,
     blankFolderBackground: colors.grey_e5,
 
+    addSaveSelectMarkBackground: colors.grey_f2,
+    addSaveSelectMark: colors.darkTheme,
+
     folderMemberCount: colors.white,
 
     profileLink: colors.theme,
+    editProfileSeperator: colors.grey_ae,
+    editProfileTextGrey: colors.grey_8e,
 
     modalHighlight: colors.theme,
     modalInputSubmitButton: colors.theme,
     modalEntry: colors.grey_ae,
+
+    modalButtonRedText: colors.red_ff,
 
     white: colors.white,
   },

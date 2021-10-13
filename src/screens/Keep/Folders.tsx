@@ -41,7 +41,6 @@ import {
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
-import ModalInput from "../../components/ModalInput";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -95,7 +94,20 @@ const Folder = ({
       {editing ? (
         <DeleteButton
           onPress={() => {
-            deleteMutation({ variables: { folderId: folder.id } });
+            Alert.alert("해당 폴더를 삭제하시겠습니까?", "", [
+              // 버튼 배열
+              {
+                text: "취소", // 버튼 제목
+                style: "cancel",
+              },
+              {
+                text: "확인",
+                onPress: () => {
+                  deleteMutation({ variables: { folderId: folder.id } });
+                },
+              }, //버튼 제목
+              // 이벤트 발생시 로그를 찍는다
+            ]);
           }}
         >
           <Minus />
@@ -184,7 +196,7 @@ const Folders = ({
 
   useEffect(() => {
     navigation.setOptions({
-      title: "저장소",
+      headerTitle: () => <BldText16>저장소</BldText16>,
       headerRight: () =>
         editing ? (
           <HeaderRightConfirm
@@ -278,9 +290,14 @@ const Folders = ({
               {editing ? (
                 <NewFolderButton
                   onPress={() => {
-                    if (editing) {
-                      setModalVisible(true);
-                    }
+                    Alert.prompt(
+                      "새 폴더 생성",
+                      "새로운 폴더의 이름을 기입하세요",
+                      (text) => {
+                        createMutation({ variables: { title: text.trim() } });
+                      },
+                      "plain-text"
+                    );
                   }}
                 >
                   <RegText13>+ 새 폴더</RegText13>
@@ -312,86 +329,59 @@ const Folders = ({
           numColumns={2}
         />
       )}
-      {editing ? (
-        <BottomSheetModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          style={{
-            borderTopLeftRadius: pixelScaler(20),
-            borderTopRightRadius: pixelScaler(20),
-            paddingBottom: pixelScaler(44),
+      <BottomSheetModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        style={{
+          borderTopLeftRadius: pixelScaler(20),
+          borderTopRightRadius: pixelScaler(20),
+          paddingBottom: pixelScaler(44),
+        }}
+      >
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("edited");
+            setModalVisible(false);
           }}
         >
-          {/* <KeyboardAvoidingView
-            
-          > */}
-          <ModalInput
-            onSubmit={(title) => {
-              if (!createMutationLoading && title !== "") {
-                createMutation({ variables: { title } });
-              }
+          <RegText20
+            style={{
+              color: sortMode === "edited" ? theme.modalHighlight : theme.text,
             }}
-            placeholder="새 폴더 이름"
-            setModalVisible={setModalVisible}
-          />
-          {/* </KeyboardAvoidingView> */}
-        </BottomSheetModal>
-      ) : (
-        <BottomSheetModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          style={{
-            borderTopLeftRadius: pixelScaler(20),
-            borderTopRightRadius: pixelScaler(20),
-            paddingBottom: pixelScaler(44),
+          >
+            최근 편집 순
+          </RegText20>
+        </ModalButtonBox>
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("generated");
+            setModalVisible(false);
           }}
         >
-          <ModalButtonBox
-            onPress={() => {
-              setSortMode("edited");
-              setModalVisible(false);
+          <RegText20
+            style={{
+              color:
+                sortMode === "generated" ? theme.modalHighlight : theme.text,
             }}
           >
-            <RegText20
-              style={{
-                color:
-                  sortMode === "edited" ? theme.modalHighlight : theme.text,
-              }}
-            >
-              최근 편집 순
-            </RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox
-            onPress={() => {
-              setSortMode("generated");
-              setModalVisible(false);
+            최근 생성 순
+          </RegText20>
+        </ModalButtonBox>
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("name");
+            setModalVisible(false);
+          }}
+        >
+          <RegText20
+            style={{
+              color: sortMode === "name" ? theme.modalHighlight : theme.text,
             }}
           >
-            <RegText20
-              style={{
-                color:
-                  sortMode === "generated" ? theme.modalHighlight : theme.text,
-              }}
-            >
-              최근 생성 순
-            </RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox
-            onPress={() => {
-              setSortMode("name");
-              setModalVisible(false);
-            }}
-          >
-            <RegText20
-              style={{
-                color: sortMode === "name" ? theme.modalHighlight : theme.text,
-              }}
-            >
-              가나다 순
-            </RegText20>
-          </ModalButtonBox>
-        </BottomSheetModal>
-      )}
+            가나다 순
+          </RegText20>
+        </ModalButtonBox>
+      </BottomSheetModal>
     </ScreenContainer>
   );
 };

@@ -5,7 +5,7 @@ import { Alert, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { LIKE_PHOTOLOG, UNLIKE_PHOTOLOG } from "../../queries";
 import { PhotologType } from "../../types";
-import { convertLike, pixelScaler } from "../../utils";
+import { convertNumber, pixelScaler } from "../../utils";
 import { RegText13 } from "../Text";
 
 const Liked = ({ item }: { item: PhotologType }) => {
@@ -60,7 +60,7 @@ const Liked = ({ item }: { item: PhotologType }) => {
   return (
     <LikeContainer>
       <RegText13>
-        {convertLike(
+        {convertNumber(
           item.totalLiked +
             (item.isILiked && !liked ? -1 : !item.isILiked && liked ? 1 : 0)
         )}

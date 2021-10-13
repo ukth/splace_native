@@ -13,7 +13,6 @@ import {
   Profile,
   Splace,
   Series,
-  Saved,
   Market,
   Moment,
   Payment,
@@ -26,6 +25,18 @@ import {
   Folder,
   AddSaveFolders,
   AddSaveFolder,
+  ProfileUsers,
+  UserLogs,
+  EditProfile,
+  Log,
+  Report,
+  Setting,
+  ChangePassword,
+  EditInfo,
+  BlockedUsers,
+  ServicePolicy,
+  TermsOfUse,
+  Agreement,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -39,6 +50,7 @@ import { pixelScaler } from "../utils";
 import { RegText13 } from "../components/Text";
 import { useWindowDimensions } from "react-native";
 import { setStatusBarStyle } from "expo-status-bar";
+import useMe from "../hooks/useMe";
 
 const ProfileImage = styled.TouchableOpacity`
   margin-right: 10px;
@@ -184,26 +196,30 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       {screenName === "Search" ? (
         <Stack.Screen name="Search" component={Search} />
       ) : null}
-      {screenName === "Saved" ? (
-        <Stack.Screen name="Saved" component={Saved} />
-      ) : null}
       {screenName === "Market" ? (
         <Stack.Screen name="Market" component={Market} />
       ) : null}
-      {screenName === "Moment" ? (
+      {screenName === "Keep" ? (
         <Stack.Screen name="Folders" component={Folders} />
       ) : null}
-      {screenName === "Moment" ? (
+      {screenName === "Keep" ? (
         <Stack.Screen name="Folder" component={Folder} />
       ) : null}
-      {screenName === "Moment" ? (
+      {screenName === "Keep" ? (
         <Stack.Screen name="AddSaveFolders" component={AddSaveFolders} />
       ) : null}
-      {screenName === "Moment" ? (
+      {screenName === "Keep" ? (
         <Stack.Screen name="AddSaveFolder" component={AddSaveFolder} />
       ) : null}
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        initialParams={{ user: useMe() }}
+      />
       <Stack.Screen name="Splace" component={Splace} />
-      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="ProfileUsers" component={ProfileUsers} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="UserLogs" component={UserLogs} />
       <Stack.Screen name="Series" component={Series} />
       <Stack.Screen name="Payment" component={Payment} />
       <Stack.Screen name="Chatrooms" component={Chatrooms} />
@@ -211,6 +227,15 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="Members" component={Members} />
       <Stack.Screen name="AddMembers" component={AddMembers} />
       <Stack.Screen name="MomentView" component={MomentView} />
+      <Stack.Screen name="Log" component={Log} />
+      <Stack.Screen name="Report" component={Report} />
+      <Stack.Screen name="Setting" component={Setting} />
+      <Stack.Screen name="EditInfo" component={EditInfo} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen name="BlockedUsers" component={BlockedUsers} />
+      <Stack.Screen name="ServicePolicy" component={ServicePolicy} />
+      <Stack.Screen name="TermsOfUse" component={TermsOfUse} />
+      <Stack.Screen name="Agreement" component={Agreement} />
     </Stack.Navigator>
   );
 };

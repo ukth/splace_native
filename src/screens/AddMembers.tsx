@@ -4,7 +4,7 @@ import { RouteProp, useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { FlatList, View } from "react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled, { ThemeContext } from "styled-components/native";
 import Image from "../components/Image";
@@ -109,7 +109,7 @@ const ChatMemberComponent = ({
         <MemberThumbnail>
           <Image
             source={{
-              uri: user.profileImageUrl,
+              uri: user.profileImageUrl ?? "",
             }}
             style={{
               width: pixelScaler(32),
@@ -223,59 +223,51 @@ const AddMembers = ({
 
   return (
     <ScreenContainer>
-      {loading ? (
-        <BldText33>loading...</BldText33>
-      ) : (
-        <>
-          <FollowerSearchEntry>
-            <Ionicons
-              name="search"
-              size={26}
-              color={theme.entryPlaceholder}
-              style={{ marginLeft: 5, marginRight: 5 }}
-            />
-            <BldTextInput16
-              onChangeText={(text) => {
-                setKeyword(text);
-              }}
-              autoCapitalize={"none"}
-            />
-          </FollowerSearchEntry>
-          {loading ? (
-            <BldText33>loading...</BldText33>
-          ) : (
-            <FlatList
-              ref={listRef}
-              data={data?.seeFollowers?.followers}
-              keyExtractor={(item) => "" + item?.id}
-              renderItem={({ item }) => (
-                <ChatMemberComponent
-                  user={item}
-                  userList={userList}
-                  setUserList={setUserList}
-                  roomMemberIds={members.map((user) => user.id)}
-                />
-              )}
-              showsVerticalScrollIndicator={false}
-              ListHeaderComponent={() => <View></View>}
-              ItemSeparatorComponent={() => <Seperator />}
-              ListFooterComponent={() => <View></View>}
-              onEndReached={async () => {
-                await fetchMore({
-                  variables: {
-                    userId: me.id,
-                    lastId:
-                      data?.seeFollowers?.followers[
-                        data?.seeFollowers?.followers?.length - 1
-                      ].id,
-                    ...(keyword !== "" ? { keyword } : {}),
-                  },
-                });
-              }}
-              onEndReachedThreshold={0.3}
+      <FollowerSearchEntry>
+        <Ionicons
+          name="search"
+          size={26}
+          color={theme.entryPlaceholder}
+          style={{ marginLeft: 5, marginRight: 5 }}
+        />
+        <BldTextInput16
+          onChangeText={(text) => {
+            setKeyword(text);
+          }}
+          autoCapitalize={"none"}
+        />
+      </FollowerSearchEntry>
+      {loading ? null : (
+        <FlatList
+          ref={listRef}
+          data={data?.seeFollowers?.followers}
+          keyExtractor={(item) => "" + item?.id}
+          renderItem={({ item }) => (
+            <ChatMemberComponent
+              user={item}
+              userList={userList}
+              setUserList={setUserList}
+              roomMemberIds={members.map((user) => user.id)}
             />
           )}
-        </>
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={() => <View></View>}
+          ItemSeparatorComponent={() => <Seperator />}
+          ListFooterComponent={() => <View></View>}
+          onEndReached={async () => {
+            await fetchMore({
+              variables: {
+                userId: me.id,
+                lastId:
+                  data?.seeFollowers?.followers[
+                    data?.seeFollowers?.followers?.length - 1
+                  ].id,
+                ...(keyword !== "" ? { keyword } : {}),
+              },
+            });
+          }}
+          onEndReachedThreshold={0.3}
+        />
       )}
     </ScreenContainer>
   );

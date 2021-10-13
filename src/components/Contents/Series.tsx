@@ -1,38 +1,56 @@
 import React, { useState } from "react";
-import { FlatList, View } from "react-native";
+import {
+  FlatList,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import styled from "styled-components/native";
-import { SeriesType } from "../../types";
+import { SeriesType, StackGeneratorParamList } from "../../types";
 import { pixelScaler } from "../../utils";
 import BottomSheetModal from "../BottomSheetModal";
 import Image from "../Image";
 import { BldText20, RegText20 } from "../Text";
 import Header from "./Header";
 import ModalButtonBox from "../ModalButtonBox";
+import { useNavigation } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const Container = styled.View`
   margin-bottom: ${pixelScaler(30)}px;
 `;
 
-const TitleContianer = styled.View`
+const TitleContianer = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(30)}px;
   margin-bottom: ${pixelScaler(20)}px;
 `;
 
 const Series = ({ item }: { item: SeriesType }) => {
-  // console.log(item);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   return (
     <Container>
       <Header
         user={item.author}
         pressThreeDots={() => {
-          console.log("press!");
+          setModalVisible(true);
         }}
       />
-      <TitleContianer>
+
+      <TitleContianer
+        onPress={() => {
+          console.log("hello");
+          navigation.push("Series", {
+            id: item.id,
+          });
+        }}
+      >
         <BldText20>{item.title}</BldText20>
       </TitleContianer>
+
       <FlatList
         data={item.photologs}
         horizontal={true}
@@ -55,6 +73,7 @@ const Series = ({ item }: { item: SeriesType }) => {
         showsHorizontalScrollIndicator={false}
         bounces={false}
       />
+
       <BottomSheetModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
