@@ -8,15 +8,10 @@ import {
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
-import { StackGeneratorParamList, themeType, UserType } from "../../types";
+import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProgressContext } from "../../contexts/Progress";
-import {
-  CHANGE_PASSWORD,
-  EDIT_MY_INFO,
-  EDIT_PROFILE,
-  GET_ME,
-} from "../../queries";
+import { EDIT_MY_INFO, GET_ME } from "../../queries";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { RegTextInput16 } from "../../components/TextInput";
 import { pixelScaler } from "../../utils";
@@ -60,17 +55,7 @@ const EditInfo = () => {
     return exp.test(String(text).toLowerCase());
   };
 
-  const validatePhone = (text: string) => {
-    const exp = /^\d{2,3}-\d{3,4}-\d{4}$/;
-    return exp.test(String(text).toLowerCase());
-  };
-
-  const validateNumber = (text: string) => {
-    const exp = /^[0-9]*$/;
-    return exp.test(String(text).toLowerCase());
-  };
-
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const { spinner } = useContext(ProgressContext);
 
   const { data, refetch } = useQuery(GET_ME);

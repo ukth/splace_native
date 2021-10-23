@@ -13,17 +13,26 @@ import {
   ServicePolicy,
   TermsOfUse,
   Agreement,
+  MomentView,
 } from "./Profile";
-import Splace from "./Splace";
+import {
+  Splace,
+  EditSplace,
+  EditSplaceCategory,
+  EditSplaceInfo,
+  EditSplaceIntro,
+  EditSplaceItem,
+  EditSplaceLocation,
+  EditSplaceOperatingtime,
+  EditSplaceLocationSearch,
+} from "./Splace";
 import Series from "./Series";
 import SignUp from "./SignUp";
 import Market from "./Market";
 import Payment from "./Payment";
-import Moment from "./Moment";
 import { Chatroom, Chatrooms } from "./Chat";
 import Members from "./Members";
 import AddMembers from "./AddMembers";
-import MomentView from "./MomentView";
 import { Folders, Folder, AddSaveFolders, AddSaveFolder } from "./Keep";
 import Log from "./Log";
 import Report from "./Report";
@@ -34,11 +43,18 @@ export {
   Search,
   Profile,
   Splace,
+  EditSplace,
+  EditSplaceCategory,
+  EditSplaceInfo,
+  EditSplaceIntro,
+  EditSplaceItem,
+  EditSplaceLocation,
+  EditSplaceOperatingtime,
+  EditSplaceLocationSearch,
   Series,
   SignUp,
   Market,
   Payment,
-  Moment,
   Chatroom,
   Chatrooms,
   Members,

@@ -7,16 +7,21 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   Animated,
+  Pressable,
 } from "react-native";
-import { pixelScaler } from "../utils";
+import { pixelScaler } from "../../utils";
 import styled from "styled-components/native";
-import { RegText13, RegText20 } from "../components/Text";
-import { useNavigation } from "@react-navigation/core";
+import { RegText13, RegText20 } from "../../components/Text";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import { AVPlaybackStatus, Video } from "expo-av";
-import { ScreenBackButton } from "../components/ScreenBackButton";
+import { ScreenBackButton } from "../../components/ScreenBackButton";
 import { Ionicons } from "@expo/vector-icons";
-import ThreeDots from "../components/ThreeDots";
+import ThreeDots from "../../components/ThreeDots";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { MomentType, StackGeneratorParamList } from "../../types";
+import { StackNavigationProp } from "@react-navigation/stack";
+import * as VideoThumbnails from "expo-video-thumbnails";
+import BottomSheetModal from "../../components/BottomSheetModal";
 
 const Container = styled.View`
   flex: 1;
@@ -31,7 +36,7 @@ const UpperContainer = styled.View`
   /* background-color: #09890a; */
 `;
 
-const UppderTouchableContainer = styled.View`
+const UpperTouchableContainer = styled.View`
   flex-direction: row;
   padding: 0 ${pixelScaler(30)}px;
   width: 100%;
@@ -60,49 +65,59 @@ const FooterContainer = styled.View`
   padding: 0 ${pixelScaler(40)}px;
 `;
 
-const MomentView = ({ data }: { data: any }) => {
-  const navigation = useNavigation<any>();
+const MomentView = () => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+  const route = useRoute<RouteProp<StackGeneratorParamList, "MomentView">>();
+
+  const { moments, index } = route.params;
 
   const video = useRef<any>(null);
   const position = useRef(new Animated.Value(0)).current;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
+  const [momentIndex, setMomentIndex] = useState(index);
+
   const [indicatorPosition, setIndicatorPosition] = useState<any>(null);
 
   const { width, height } = useWindowDimensions();
   const [length, setLength] = useState(0);
-  // const position = useRef(new Animated.Value(0)).current;
+
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
-    // console.log("refetch!", messageData?.getRoomMessages?.messages.length);
     if (video.current) {
       video.current.playAsync();
     }
   }, []);
 
-  const text =
-    "정신없이 하루를 보내다 보면 문득 아이가 되어버리고 싶어지는 순간이 있다. 아직 내 안에 어린 내가 있는 것일까 주변이 나를 과거로 돌아가게 만든 것일까.";
+  let timer = 0;
 
   let lines = [];
-  const words = text.split(" ");
+  const words = moments[momentIndex].text.split(" ");
   let l = 0;
   let ind = 0;
 
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
     if (lines.length === 2) {
-      lines.push(text.substring(ind, text.length));
+      lines.push(
+        moments[momentIndex].text.substring(
+          ind,
+          moments[momentIndex].text.length
+        )
+      );
     }
     if (l + word.length > 24) {
       if (l > 20) {
-        lines.push(text.substr(ind, l - 1));
+        lines.push(moments[momentIndex].text.substr(ind, l - 1));
         ind = ind + l;
         l = 0;
       } else {
-        lines.push(text.substr(ind, 24));
+        lines.push(moments[momentIndex].text.substr(ind, 24));
         ind = ind + 24;
         l = 0;
       }
@@ -111,10 +126,40 @@ const MomentView = ({ data }: { data: any }) => {
     }
   }
 
+  useEffect(() => {
+    if (length === 0 && isLoaded) {
+      (async () => {
+        // await video.current.setPositionAsync(0);
+        await video.current.playAsync();
+      })();
+    }
+  }, [isLoaded, length]);
+
+  useEffect(() => {
+    setIsLoaded(false);
+    setLength(0);
+  }, [momentIndex]);
+
+  const back = async () => {
+    if (momentIndex === 0) {
+      navigation.pop();
+    } else {
+      setMomentIndex(momentIndex - 1);
+    }
+  };
+
+  const next = async () => {
+    if (momentIndex === moments.length - 1) {
+      navigation.pop();
+    } else {
+      setMomentIndex(momentIndex + 1);
+    }
+  };
+
   return (
     <Container>
       <UpperContainer>
-        <UppderTouchableContainer>
+        <UpperTouchableContainer>
           <TouchableOpacity
             onPress={() => {
               navigation.pop();
@@ -128,9 +173,11 @@ const MomentView = ({ data }: { data: any }) => {
             />
           </TouchableOpacity>
           <ThreeDots color={"#ffffff"} onPress={() => {}} />
-        </UppderTouchableContainer>
+        </UpperTouchableContainer>
         <TitleContainer>
-          <RegText20 style={{ color: "#ffffff" }}>유니언타운</RegText20>
+          <RegText20 style={{ color: "#ffffff" }}>
+            {moments[momentIndex].splace?.name ?? moments[momentIndex].title}
+          </RegText20>
         </TitleContainer>
       </UpperContainer>
       <ProgressContainer>
@@ -143,11 +190,22 @@ const MomentView = ({ data }: { data: any }) => {
           }}
         />
       </ProgressContainer>
-      <TouchableWithoutFeedback
-        onPressIn={async () => {
-          await video.current.pauseAsync();
+      <Pressable
+        onPressIn={(e) => {
+          if (Date.now() - timer > 700) {
+            timer = Date.now();
+            (async () => await video.current.pauseAsync())();
+          }
         }}
-        onPressOut={async () => {
+        onPressOut={async (e) => {
+          // console.log(Date.now() - timer);
+          if (Date.now() - timer < 700) {
+            if (e.nativeEvent?.locationX > pixelScaler(187)) {
+              next();
+            } else {
+              back();
+            }
+          }
           await video.current.playAsync();
         }}
       >
@@ -158,12 +216,19 @@ const MomentView = ({ data }: { data: any }) => {
             height: (width * 4) / 3,
           }}
           source={{
-            uri: "https://splace-test.s3.ap-northeast-2.amazonaws.com/test2.mp4",
+            uri: moments[momentIndex].videoUrl,
           }}
           resizeMode="cover"
           onPlaybackStatusUpdate={(e: AVPlaybackStatus) => {
-            // setStatus(() => e);
+            // console.log(e);
+            if (e.isLoaded && e.didJustFinish) {
+              next();
+            }
             if (e.isLoaded) {
+              if (!isLoaded) {
+                video.current.setPositionAsync(0);
+                setIsLoaded(true);
+              }
               if (e.durationMillis && length === 0) {
                 setIndicatorPosition(
                   position.interpolate({
@@ -171,38 +236,25 @@ const MomentView = ({ data }: { data: any }) => {
                     outputRange: [0, pixelScaler(375)],
                   })
                 );
-                // console.log(e);
                 setLength(e.durationMillis);
-                // console.log(e.durationMillis);
               }
               if (e.positionMillis) {
-                // console.log(e);
                 position.setValue(e.positionMillis);
-                // console.log(indicatorPosition);
               }
             }
           }}
           progressUpdateIntervalMillis={30}
         />
-      </TouchableWithoutFeedback>
+      </Pressable>
       <FooterContainer>
         <RegText13
           numberOfLines={3}
           style={{ color: "#ffffff", lineHeight: pixelScaler(23) }}
         >
-          {text}
+          {moments[momentIndex].text}
         </RegText13>
-        {/* <RegText13 style={{ color: "#ffffff", lineHeight: pixelScaler(23) }}>
-          {lines[0]}
-        </RegText13>
-        <RegText13 style={{ color: "#ffffff", lineHeight: pixelScaler(23) }}>
-          {lines[1]}
-        </RegText13>
-        <RegText13 style={{ color: "#ffffff", lineHeight: pixelScaler(23) }}>
-          {lines[2]}
-        </RegText13> */}
         <RegText13 style={{ color: "rgba(174,174,178,0.6)" }}>
-          iam_maknae
+          {moments[momentIndex].author.username}
         </RegText13>
       </FooterContainer>
     </Container>

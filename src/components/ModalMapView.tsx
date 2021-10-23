@@ -11,13 +11,13 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import BottomSheetModal from "../components/BottomSheetModal";
-import { BLANK_IMAGE, pixelScaler } from "../utils";
-import { BldText16, RegText13, RegText16 } from "../components/Text";
+import BottomSheetModal from "./BottomSheetModal";
+import { BLANK_IMAGE, coords2address, pixelScaler } from "../utils";
+import { BldText16, RegText13, RegText16 } from "./Text";
 import { Ionicons } from "@expo/vector-icons";
-import { SplaceType, StackGeneratorParamList, themeType } from "../types";
+import { SplaceType, StackGeneratorParamList, ThemeType } from "../types";
 import clustering from "density-clustering";
-import Image from "../components/Image";
+import Image from "./Image";
 import * as Linking from "expo-linking";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
@@ -67,7 +67,7 @@ const SplaceInfo = styled.View`
   padding: ${pixelScaler(20)}px ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(15)}px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
 `;
 
 const UpperContainer = styled.TouchableOpacity`
@@ -81,7 +81,7 @@ const FoundRouteButton = styled.TouchableOpacity`
   height: ${pixelScaler(35)}px;
   border-width: ${pixelScaler(1)}px;
   border-radius: ${pixelScaler(10)}px;
-  border-color: ${({ theme }: { theme: themeType }) => theme.borderHighlight};
+  border-color: ${({ theme }: { theme: ThemeType }) => theme.borderHighlight};
   align-items: center;
   justify-content: center;
 `;
@@ -95,7 +95,7 @@ const TagContainer = styled.View`
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(12.5)}px;
   border-width: ${pixelScaler(0.7)}px;
-  border-color: ${({ color, theme }: { color?: string; theme: themeType }) =>
+  border-color: ${({ color, theme }: { color?: string; theme: ThemeType }) =>
     color ?? theme.tagBorder};
   align-items: center;
   justify-content: center;
@@ -126,7 +126,7 @@ const ModalMapView = ({
 }) => {
   const { width } = useWindowDimensions();
   const height = pixelScaler(760);
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const [userLocation, setUserLocation] =
     useState<{ latitude: number; longitude: number }>();
@@ -172,6 +172,17 @@ const ModalMapView = ({
   const [delta, setDelta] = useState(latitudeDelta);
   const [clustered, setClustered] = useState<number[][]>();
   const [selectedSplaceIndex, setSelectedSplaceIndex] = useState(0);
+  const [address, setAddress] = useState<string>("");
+
+  useEffect(() => {
+    (async () => {
+      const add = await coords2address({
+        lat: splaces[selectedSplaceIndex].lat,
+        lon: splaces[selectedSplaceIndex].lon,
+      });
+      setAddress(add);
+    })();
+  }, [selectedSplaceIndex]);
 
   const getCenter = (indices: number[]) => {
     let max_lat = -90,
@@ -431,7 +442,7 @@ const ModalMapView = ({
                   }}
                   numberOfLines={2}
                 >
-                  {"서울특별시 강남구 성범동 아아아아아아"}
+                  {address}
                 </RegText13>
 
                 <TagsContainer>

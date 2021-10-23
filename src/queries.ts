@@ -56,6 +56,16 @@ export const SPLACE_FRAGMENT = gql`
     thumbnail
     lat
     lon
+    activate
+    detailAddress
+    # ratingtags {
+    #   id
+    #   name
+    # }
+    categories {
+      id
+      name
+    }
   }
 `;
 
@@ -102,6 +112,7 @@ export const LOG_FRAGMENT = gql`
     photoSize
     text
     categories {
+      id
       name
     }
     totalLiked
@@ -669,6 +680,149 @@ export const REPORT = gql`
 export const DELETE_ACCOUNT = gql`
   mutation deleteAccount {
     deleteAccount {
+      ok
+      error
+    }
+  }
+`;
+
+export const GET_MOMENTS = gql`
+  query getMyMoments($lastId: Int) {
+    getMyMoments(lastId: $lastId) {
+      ok
+      error
+      moments {
+        id
+        text
+        author {
+          ...UserFragment
+        }
+        videoUrl
+        createdAt
+        updatedAt
+        splace {
+          ...SplaceFragment
+        }
+      }
+    }
+  }
+  ${USER_FRAGMENT}
+  ${SPLACE_FRAGMENT}
+`;
+
+export const GET_SPLACE_INFO = gql`
+  query seeSplace($splaceId: Int!) {
+    seeSplace(splaceId: $splaceId) {
+      ok
+      error
+      splace {
+        ...SplaceFragment
+        owner {
+          ...UserFragment
+        }
+        parking
+        pets
+        noKids
+        intro
+        url
+        phone
+        breakDays
+        holidayBreak
+        timeSets {
+          id
+          day
+          open
+          close
+          breakOpen
+          breakClose
+          createdAt
+          updatedAt
+        }
+        itemName
+        itemPrice
+        totalPhotologs
+      }
+    }
+  }
+  ${SPLACE_FRAGMENT}
+  ${USER_FRAGMENT}
+`;
+
+export const GET_LOGS_BY_SPLACE = gql`
+  query getLogsBySplace($splaceId: Int!, $orderBy: String!, $lastId: Int) {
+    getLogsBySplace(splaceId: $splaceId, orderBy: $orderBy, lastId: $lastId) {
+      ok
+      error
+      logs {
+        ...LogFragment
+      }
+    }
+  }
+  ${LOG_FRAGMENT}
+`;
+
+export const EDIT_SPLACE = gql`
+  mutation editSplaces(
+    $splaceId: Int!
+    $name: String
+    $phone: String
+    $url: String
+    $itemName: String
+    $itemPrice: Int
+    $menuUrls: [String]
+    $intro: String
+    $detailAddress: String
+    $parking: Boolean
+    $pets: Boolean
+    $kids: Boolean
+    $thumbnail: Boolean
+  ) {
+    editSplaces(
+      splaceId: $splaceId
+      name: $name
+      phone: $phone
+      url: $url
+      itemName: $itemName
+      itemPrice: $itemPrice
+      menuUrls: $menuUrls
+      intro: $intro
+      detailAddress: $detailAddress
+      parking: $parking
+      pets: $pets
+      kids: $kids
+      thumbnail: $thumbnail
+    ) {
+      ok
+      error
+    }
+  }
+`;
+
+export const EDIT_SPLACE_TIMESETS = gql`
+  mutation editTimeSets(
+    $splaceId: Int!
+    $breakDays: [Int]!
+    $sun: [Int]!
+    $mon: [Int]!
+    $tue: [Int]!
+    $wed: [Int]!
+    $thr: [Int]!
+    $fri: [Int]!
+    $sat: [Int]!
+    $holidayBreak: Boolean!
+  ) {
+    editTimeSets(
+      splaceId: $splaceId
+      breakDays: $breakDays
+      sun: $sun
+      mon: $mon
+      tue: $tue
+      wed: $wed
+      thr: $thr
+      fri: $fri
+      sat: $sat
+      holidayBreak: $holidayBreak
+    ) {
       ok
       error
     }

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components/native";
-import { HashTagType, themeType } from "../../types";
+import { HashTagType, ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText13 } from "../Text";
 
@@ -10,11 +10,11 @@ const Container = styled.View`
 const Tag = styled.View`
   height: ${pixelScaler(20)}px;
   border-width: ${pixelScaler(0.6)}px;
-  border-color: ${({ theme }: { theme: themeType }) => theme.tagBorder};
+  border-color: ${({ theme }: { theme: ThemeType }) => theme.tagBorder};
   border-radius: ${({
     borderRadius,
   }: {
-    theme: themeType;
+    theme: ThemeType;
     borderRadius: number;
   }) => borderRadius}px;
   padding: 0 ${pixelScaler(10)}px;

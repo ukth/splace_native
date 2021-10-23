@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import styled, { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText16 } from "../Text";
 
@@ -9,7 +9,7 @@ const TagContainer = styled.TouchableOpacity`
   padding: 0 10px;
   border-radius: ${pixelScaler(12.5)}px;
   border-width: ${pixelScaler(0.8)}px;
-  border-color: ${({ color, theme }: { color?: string; theme: themeType }) =>
+  border-color: ${({ color, theme }: { color?: string; theme: ThemeType }) =>
     color ?? theme.tagBorder};
   align-items: center;
   justify-content: center;
@@ -26,7 +26,7 @@ const Tag = ({
   onPress: () => void;
   color?: string;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   return (
     <TagContainer color={color}>
       <RegText16 style={{ color: color ?? theme.text }}>{text}</RegText16>

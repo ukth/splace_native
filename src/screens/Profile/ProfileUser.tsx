@@ -11,7 +11,7 @@ import ScreenContainer from "../../components/ScreenContainer";
 import useMe from "../../hooks/useMe";
 import { GET_FOLLOWERS, GET_FOLLOWINGS } from "../../queries";
 
-import { StackGeneratorParamList, themeType, UserType } from "../../types";
+import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
 
 const ProfileUsers = ({
   navigation,

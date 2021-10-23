@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { View } from "../Themed";
 
 const Seperator = () => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   return (
     <View
       style={{

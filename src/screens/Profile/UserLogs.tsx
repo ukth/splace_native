@@ -1,8 +1,10 @@
 import { useQuery } from "@apollo/client";
-import { RouteProp, useRoute } from "@react-navigation/core";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Alert, FlatList } from "react-native";
 import PhotoLog from "../../components/Contents/Photolog";
+import { HeaderBackButton } from "../../components/HeaderBackButton";
 import ScreenContainer from "../../components/ScreenContainer";
 import { GET_USER_LOGS } from "../../queries";
 import { PhotologType, StackGeneratorParamList, UserType } from "../../types";
@@ -16,6 +18,15 @@ const UserLogs = () => {
   //   },
   // });
   // console.log(data);
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: "게시물",
+      headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
+    });
+  }, []);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 

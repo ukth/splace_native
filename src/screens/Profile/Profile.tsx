@@ -8,33 +8,33 @@ import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import {
   BldText13,
-  BldText16,
+  RegText16,
   BldText20,
   RegText13,
-  RegText16,
   RegText20,
 } from "../../components/Text";
 import {
   BLOCK,
   FOLLOW,
+  GET_MOMENTS,
   GET_PROFILE,
   GET_USER_LOGS,
   GET_USER_SERIES,
   UNFOLLOW,
 } from "../../queries";
 import {
+  MomentType,
   PhotologType,
   SeriesType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
   UserType,
 } from "../../types";
-import { convertNumber, pixelScaler } from "../../utils";
+import { BLANK_IMAGE, convertNumber, pixelScaler } from "../../utils";
 import * as Linking from "expo-linking";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import client from "../../apollo";
 import { gql, useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";
 import BottomSheetModal from "../../components/BottomSheetModal";
@@ -102,7 +102,7 @@ const TabViewContainer = styled.View`
   height: ${pixelScaler(60)}px;
   justify-content: center;
   border-bottom-width: ${pixelScaler(0.6)}px;
-  border-bottom-color: ${({ theme }: { theme: themeType }) =>
+  border-bottom-color: ${({ theme }: { theme: ThemeType }) =>
     theme.profileTabBarBorderBottom};
 `;
 
@@ -118,7 +118,7 @@ const Tab = styled.TouchableOpacity`
     theme,
   }: {
     isFocused: boolean;
-    theme: themeType;
+    theme: ThemeType;
   }) => (isFocused ? theme.profileFocusedTabBorderBottom : theme.background)};
 `;
 
@@ -147,14 +147,7 @@ const ProfileInfo = ({
 }) => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: user.username ?? "",
-    });
-  }, [user]);
-
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const onFollowCompleted = ({
     followUser: { ok, error },
@@ -350,15 +343,12 @@ const CountButton = ({ count, text }: { count: number; text: string }) => {
   );
 };
 
-const Profile = ({
-  route,
-}: {
-  route: RouteProp<StackGeneratorParamList, "Profile">;
-}) => {
+const Profile = () => {
+  const route = useRoute<RouteProp<StackGeneratorParamList, "Profile">>();
   const [user, setUser] = useState<UserType>(route.params.user);
   const [tabViewIndex, setTabViewIndex] = useState<0 | 1 | 2>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -374,7 +364,9 @@ const Profile = ({
           <HeaderRightMenu onPress={() => setModalVisible(true)} />
         </View>
       ),
+      title: user.username ?? "",
     });
+    console.log("RENDERED!!");
   }, []);
 
   const onShare = async (id: number) => {
@@ -440,15 +432,13 @@ const Profile = ({
     },
   });
 
-  // const {
-  //   data: momentData,
-  //   refetch: refetchMoment,
-  //   fetchMore: fetchMoreMoment,
-  // } = useQuery(GET_USER_SERIES, {
-  //   variables: {
-  //     userId: route.params.user.id,
-  //   },
-  // });
+  // console.log(seriesData, route.params.user.id);
+
+  const {
+    data: momentData,
+    refetch: refetchMoment,
+    fetchMore: fetchMoreMoment,
+  } = useQuery(GET_MOMENTS);
 
   const onBlockCompleted = (data: any) => {
     console.log(data);
@@ -470,6 +460,8 @@ const Profile = ({
   const updateData = async () => {
     await refetchProfile();
     await refetchLogs();
+    await refetchSereis();
+    await refetchMoment();
   };
 
   const refresh = async () => {
@@ -515,12 +507,8 @@ const Profile = ({
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.push("UserLogs", {
-            user,
-            initialScrollIndex: index,
-            data: logsData,
-            refetch: refetchLogs,
-            fetchMore: fetchMoreLogs,
+          navigation.push("Series", {
+            id: item.id,
           });
         }}
       >
@@ -548,9 +536,7 @@ const Profile = ({
         />
         <Image
           source={{
-            uri:
-              item.photologs[0]?.imageUrls[0] ??
-              "https://i.stack.imgur.com/mwFzF.png",
+            uri: item.photologs[0]?.imageUrls[0] ?? BLANK_IMAGE,
           }}
           style={{
             width: pixelScaler(186),
@@ -564,125 +550,154 @@ const Profile = ({
   };
 
   const renderMoments = ({
-    item,
+    moments,
     index,
   }: {
-    item: PhotologType;
+    moments: MomentType[];
     index: number;
-  }) => (
-    <CardBox
-      url={item.imageUrls[0]}
-      onPress={() => {
-        navigation.push("UserLogs", {
-          user,
-          initialScrollIndex: index,
-          data: logsData,
-          refetch: refetchLogs,
-          fetchMore: fetchMoreLogs,
-        });
-      }}
-    />
-  );
+  }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.push("MomentView", {
+            moments,
+            index,
+          });
+        }}
+      >
+        <Image
+          source={{
+            uri: moments[index].videoUrl ?? BLANK_IMAGE,
+          }}
+          style={{
+            width: pixelScaler(186),
+            height: pixelScaler(186),
+            marginRight: pixelScaler(3),
+            marginBottom: pixelScaler(3),
+          }}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const [listData, setListData] = useState<any>([[], [], []]);
+  useEffect(() => {
+    setListData([
+      logsData?.getUserLogs?.logs,
+      seriesData?.getUserSeries?.series,
+      momentData?.getMyMoments?.moments,
+    ]);
+  }, [logsData, seriesData, momentData]);
 
   return (
     <ScreenContainer>
-      {tabViewIndex === 0 ? (
-        logsData?.getUserLogs?.logs?.length > 0 ? (
-          <FlatList
-            ListHeaderComponent={
-              <ProfileInfo
-                user={user}
-                tabViewIndex={tabViewIndex}
-                setTabViewIndex={setTabViewIndex}
-                refetchProfile={refetchProfile}
-              />
-            }
-            numColumns={2}
-            data={logsData?.getUserLogs?.logs}
-            keyExtractor={(item, index) => "" + index}
-            renderItem={renderLogs}
-            refreshing={refreshing}
-            onRefresh={refresh}
-            onEndReached={async () => {
-              await fetchMoreLogs({
-                variables: {
-                  lastId:
-                    logsData?.getUserLogs?.logs[
-                      logsData?.getUserLogs?.logs.length - 1
-                    ].id,
-                  userId: user.id,
-                },
-              });
-            }}
+      <FlatList
+        key={tabViewIndex === 2 ? "moment" : "else"}
+        ListHeaderComponent={
+          <ProfileInfo
+            user={user}
+            tabViewIndex={tabViewIndex}
+            setTabViewIndex={setTabViewIndex}
+            refetchProfile={refetchProfile}
           />
-        ) : (
-          <BlankContainer>
-            <BldText16>게시물이 존재하지 않습니다</BldText16>
-          </BlankContainer>
-        )
-      ) : tabViewIndex === 1 ? (
-        seriesData?.getUserSeries?.series?.length > 0 ? (
-          <FlatList
-            ListHeaderComponent={
-              <ProfileInfo
-                user={user}
-                tabViewIndex={tabViewIndex}
-                setTabViewIndex={setTabViewIndex}
-                refetchProfile={refetchProfile}
-              />
-            }
-            numColumns={2}
-            data={seriesData?.getUserSeries?.series}
-            keyExtractor={(item, index) => "" + index}
-            renderItem={renderSeries}
-            refreshing={refreshing}
-            onRefresh={refresh}
-            onEndReached={async () => {
-              await fetchMoreLogs({
-                variables: {
-                  lastId:
-                    logsData?.getUserLogs?.logs[
-                      logsData?.getUserLogs?.logs.length - 1
-                    ].id,
-                  userId: user.id,
-                },
-              });
-            }}
-          />
-        ) : (
-          <BlankContainer>
-            <BldText16>게시물이 존재하지 않습니다</BldText16>
-          </BlankContainer>
-        )
-      ) : (
-        <FlatList
-          ListHeaderComponent={
+        }
+        numColumns={tabViewIndex === 2 ? 3 : 2}
+        data={listData[tabViewIndex]}
+        keyExtractor={(item, index) => "" + index}
+        renderItem={({ item, index }) => {
+          if (tabViewIndex === 0) {
+            return renderLogs({ item, index });
+          } else if (tabViewIndex === 1) {
+            return renderSeries({ item, index });
+          }
+          return renderMoments({
+            moments: momentData?.getMyMoments?.moments,
+            index,
+          });
+        }}
+        refreshing={refreshing}
+        onRefresh={refresh}
+        onEndReached={async () => {
+          if (tabViewIndex === 0) {
+            await fetchMoreLogs({
+              variables: {
+                lastId:
+                  listData[tabViewIndex][listData[tabViewIndex].length - 1].id,
+                userId: user.id,
+              },
+            });
+          } else if (tabViewIndex === 1) {
+            await fetchMoreSereis({
+              variables: {
+                lastId:
+                  listData[tabViewIndex][listData[tabViewIndex].length - 1].id,
+                userId: user.id,
+              },
+            });
+          } else if (tabViewIndex === 2) {
+            await fetchMoreMoment({
+              variables: {
+                lastId:
+                  listData[tabViewIndex][listData[tabViewIndex].length - 1].id,
+                userId: user.id,
+              },
+            });
+          }
+        }}
+        ListFooterComponent={() => {
+          return listData[tabViewIndex]?.length == 0 ? (
+            <BlankContainer>
+              <RegText16>
+                등록된{" "}
+                {tabViewIndex === 0
+                  ? "게시물이 "
+                  : tabViewIndex === 1
+                  ? "시리즈가 "
+                  : "모먼트가 "}
+                없습니다.
+              </RegText16>
+            </BlankContainer>
+          ) : null;
+        }}
+      />
+      {/* <FlatList
+          key="moment"
+          ListHeaderComponent={() => (
             <ProfileInfo
               user={user}
               tabViewIndex={tabViewIndex}
               setTabViewIndex={setTabViewIndex}
               refetchProfile={refetchProfile}
             />
+          )}
+          numColumns={3}
+          data={momentData?.getMyMoments?.moments}
+          keyExtractor={(item, index) => "moment" + index}
+          renderItem={({ index }) =>
+            renderMoments({ moments: momentData?.getMyMoments?.moments, index })
           }
-          numColumns={2}
-          data={seriesData?.getUserSeries?.series}
-          keyExtractor={(item, index) => "" + index}
-          renderItem={renderMoments}
           refreshing={refreshing}
           onRefresh={refresh}
           onEndReached={async () => {
             await fetchMoreLogs({
               variables: {
                 lastId:
-                  logsData?.getUserLogs?.logs[
-                    logsData?.getUserLogs?.logs.length - 1
+                  momentData?.getMyMoments?.moments[
+                    momentData?.getMyMoments?.moments.length - 1
                   ].id,
                 userId: user.id,
               },
             });
           }}
+          ListFooterComponent={() => {
+            return momentData?.getMyMoments?.moments?.length == 0 ? (
+              <BlankContainer>
+                <RegText16>등록된 모먼트가 없습니다.</RegText16>
+              </BlankContainer>
+            ) : null;
+          }}
         />
-      )}
+      )} */}
       {user.isMe ? (
         <BottomSheetModal
           modalVisible={modalVisible}

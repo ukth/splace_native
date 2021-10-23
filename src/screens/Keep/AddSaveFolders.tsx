@@ -15,7 +15,7 @@ import {
   FolderType,
   SaveType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
 } from "../../types";
 import { pixelScaler, strCmpFunc } from "../../utils";
 import { useNavigation, useRoute } from "@react-navigation/core";
@@ -64,7 +64,7 @@ const Folder = ({
 }) => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const route = useRoute<RouteProp<StackGeneratorParamList, "AddSaveFolder">>();
 
   return (
@@ -132,7 +132,7 @@ const AddSaveFolders = ({
     "edited"
   );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const { data, loading, refetch } = useQuery(GET_FOLDERS);
 

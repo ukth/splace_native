@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
-import { FolderType, StackGeneratorParamList, themeType } from "../../types";
+import { FolderType, StackGeneratorParamList, ThemeType } from "../../types";
 import { pixelScaler, strCmpFunc } from "../../utils";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -68,7 +68,7 @@ const Folder = ({
 }) => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const onDeleteCompleted = (data: any) => {
     // console.log(data);
@@ -181,7 +181,7 @@ const Folders = ({
     "edited"
   );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const { data, loading, refetch } = useQuery(GET_FOLDERS);
 
@@ -282,7 +282,7 @@ const Folders = ({
     <ScreenContainer>
       {loading ? null : (
         <FlatList
-          style={{ left: pixelScaler(17.5) }}
+          style={{ left: pixelScaler(17.5), width: pixelScaler(340) }}
           refreshing={refreshing}
           onRefresh={refresh}
           ListHeaderComponent={() => (

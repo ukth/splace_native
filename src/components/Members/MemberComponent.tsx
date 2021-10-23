@@ -3,7 +3,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "styled-components/native";
 import client from "../../apollo";
-import { StackGeneratorParamList, themeType, UserType } from "../../types";
+import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { gql, useMutation } from "@apollo/client";
 import { Alert } from "react-native";
@@ -20,7 +20,7 @@ import Image from "../Image";
 import { BldText13, BldText16, RegText13 } from "../Text";
 
 const MemberComponent = ({ user }: { user: UserType }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 

@@ -1,0 +1,15 @@
+import React, { useState, useEffect, useRef } from "react";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
+import ScreenContainer from "../../components/ScreenContainer";
+import { useQuery } from "@apollo/client";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { StackGeneratorParamList } from "../../types";
+import styled from "styled-components/native";
+
+const ScreenName = () => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+  return <ScreenContainer></ScreenContainer>;
+};
+
+export default ScreenName;

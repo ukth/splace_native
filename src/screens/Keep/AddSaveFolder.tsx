@@ -14,7 +14,7 @@ import {
   FolderType,
   SaveType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
 } from "../../types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -98,7 +98,7 @@ const SelectMark = styled.View`
   width: ${pixelScaler(20)}px;
   height: ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(20)}px;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.addSaveSelectMarkBackground};
   align-items: center;
   justify-content: center;
@@ -109,7 +109,7 @@ const SelectedMark = styled.View`
   width: ${pixelScaler(14)}px;
   height: ${pixelScaler(14)}px;
   border-radius: ${pixelScaler(14)}px;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.addSaveSelectMark};
   z-index: 3;
 `;
@@ -186,7 +186,7 @@ const AddSaveFolder = ({
   route: RouteProp<StackGeneratorParamList, "AddSaveFolder">;
 }) => {
   const [sortMode, setSortMode] = useState<"generated" | "name">("generated");
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const [folder, setFolder] = useState<FolderType>(route.params.folder);
 
   const [saves, setSaves] = useState<SaveType[]>();

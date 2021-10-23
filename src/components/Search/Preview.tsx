@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import styled, { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { CardBox, RowCardBoxContainer } from "../CardRowBox";
 import Tag from "./Tag";
@@ -23,11 +23,11 @@ const Recommendation = styled.View`
 
 const Container = styled.ScrollView`
   flex: 1;
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
 `;
 
 const Preview = () => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   return (
     <Container showsVerticalScrollIndicator={false}>
       <TagBox>

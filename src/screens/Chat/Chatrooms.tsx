@@ -26,7 +26,7 @@ import { CREATE_ROOM, GET_ROOMS, ROOM_UPDATE } from "../../queries";
 import {
   RoomType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
   UserType,
 } from "../../types";
 import { pixelScaler } from "../../utils";
@@ -59,7 +59,7 @@ const UnreadMark = styled.View`
   width: ${pixelScaler(12)}px;
   height: ${pixelScaler(12)}px;
   border-radius: ${pixelScaler(10)}px;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.chatPreviewUnreadMark};
   position: absolute;
   right: 0px;
@@ -72,7 +72,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
     // console.log("chatrooms! idvar:", userIdVar());
   }, []);
   const navigation = useNavigation<any>();
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   // console.log(room);
 
@@ -286,7 +286,7 @@ const Chatrooms = () => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const renderItem = ({ item: room }: { item: RoomType }) => (
     <RoomItem room={room} />

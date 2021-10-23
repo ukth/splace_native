@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { GestureResponderEvent, TouchableOpacity } from "react-native";
+import { GestureResponderEvent, Image, TouchableOpacity } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
+import { Icons } from "../icons";
 import { pixelScaler } from "../utils";
 import { BldText16 } from "./Text";
 
@@ -12,8 +13,11 @@ export const HeaderRightMenu = ({
 }) => {
   const theme = useContext(ThemeContext);
   return (
-    <TouchableOpacity onPress={onPress} style={{ marginLeft: pixelScaler(18) }}>
-      <Ionicons name="menu" size={26} />
+    <TouchableOpacity
+      onPress={onPress}
+      style={{ marginRight: pixelScaler(27) }}
+    >
+      <Image source={Icons.menu} style={{ width: 18, height: 15 }} />
     </TouchableOpacity>
   );
 };

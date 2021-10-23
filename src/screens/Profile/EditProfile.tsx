@@ -19,7 +19,7 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldTextInput16, RegTextInput16 } from "../../components/TextInput";
-import { StackGeneratorParamList, themeType } from "../../types";
+import { StackGeneratorParamList, ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import * as ImagePicker from "expo-image-picker";
 import { EDIT_PROFILE } from "../../queries";
@@ -46,7 +46,7 @@ const EntryContainer = styled.View`
 `;
 
 const Seperator = styled.View`
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.editProfileSeperator};
   height: ${pixelScaler(0.7)}px;
   width: ${pixelScaler(315)}px;
@@ -59,7 +59,7 @@ const EditProfile = () => {
 
   const { me } = route.params;
 
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const {
     username: old_username,
@@ -174,15 +174,13 @@ const EditProfile = () => {
               if (Object.keys(variables).length !== 0) {
                 if ("username" in variables) {
                   if (!validateUsername(variables.username ?? "")) {
-                    Alert.alert(
-                      "적절하지 않은 아이디임ㅠㅁㄴ어ㅏㅜ나ㅓ라ㅓㄴ아ㅓㄹ"
-                    );
+                    Alert.alert("적절하지 않은 아이디입니다.");
                     return;
                   }
                 }
                 if ("url" in variables) {
                   if (!validateUrl(variables.url ?? "")) {
-                    Alert.alert("적절하지 않은 링크임ㅠ링크링크링크");
+                    Alert.alert("적절하지 않은 링크입니다.");
                     return;
                   }
                 }
@@ -203,10 +201,11 @@ const EditProfile = () => {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
+        alert("편집을 위해선 카메라 권한이 필요합니다.");
+        navigation.pop();
       }
     })();
-    console.log("localuri:", localUri, name, valueChanged);
+    // console.log("localuri:", localUri, name, valueChanged);
     if (
       localUri !== "" ||
       username !== old_username ||

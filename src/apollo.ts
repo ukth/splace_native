@@ -15,34 +15,36 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { createUploadLink } from "apollo-upload-client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { Alert } from "react-native";
+import { ProgressContext } from "./contexts/Progress";
+import { useContext } from "react";
 
 export const isLoggedInVar = makeVar<boolean>(false);
 export const tokenVar = makeVar<string | null>("");
 export const userIdVar = makeVar<number | null>(null);
 
-export const API_URL = "3.37.199.95:5000";
+export const API_URL = "splacelunen.ap-northeast-2.elasticbeanstalk.com";
 
 const TOKEN = "token";
 
 export const logUserIn = async (token: string, userId: number) => {
   await AsyncStorage.setItem(TOKEN, token);
-  console.log("input:", userId, token);
+  // console.log("input:", userId, token);
   isLoggedInVar(true);
   tokenVar(token);
   userIdVar(userId);
-  console.log("logged in!");
-  console.log(tokenVar());
-  console.log(userIdVar());
-  console.log(isLoggedInVar());
+  // console.log("logged in!");
+  // console.log(tokenVar());
+  // console.log(userIdVar());
+  // console.log(isLoggedInVar());
 };
 
 export const logUserOut = async () => {
   await AsyncStorage.setItem(TOKEN, "");
-  console.log("log out!");
+  // console.log("log out!");
   isLoggedInVar(false);
   tokenVar("a");
   userIdVar(null);
-  console.log(isLoggedInVar(), tokenVar(), userIdVar());
+  // console.log(isLoggedInVar(), tokenVar(), userIdVar());
 };
 
 const httpLink = createHttpLink({
@@ -75,6 +77,8 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  const { spinner } = useContext(ProgressContext);
+  spinner.stop();
   if (graphQLErrors) {
     console.log(`GraphQL Error`, graphQLErrors);
     Alert.alert("네트워크 에러 발생, 관리자에게 문의 부탁드립니다");
@@ -184,6 +188,21 @@ export const cache = new InMemoryCache({
 
             return {
               ...incoming,
+              logs: [...existing.logs, ...incoming.logs],
+            };
+          },
+        },
+        getLogsBySplace: {
+          keyArgs: ["splaceId", "orderBy"],
+          merge(existing, incoming) {
+            if (!existing) {
+              return incoming;
+            }
+            if (!incoming || !incoming.ok) {
+              return existing;
+            }
+            return {
+              ...existing,
               logs: [...existing.logs, ...incoming.logs],
             };
           },

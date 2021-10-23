@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 
 export const MemberContainer = styled.TouchableOpacity`
@@ -29,7 +29,7 @@ export const FollowButton = styled.TouchableOpacity`
   height: 100%;
   width: ${pixelScaler(100)}px;
   border-radius: ${pixelScaler(10)}px;
-  background-color: ${({ theme }: { theme: themeType }) => theme.followButton};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.followButton};
   position: absolute;
   right: 0;
   align-items: center;
@@ -40,7 +40,7 @@ export const GreyButton = styled.View`
   width: ${pixelScaler(32)}px;
   height: ${pixelScaler(32)}px;
   border-radius: ${pixelScaler(32)}px;
-  background-color: ${({ theme }: { theme: themeType }) => theme.greyButton};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.greyButton};
   align-items: center;
   justify-content: center;
 `;

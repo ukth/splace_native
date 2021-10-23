@@ -5,6 +5,7 @@ const colors = {
   black: "#000000",
   red: "#e84118",
   red_ff: "#ff1a1a",
+  grey_76: "#767577",
   grey_8e: "#8e8e93",
   grey_a: "#a0a0a0",
   grey_b: "#b0b0b0",
@@ -37,6 +38,15 @@ export const theme = {
     searchBarBackground: colors.grey_f2,
     searchBarPlaceholder: colors.grey_c7,
     dots: colors.black,
+
+    switchTrackFalse: colors.grey_76,
+
+    greyBackground: colors.grey_f2,
+
+    editSplacePlaceholder: colors.grey_ae,
+    editSplaceOperationTimeDayIndicator: colors.grey_ae,
+
+    editSplaceBreakDayRedBackground: colors.red,
 
     seriesHeaderGreyText: colors.grey_8e,
 
@@ -81,6 +91,7 @@ export const theme = {
     chatMemberName: colors.grey_ae,
 
     searchHistorySeperator: colors.grey_e5,
+    lightSeperator: colors.grey_e5,
 
     followButton: colors.darkTheme,
     followButtonText: colors.white,
@@ -94,6 +105,7 @@ export const theme = {
 
     entry: colors.grey_f2,
     entryPlaceholder: colors.grey_c7,
+    entrySelection: colors.theme,
 
     chatInviteSelect: colors.grey_f2,
     chatInviteSelected: colors.darkTheme,
@@ -120,6 +132,8 @@ export const theme = {
     modalEntry: colors.grey_ae,
 
     modalButtonRedText: colors.red_ff,
+
+    themeBackground: colors.darkTheme,
 
     white: colors.white,
   },

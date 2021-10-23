@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import styled, { ThemeContext } from "styled-components/native";
-import { StackGeneratorParamList, themeType } from "../../types";
+import { StackGeneratorParamList, ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText13 } from "../Text";
 
@@ -17,7 +17,7 @@ const Tag = styled.TouchableOpacity`
   height: ${pixelScaler(20)}px;
   border-width: ${pixelScaler(0.8)}px;
   border-radius: ${pixelScaler(10)}px;
-  border-color: ${({ theme }: { theme: themeType }) => theme.tagGreyBorder};
+  border-color: ${({ theme }: { theme: ThemeType }) => theme.tagGreyBorder};
   margin-right: ${pixelScaler(10)}px;
   padding: 0 ${pixelScaler(10)}px;
   align-items: center;

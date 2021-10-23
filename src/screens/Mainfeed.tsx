@@ -13,7 +13,7 @@ import {
   PhotologType,
   SeriesType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
 } from "../types";
 
 import { useQuery } from "@apollo/client";
@@ -27,7 +27,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 const { width } = Dimensions.get("window");
 
 const Container = styled.View`
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
   flex: 1;
 `;
 // ({ navigation,}: { navigation: StackNavigationProp<StackGeneratorParamList>;}) => {

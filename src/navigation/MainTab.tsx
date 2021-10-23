@@ -7,6 +7,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
+import { Image } from "react-native";
+// import Image from "../components/Image";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -16,11 +18,50 @@ import StackGenerator from "./StackGenerator";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
-const TabBarIcon = (props: {
-  name: React.ComponentProps<typeof Ionicons>["name"];
-  color: string;
+const tabBarIcons = {
+  Mainfeed: {
+    activeIcon: require("../../assets/images/tabBarIcons/home-selected.png"),
+    inactiveIcon: require("../../assets/images/tabBarIcons/home.png"),
+  },
+  Search: {
+    activeIcon: require("../../assets/images/tabBarIcons/search-selected.png"),
+    inactiveIcon: require("../../assets/images/tabBarIcons/search.png"),
+  },
+  Market: {
+    activeIcon: require("../../assets/images/tabBarIcons/market.png"),
+    inactiveIcon: require("../../assets/images/tabBarIcons/market.png"),
+  },
+  Keep: {
+    activeIcon: require("../../assets/images/tabBarIcons/keep-selected.png"),
+    inactiveIcon: require("../../assets/images/tabBarIcons/keep.png"),
+  },
+  Profile: {
+    activeIcon: require("../../assets/images/tabBarIcons/profile-selected.png"),
+    inactiveIcon: require("../../assets/images/tabBarIcons/profile.png"),
+  },
+};
+
+const TabBarIcon = ({
+  focused,
+  screenName,
+}: {
+  focused: boolean;
+  screenName: "Mainfeed" | "Search" | "Market" | "Keep" | "Profile";
 }) => {
-  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
+  return (
+    <Image
+      source={
+        focused
+          ? tabBarIcons[screenName].activeIcon
+          : tabBarIcons[screenName].inactiveIcon
+      }
+      style={
+        screenName === "Keep"
+          ? { width: pixelScaler(13), height: pixelScaler(19) }
+          : { width: pixelScaler(19), height: pixelScaler(19) }
+      }
+    />
+  );
 };
 
 export default function MainTab() {
@@ -34,6 +75,7 @@ export default function MainTab() {
         style: {
           height: pixelScaler(85),
         },
+        showLabel: false,
       }}
       // screenOptions={{
       //   headerShown: false,
@@ -42,8 +84,8 @@ export default function MainTab() {
       <BottomTab.Screen
         name="Mainfeed"
         options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon screenName="Mainfeed" focused={focused} />
           ),
         }}
       >
@@ -55,8 +97,8 @@ export default function MainTab() {
       <BottomTab.Screen
         name="Search"
         options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon screenName="Search" focused={focused} />
           ),
         }}
       >
@@ -67,8 +109,8 @@ export default function MainTab() {
       <BottomTab.Screen
         name="Market"
         options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon screenName="Market" focused={focused} />
           ),
         }}
       >
@@ -80,8 +122,8 @@ export default function MainTab() {
       <BottomTab.Screen
         name="Keep"
         options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon screenName="Keep" focused={focused} />
           ),
         }}
       >
@@ -92,8 +134,8 @@ export default function MainTab() {
       <BottomTab.Screen
         name="Profile"
         options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon screenName="Profile" focused={focused} />
           ),
         }}
       >

@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import { themeType } from "../types";
+import { ThemeType } from "../types";
 import { pixelScaler } from "../utils";
 
 export const FloatingMapButton = styled.TouchableOpacity`
@@ -9,7 +9,7 @@ export const FloatingMapButton = styled.TouchableOpacity`
   width: ${pixelScaler(60)}px;
   height: ${pixelScaler(60)}px;
   border-radius: ${pixelScaler(60)}px;
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   align-items: center;
   justify-content: center;

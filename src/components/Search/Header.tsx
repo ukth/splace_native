@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import styled, { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText16 } from "../Text";
 import HeaderEntry from "./HeaderEntry";
@@ -22,12 +22,12 @@ const TopTab = styled.TouchableOpacity`
   width: ${pixelScaler(65)}px;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme }: { theme: themeType }) => theme.background};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
   border-bottom-width: ${({
     theme,
     focused,
   }: {
-    theme: themeType;
+    theme: ThemeType;
     focused: boolean;
   }) => (focused ? 1 : 0)}px;
 `;
@@ -45,7 +45,7 @@ const SearchHeader = ({
   setSearchBarFocused: (_: boolean) => void;
   searchByKeyword: (_: string) => void;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   return (
     <Container>
       {searchBarFocused ? (

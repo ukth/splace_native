@@ -6,7 +6,7 @@ import {
   PhotologType,
   SplaceType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
 } from "../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler } from "../utils";
@@ -22,7 +22,7 @@ import { HeaderBackButton } from "../components/HeaderBackButton";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import PhotoLog from "../components/Contents/Photolog";
-import ModalMapView from "./ModalMapView";
+import ModalMapView from "../components/ModalMapView";
 import { FloatingMapButton } from "../components/FloatingMapButton";
 import { Ionicons } from "@expo/vector-icons";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -47,7 +47,7 @@ const Series = () => {
   const [splaces, setSplaces] = useState<SplaceType[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const { data: seriesInfo } = useQuery(GET_SERIES_INFO, {
     variables: { seriesId },
@@ -99,10 +99,12 @@ const Series = () => {
     }
   };
 
-  const { data: logsData } = useQuery(GET_SERIES, {
+  const { data: logsData, refetch } = useQuery(GET_SERIES, {
     variables: { seriesId },
     onCompleted: onGetLogsCompleted,
   });
+
+  navigation.addListener("focus", () => refetch());
 
   return (
     <ScreenContainer>

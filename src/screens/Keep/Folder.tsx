@@ -8,7 +8,7 @@ import {
   FolderType,
   SaveType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
 } from "../../types";
 import { RouteProp, useNavigation } from "@react-navigation/core";
 import { HeaderTitle, StackNavigationProp } from "@react-navigation/stack";
@@ -43,7 +43,7 @@ import {
   REMOVE_SAVE,
 } from "../../queries";
 import { fromPromise, useMutation, useQuery } from "@apollo/client";
-import ModalMapView from "../ModalMapView";
+import ModalMapView from "../../components/ModalMapView";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 
@@ -189,7 +189,7 @@ const Folder = ({
 }) => {
   const [editing, setEditing] = useState<boolean>(false);
   const [sortMode, setSortMode] = useState<"generated" | "name">("generated");
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const [folder, setFolder] = useState<FolderType>(route.params.folder);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [showMap, setShowMap] = useState(false);
@@ -372,7 +372,7 @@ const Folder = ({
   return (
     <ScreenContainer>
       <FlatList
-        style={{ left: pixelScaler(17.5) }}
+        style={{ left: pixelScaler(17.5), width: pixelScaler(340) }}
         refreshing={refreshing}
         onRefresh={refresh}
         ListHeaderComponent={() => (

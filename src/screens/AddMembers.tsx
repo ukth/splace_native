@@ -16,7 +16,7 @@ import { GET_FOLLOWERS } from "../queries";
 import {
   RoomType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
   UserType,
 } from "../types";
 import { pixelScaler } from "../utils";
@@ -51,7 +51,7 @@ const SelectButton = styled.View`
   width: ${pixelScaler(30)}px;
   height: ${pixelScaler(30)}px;
   border-radius: ${pixelScaler(30)}px;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.chatInviteSelect};
   align-items: center;
   justify-content: center;
@@ -61,12 +61,12 @@ const Selected = styled.View`
   width: ${pixelScaler(18)}px;
   height: ${pixelScaler(18)}px;
   border-radius: ${pixelScaler(18)}px;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.chatInviteSelected};
 `;
 
 const Seperator = () => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   return (
     <View
       style={{
@@ -90,7 +90,7 @@ const ChatMemberComponent = ({
   setUserList: (users: number[]) => void;
   roomMemberIds: number[];
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const navigation = useNavigation<any>();
 
   return (
@@ -155,7 +155,7 @@ const FollowerSearchEntry = styled.View`
   margin-right: ${pixelScaler(30)}px;
   margin-top: ${pixelScaler(15)}px;
   margin-bottom: ${pixelScaler(15)}px;
-  background-color: ${({ theme }: { theme: themeType }) => theme.entry};
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.entry};
   border-radius: ${pixelScaler(10)}px;
   flex-direction: row;
   align-items: center;
@@ -168,7 +168,7 @@ const AddMembers = ({
   navigation: StackNavigationProp<StackGeneratorParamList>;
   route: RouteProp<StackGeneratorParamList, "AddMembers">;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const me = useMe();
   const [keyword, setKeyword] = useState<string>("");
   const listRef = useRef<any>();

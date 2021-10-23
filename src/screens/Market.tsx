@@ -1,49 +1,26 @@
 import React, { useRef, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { isLoggedInVar, logUserOut, tokenVar } from "../apollo";
 
 export default function Market({ navigation }: { navigation: any }) {
   return (
-    <ScrollView>
-      <TouchableOpacity
-        style={{ width: 100, height: 100, backgroundColor: "#f8e0f8" }}
-        onPress={() => navigation.push("Chatrooms")}
-      >
-        <Text>kakao</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{ width: 100, height: 100, backgroundColor: "#f8a0f8" }}
-        onPress={async () => {
-          console.log("press logout");
-          await logUserOut();
-          console.log("logout!");
+    <ScrollView
+      maximumZoomScale={2.5}
+      minimumZoomScale={1.0}
+      style={{ backgroundColor: "#a0e0d0" }}
+    >
+      <Image
+        source={{
+          uri: "https://www.surfcanarias.com/wp-content/uploads/2020/05/Surfing-Equipment-scaled.jpg",
         }}
-      >
-        <Text>logout</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{ width: 100, height: 100, backgroundColor: "#c8e0d8" }}
-        onPress={() => navigation.push("Payment", { pay_method: "card" })}
-      >
-        <Text>card</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{ width: 100, height: 100, backgroundColor: "#c8e0d8" }}
-        onPress={() =>
-          navigation.push("MomentView", {
-            chatroom: {
-              chatroomId: 1,
-              title: null,
-              members: [
-                { userId: 1, username: "dreamost_heo" },
-                { userId: 2, username: "ukth_1234" },
-              ],
-            },
-          })
-        }
-      >
-        <Text>MomentView</Text>
-      </TouchableOpacity>
+        style={{ width: 200, height: 200 }}
+      />
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
     </ScrollView>
   );
 }

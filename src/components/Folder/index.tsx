@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 import React from "react";
 import { pixelScaler } from "../../utils";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 
 export const DeleteButton = styled.TouchableOpacity`
   position: absolute;
@@ -10,7 +10,7 @@ export const DeleteButton = styled.TouchableOpacity`
   width: ${pixelScaler(30)}px;
   height: ${pixelScaler(30)}px;
   border-radius: ${pixelScaler(30)}px;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.folderDeleteButtonBackground};
   z-index: 1;
   align-items: center;
@@ -18,7 +18,7 @@ export const DeleteButton = styled.TouchableOpacity`
 `;
 
 export const Minus = styled.View`
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.folderDeleteMinus};
   width: ${pixelScaler(12)}px;
   height: ${pixelScaler(2)}px;

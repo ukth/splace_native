@@ -23,6 +23,30 @@ export type SplaceType = {
   thumbnail?: string;
   lat: number;
   lon: number;
+  itemName?: string;
+  itemPrice?: number;
+  intro?: string;
+  url?: string;
+  phone?: string;
+  owner?: UserType;
+  pets: boolean;
+  noKids: boolean;
+  parking: boolean;
+  breakDays: number[];
+  holidayBreak: boolean;
+  totalPhotologs: number;
+  timeSets?: TimeSetType[];
+  activate: boolean;
+  detailAddress?: string;
+};
+
+export type TimeSetType = {
+  id: number;
+  day: number;
+  open?: number;
+  close?: number;
+  breakOpen?: number;
+  breakClose?: number;
 };
 
 export type UserType = {
@@ -50,6 +74,17 @@ export type UserType = {
   url?: string;
 };
 
+export type MomentType = {
+  id: number;
+  title: string;
+  text: string;
+  author: UserType;
+  videoUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  splace?: SplaceType;
+};
+
 export type SaveType = {
   id: number;
   createdAt: string;
@@ -71,8 +106,36 @@ export type StackGeneratorParamList = {
   Saved: undefined;
   Market: undefined;
   Moment: undefined;
-  MomentView: undefined;
+  MomentView: {
+    moments: MomentType[];
+    index: number;
+  };
   Splace: {
+    splace: SplaceType;
+  };
+  EditSplace: {
+    splace: SplaceType;
+  };
+  EditSplaceCategory: {
+    splace: SplaceType;
+  };
+  EditSplaceInfo: {
+    splace: SplaceType;
+  };
+  EditSplaceIntro: {
+    splace: SplaceType;
+  };
+  EditSplaceItem: {
+    splace: SplaceType;
+    urls?: string[];
+  };
+  EditSplaceLocation: {
+    splace: SplaceType;
+  };
+  EditSplaceOperatingtime: {
+    splace: SplaceType;
+  };
+  EditSplaceLocationSearch: {
     splace: SplaceType;
   };
   Profile: {
@@ -216,7 +279,7 @@ export type BottomTabParamList = {
   Profile: undefined;
 };
 
-export type themeType = {
+export type ThemeType = {
   background: string;
   text: string;
   errorText: string;
@@ -261,8 +324,6 @@ export type themeType = {
 
   chatSendText: string;
 
-  highlightText: string;
-
   chatMemberSeperator: string;
   chatMemberUsername: string;
   chatMemberName: string;
@@ -298,16 +359,26 @@ export type themeType = {
 
   editProfileSeperator: string;
   editProfileTextGrey: string;
+  editSplaceBreakDayRedBackground: string;
 
+  greyBackground: string;
   modalButtonRedText: string;
 
   addSaveSelectMarkBackground: string;
   addSaveSelectMark: string;
 
+  editSplaceOperationTimeDayIndicator: string;
+  editSplacePlaceholder: string;
   borderHighlight: string;
 
   passwordChangeGreyText: string;
   editInfoGreyText: string;
+  lightSeperator: string;
+
+  entrySelection: string;
+  themeBackground: string;
+
+  switchTrackFalse: string;
 
   white: string;
 };

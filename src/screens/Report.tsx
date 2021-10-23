@@ -4,7 +4,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../components/ScreenContainer";
 import { useMutation } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { StackGeneratorParamList, themeType } from "../types";
+import { StackGeneratorParamList, ThemeType } from "../types";
 import { RegTextInput13 } from "../components/TextInput";
 import { HeaderBackButton } from "../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
@@ -23,7 +23,7 @@ const Report = () => {
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   const route = useRoute<RouteProp<StackGeneratorParamList, "Report">>();
 
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const [reason, setReason] = useState("");
 
   const onCompleted = (data: any) => {

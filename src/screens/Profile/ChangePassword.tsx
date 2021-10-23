@@ -5,7 +5,7 @@ import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { BldTextInput20 } from "../../components/TextInput";
 import { BldText13 } from "../../components/Text";
-import { StackGeneratorParamList, themeType } from "../../types";
+import { StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler } from "../../utils";
 import { Alert, Keyboard, TouchableWithoutFeedback } from "react-native";
@@ -26,7 +26,7 @@ const ChangePassword = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const { spinner } = useContext(ProgressContext);
 
   const reg =

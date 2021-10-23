@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled, { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText16 } from "../Text";
 import { BldTextInput16 } from "../TextInput";
@@ -20,7 +20,7 @@ const SearchBar = styled.View`
   border-radius: ${pixelScaler(10)}px;
   flex-direction: row;
   align-items: center;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.searchBarBackground};
 `;
 
@@ -33,7 +33,7 @@ const HeaderEntry = ({
   setFocused: Function;
   searchByKeyword: (_: string) => void;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const textInputRef = useRef<any>();
   const [keyword, setKeyword] = useState<string>("");
 

@@ -11,7 +11,7 @@ import {
 } from "../components/Members";
 import ScreenContainer from "../components/ScreenContainer";
 import { BldText13, BldText16, BldText20, RegText13 } from "../components/Text";
-import { StackGeneratorParamList, themeType, UserType } from "../types";
+import { StackGeneratorParamList, ThemeType, UserType } from "../types";
 import { pixelScaler } from "../utils";
 
 const Members = ({
@@ -21,7 +21,7 @@ const Members = ({
   navigation: StackNavigationProp<StackGeneratorParamList>;
   route: RouteProp<StackGeneratorParamList, "Members">;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const {
     title,

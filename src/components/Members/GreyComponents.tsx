@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { GestureResponderEvent } from "react-native";
 import { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { BldText16 } from "../Text";
 import { View } from "../Themed";
@@ -14,7 +14,7 @@ export const GreyButtonComponent = ({
   type: "+" | "-";
   onPress: (event: GestureResponderEvent) => void;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   return (
     <MemberContainer onPress={onPress}>
       <InfoContainer>

@@ -12,9 +12,16 @@ import {
   Search,
   Profile,
   Splace,
+  EditSplace,
+  EditSplaceCategory,
+  EditSplaceInfo,
+  EditSplaceIntro,
+  EditSplaceItem,
+  EditSplaceLocation,
+  EditSplaceOperatingtime,
+  EditSplaceLocationSearch,
   Series,
   Market,
-  Moment,
   Payment,
   Chatrooms,
   Chatroom,
@@ -217,6 +224,21 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
         initialParams={{ user: useMe() }}
       />
       <Stack.Screen name="Splace" component={Splace} />
+      <Stack.Screen name="EditSplace" component={EditSplace} />
+      <Stack.Screen name="EditSplaceCategory" component={EditSplaceCategory} />
+      <Stack.Screen name="EditSplaceInfo" component={EditSplaceInfo} />
+      <Stack.Screen name="EditSplaceIntro" component={EditSplaceIntro} />
+      <Stack.Screen name="EditSplaceItem" component={EditSplaceItem} />
+      <Stack.Screen name="EditSplaceLocation" component={EditSplaceLocation} />
+      <Stack.Screen
+        name="EditSplaceOperatingtime"
+        component={EditSplaceOperatingtime}
+      />
+      <Stack.Screen
+        name="EditSplaceLocationSearch"
+        component={EditSplaceLocationSearch}
+      />
+
       <Stack.Screen name="ProfileUsers" component={ProfileUsers} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="UserLogs" component={UserLogs} />

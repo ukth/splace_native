@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { HashTagType, StackGeneratorParamList, themeType } from "../types";
+import { HashTagType, StackGeneratorParamList, ThemeType } from "../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler } from "../utils";
 import { useContext } from "react";
@@ -34,7 +34,7 @@ import SplaceSearch from "../components/Search/SplaceSearch";
 // import { TextInput } from "react-native-gesture-handler";
 
 const SearchTabMapScreen = () => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const { width } = useWindowDimensions();
   const Container = styled.ScrollView`
     width: ${width}px;
@@ -103,7 +103,7 @@ const SearchTabMapScreen = () => {
 };
 const SearchTabAccountScreen = () => {
   const { width } = useWindowDimensions();
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   const Container = styled.ScrollView`
     width: ${width}px;
   `;
@@ -175,7 +175,7 @@ const SearchTabView = ({
   searchByKeyword: (_: string) => void;
   setHistory: (_: string[]) => void;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   return (
     <ScreenContainer>
@@ -206,7 +206,7 @@ const SearchTabView = ({
 
 const Search = () => {
   const [searchBarFocused, setSearchBarFocused] = useState(false);
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { GestureResponderEvent } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import { themeType } from "../types";
+import { ThemeType } from "../types";
 import { pixelScaler } from "../utils";
 
 const DotsContainer = styled.TouchableOpacity`
@@ -24,7 +24,7 @@ const ThreeDots = ({
   onPress: (event: GestureResponderEvent) => void;
   color?: string;
 }) => {
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
   if (!color) {
     color = theme.dots;
   }

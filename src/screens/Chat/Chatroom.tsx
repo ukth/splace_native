@@ -22,7 +22,7 @@ import {
   MessageType,
   RoomType,
   StackGeneratorParamList,
-  themeType,
+  ThemeType,
 } from "../../types";
 import { pixelScaler } from "../../utils";
 import * as Clipboard from "expo-clipboard";
@@ -51,7 +51,7 @@ const Entry = styled.View`
   /* align-items: center; */
   flex-direction: row;
   border-top-width: ${pixelScaler(0.3)}px;
-  /* border-top-color: ${({ theme }: { theme: themeType }) =>
+  /* border-top-color: ${({ theme }: { theme: ThemeType }) =>
     theme.chatEntryBorderTop}; */
   border-top-color: rgba(60, 60, 67, 0.2);
   margin-bottom: ${pixelScaler(30)}px;
@@ -63,7 +63,7 @@ const EntryTextInputContainer = styled.View`
   /* height: ${pixelScaler(35)}px; */
   /* padding-top: ${pixelScaler(4)}px;
   padding-bottom: ${pixelScaler(7)}px; */
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.chatEntryInputBackground};
   flex: 1;
   border-radius: ${pixelScaler(10)}px;
@@ -122,7 +122,7 @@ const ChatBubble = styled.TouchableOpacity`
   align-items: center;
   padding: ${pixelScaler(10)}px ${pixelScaler(10)}px;
   max-width: ${pixelScaler(237)}px;
-  background-color: ${(props: { theme: themeType; isMine: boolean }) =>
+  background-color: ${(props: { theme: ThemeType; isMine: boolean }) =>
     props.isMine ? props.theme.myChatBubble : props.theme.otherChatBubble};
   border-radius: ${pixelScaler(10)}px;
   margin-left: ${({ isMine }: { isMine: boolean }) =>
@@ -136,7 +136,7 @@ const Chatroom = () => {
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   const route = useRoute<RouteProp<StackGeneratorParamList, "Chatroom">>();
   const textInputRef = useRef<any>();
-  const theme = useContext<themeType>(ThemeContext);
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const [chatroom, setChatroom] = useState<RoomType>(route.params.room);
 

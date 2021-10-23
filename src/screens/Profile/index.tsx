@@ -9,6 +9,7 @@ import BlockedUsers from "./BlockedUsers";
 import ServicePolicy from "./ServicePolicy";
 import TermsOfUse from "./TermsOfUse";
 import Agreement from "./Agreement";
+import MomentView from "./MomentView";
 
 export {
   Profile,
@@ -22,4 +23,5 @@ export {
   ServicePolicy,
   TermsOfUse,
   Agreement,
+  MomentView,
 };

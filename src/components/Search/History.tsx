@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled, { ThemeContext } from "styled-components/native";
-import { themeType } from "../../types";
+import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText16 } from "../Text";
 
@@ -23,7 +23,7 @@ const Seperator = styled.View`
   width: ${pixelScaler(315)}px;
   margin-left: ${pixelScaler(30)}px;
   height: 0.7px;
-  background-color: ${({ theme }: { theme: themeType }) =>
+  background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.searchHistorySeperator};
 `;
 

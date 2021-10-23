@@ -95,7 +95,11 @@ const PhotoLog = ({
       </SwiperContainer>
       <BottomHeader>
         <TouchableOpacity
-          onPress={() => navigation.push("Splace", { splace: item.splace })}
+          onPress={() => {
+            if (item.splace?.activate) {
+              navigation.push("Splace", { splace: item.splace });
+            }
+          }}
         >
           <BldText20>{item.splace?.name ?? "Splace"}</BldText20>
         </TouchableOpacity>
