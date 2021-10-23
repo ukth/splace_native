@@ -11,19 +11,23 @@ const ProgressContext = createContext({
 
 const ProgressProvider = ({ children }: { children: any }) => {
   const [inProgress, setInProgress] = useState(false);
-  var timer: NodeJS.Timeout;
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
   const spinner = {
     start: () => {
-      timer = setTimeout(() => {
-        Alert.alert("요청시간 초과");
-        setInProgress(false);
-      }, 10000);
+      setTimer(
+        setTimeout(() => {
+          Alert.alert("요청시간 초과");
+          setInProgress(false);
+        }, 10000)
+      );
 
       setInProgress(true);
     },
     stop: () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
       setInProgress(false);
-      clearTimeout(timer);
     },
   };
   const value = { inProgress, spinner };

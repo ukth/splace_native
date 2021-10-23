@@ -10,34 +10,33 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { pixelScaler } from "../utils";
 
-class ZoomableImage extends Component<
-  {
-    imageWidth: number;
-    imageHeight: number;
-    frameWidth: number;
-    frameHeight: number;
-    uri: string;
-  },
-  {
-    frameWidth: number;
-    frameHeight: number;
-    zoom: number;
-    offset_x: number;
-    offset_y: number;
-    isZooming: boolean;
-    isMoving: boolean;
-    initialZoom: number;
-    initialCenter_x: number;
-    initialCenter_y: number;
-    initialOffset_x: number;
-    initialOffset_y: number;
-    initialDistance: number;
-    initialX: number;
-    initialY: number;
-  }
-> {
+
+
+{
+frameWidth: number;
+frameHeight: number;
+zoom: number;
+offset_x: number;
+offset_y: number;
+isZooming: boolean;
+isMoving: boolean;
+initialZoom: number;
+initialCenter_x: number;
+initialCenter_y: number;
+initialOffset_x: number;
+initialOffset_y: number;
+initialDistance: number;
+initialX: number;
+initialY: number;
+}
+
+const ZoomableImage = ({imageWidth: number;
+  imageHeight: number;
+  frameWidth: number;
+  frameHeight: number;
+  uri: string;
+  })=> {
   constructor(props: any) {
     super(props);
 
@@ -56,25 +55,32 @@ class ZoomableImage extends Component<
     // console.log("2", this.props.imageWidth, this.props.imageHeight);
 
     this.state = {
-      isMoving: false,
-      isZooming: false,
       frameWidth: this.props.frameWidth,
       frameHeight: this.props.frameHeight,
       zoom: 1,
-      initialZoom: 1,
       offset_x,
       offset_y,
+      isMoving: false,
+      isZooming: false,
+      initialZoom: 1,
       initialCenter_x: 0,
       initialCenter_y: 0,
       initialOffset_x: offset_x,
       initialOffset_y: offset_y,
       initialDistance: 1,
+      initialX: 0,
+      initialY: 0,
     };
   }
 
-  processPinch(x1, y1, x2, y2) {
-    let distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    let center = { x: (x1 + y1) / 2, y: (x2 + y2) / 2 };
+  processPinch(
+    coord1: { x: number; y: number },
+    coord2: { x: number; y: number }
+  ) {
+    let distance = Math.sqrt(
+      Math.pow(coord1.x - coord2.x, 2) + Math.pow(coord1.y - coord2.y, 2)
+    );
+    let center = { x: (coord1.x + coord2.x) / 2, y: (coord1.y + coord2.y) / 2 };
     console.log(this.state.offset_x);
 
     if (!this.state.isZooming) {
@@ -120,18 +126,20 @@ class ZoomableImage extends Component<
     }
   }
 
-  processTouch(x, y) {
+  processTouch(coord: { x: number; y: number }) {
     if (!this.state.isMoving) {
       this.setState({
         isMoving: true,
-        initialX: x,
-        initialY: y,
+        initialX: coord.x,
+        initialY: coord.y,
         initialOffset_x: this.state.offset_x,
         initialOffset_y: this.state.offset_y,
       });
     } else {
-      const offset_x = x - (this.state.initialX - this.state.initialOffset_x);
-      const offset_y = y - (this.state.initialY - this.state.initialOffset_y);
+      const offset_x =
+        coord.x - (this.state.initialX - this.state.initialOffset_x);
+      const offset_y =
+        coord.y - (this.state.initialY - this.state.initialOffset_y);
 
       this.setState({
         offset_x:
@@ -152,8 +160,10 @@ class ZoomableImage extends Component<
     }
   }
 
-  _onLayout(event) {
-    // let layout = event.nativeEvent.layout;
+  _onLayout(event: any) {
+    let layout = event.nativeEvent.layout;
+    console.log(layout);
+    console.log("dshjbfjdsbfkj");
     // if (
     //   layout.width === this.state.width &&
     //   layout.height === this.state.height
@@ -181,21 +191,12 @@ class ZoomableImage extends Component<
     onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
     onMoveShouldSetPanResponder: (evt, gestureState) => true,
     onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-    onPanResponderGrant: (evt, gestureState) => {},
     onPanResponderMove: (evt, gestureState) => {
-      // console.log()
-      // console.log(this.state);
       let touches = evt.nativeEvent.touches;
       if (touches.length == 2) {
-        let touch1 = touches[0];
-        let touch2 = touches[1];
-        // console.log(touch1, touch2);
-
         this.processPinch(
-          touches[0].pageX,
-          touches[0].pageY,
-          touches[1].pageX,
-          touches[1].pageY
+          { x: touches[0].pageX, y: touches[0].pageY },
+          { x: touches[1].pageX, y: touches[1].pageY }
         );
       } else if (touches.length == 1) {
         if (this.state.isZooming) {
@@ -203,7 +204,7 @@ class ZoomableImage extends Component<
             isZooming: false,
           });
         }
-        this.processTouch(touches[0].pageX, touches[0].pageY);
+        this.processTouch({ x: touches[0].pageX, y: touches[0].pageY });
       }
     },
 
@@ -214,14 +215,11 @@ class ZoomableImage extends Component<
         isMoving: false,
       });
     },
-    onPanResponderTerminate: (evt, gestureState) => {},
     onShouldBlockNativeResponder: (evt, gestureState) => true,
   });
 
-  componentWillMount() {}
 
-  render() {
-    // console.log(this.props, this.state);
+
     return (
       <View
         style={{
@@ -243,11 +241,10 @@ class ZoomableImage extends Component<
           source={{
             uri: this.props.uri,
           }}
-          // imageWidth={}
         />
       </View>
     );
-  }
+
 }
 
 const Market = ({ navigation }: { navigation: any }) => {
@@ -257,10 +254,6 @@ const Market = ({ navigation }: { navigation: any }) => {
       "https://www.surfcanarias.com/wp-content/uploads/2020/05/Surfing-Equipment-scaled.jpg",
       (img_w, img_h) => {
         if (img_w > img_h) {
-          // console.log("1@@@@", {
-          //   width: (img_w / img_h) * pixelScaler(315),
-          //   height: pixelScaler(315),
-          // });
           setSize({
             width: (img_w / img_h) * pixelScaler(315),
             height: pixelScaler(315),
@@ -275,26 +268,13 @@ const Market = ({ navigation }: { navigation: any }) => {
     );
   }, []);
   return (
-    <View style={{ alignItems: "center", justifyContent: "center" }}>
-      <ScrollView
-        style={{
-          borderRadius: pixelScaler(15),
-          width: pixelScaler(315),
-          height: pixelScaler(315),
-        }}
-        scrollEnabled={false}
-      >
-        {size && (
-          <ZoomableImage
-            imageHeight={size.height}
-            imageWidth={size.width}
-            frameWidth={pixelScaler(315)}
-            frameHeight={pixelScaler(315)}
-            uri="https://www.surfcanarias.com/wp-content/uploads/2020/05/Surfing-Equipment-scaled.jpg"
-          />
-        )}
-      </ScrollView>
-    </View>
+    <ZoomableImage
+      imageHeight={size.height}
+      imageWidth={size.width}
+      frameWidth={pixelScaler(315)}
+      frameHeight={pixelScaler(315)}
+      uri="https://www.surfcanarias.com/wp-content/uploads/2020/05/Surfing-Equipment-scaled.jpg"
+    />
   );
 };
 

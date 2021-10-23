@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -269,18 +269,6 @@ const EditSplaceOperatingtime = () => {
                     : []),
                 ]);
               }
-              // console.log({
-              //   splaceId: splace.id,
-              //   breakDays: breakDays_var,
-              //   sun: operatingTime_vars[0],
-              //   mon: operatingTime_vars[1],
-              //   tue: operatingTime_vars[2],
-              //   wed: operatingTime_vars[3],
-              //   thr: operatingTime_vars[4],
-              //   fri: operatingTime_vars[5],
-              //   sat: operatingTime_vars[6],
-              //   holidayBreak,
-              // });
               if (!loading) {
                 spinner.start();
 

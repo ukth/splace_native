@@ -775,7 +775,7 @@ export const EDIT_SPLACE = gql`
     $parking: Boolean
     $pets: Boolean
     $kids: Boolean
-    $thumbnail: Boolean
+    $thumbnail: String
   ) {
     editSplaces(
       splaceId: $splaceId

@@ -9,6 +9,7 @@ import { BldText16, RegText33 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { TouchableOpacity } from "react-native";
+import ImagePicker from "../../components/ImagePicker/ImagePicker";
 
 const EditSplaceItem = () => {
   const navigation =
@@ -24,14 +25,23 @@ const EditSplaceItem = () => {
     });
   }, []);
 
+  const [showPicker, setShowPicker] = useState(false);
+
   return (
     <ScreenContainer>
       <TouchableOpacity
         style={{ width: 100, height: 100, backgroundColor: "#90f0d0" }}
-        onPress={() => navigation.navigate("Splace", { splace })}
+        onPress={() => setShowPicker(true)}
       >
         <RegText33>어나라ㅓㅇㄴ</RegText33>
       </TouchableOpacity>
+      <ImagePicker
+        setURLs={(s) => {}}
+        multiple={true}
+        showPicker={showPicker}
+        setShowPicker={setShowPicker}
+        type={"Menu"}
+      />
     </ScreenContainer>
   );
 };

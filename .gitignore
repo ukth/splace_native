@@ -8,8 +8,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-yarn-error.log
-yarn.lock
+yarn-error.log*
 package-lock.json
 
 # macOS

@@ -77,8 +77,6 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const onErrorLink = onError(({ graphQLErrors, networkError }) => {
-  const { spinner } = useContext(ProgressContext);
-  spinner.stop();
   if (graphQLErrors) {
     console.log(`GraphQL Error`, graphQLErrors);
     Alert.alert("네트워크 에러 발생, 관리자에게 문의 부탁드립니다");

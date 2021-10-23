@@ -14,7 +14,11 @@ import { Alert, SafeAreaView, Switch } from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-import { EDIT_SPLACE, GET_SPLACE_INFO } from "../../queries";
+import {
+  EDIT_SPLACE,
+  EDIT_SPLACE_TIMESETS,
+  GET_SPLACE_INFO,
+} from "../../queries";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
 import { API_URL, tokenVar } from "../../apollo";
@@ -96,11 +100,12 @@ const EditSplace = () => {
   const onCompleted = (data: any) => {
     spinner.stop();
     if (data?.editSplaces?.ok) {
-      Alert.alert("splace 정보를 변경했습니다.");
+      Alert.alert("변경이 완료되었습니다.");
     } else {
-      Alert.alert("splace 정보를 변경할 수 없습니다.");
+      Alert.alert("정보를 변경할 수 없습니다.");
     }
   };
+
   const [mutation, { loading }] = useMutation(EDIT_SPLACE, { onCompleted });
 
   navigation.addListener("focus", async () => {
@@ -120,14 +125,6 @@ const EditSplace = () => {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("편집을 위해선 카메라 권한이 필요합니다.");
-        navigation.pop();
-      }
-    })();
     navigation.setOptions({
       headerTitle: () => <BldText16>편집모드</BldText16>,
       headerRight: () => (
@@ -147,7 +144,7 @@ const EditSplace = () => {
 
               spinner.start();
 
-              const res = await axios.post(
+              const res: { data: Object } = await axios.post(
                 "http://" + API_URL + "/upload",
                 formData,
                 {
