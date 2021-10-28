@@ -23,6 +23,7 @@ import useMe from "../hooks/useMe";
 import * as Linking from "expo-linking";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { ImagePickerContext } from "../contexts/ImagePicker";
 
 const { width } = Dimensions.get("window");
 
@@ -88,8 +89,8 @@ const Mainfeed = () => {
       series: SeriesType[];
     };
   }) => {
+    // console.log(data);
     const { getFeed } = data;
-    // console.log(getFeed);
     setFeedData({ logs: getFeed.logs ?? [], series: getFeed.series ?? [] });
   };
   // console.log(
@@ -146,12 +147,12 @@ const Mainfeed = () => {
     Linking.addEventListener("url", handleDeepLink);
 
     (async () => {
-      console.log("async!!");
       const url = await Linking.getInitialURL();
       if (url) {
         handleUrl(url);
       }
     })();
+
     return () => {
       Linking.removeEventListener("url", handleDeepLink);
     };

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Dimensions } from "react-native";
-import { API_URL } from "./apollo";
+import { API_URL, tokenVar } from "./apollo";
+import { Splace } from "./screens";
 
 export const convertNumber = (n: number) => {
   if (n === 0) {
@@ -76,6 +77,47 @@ export const keyword2Address = async (
       return res.data?.addresses;
     }
   }
+  return [];
+};
+
+export const keyword2Place = async (
+  keyword: string,
+  coordinate?: { lat: number; lon: number }
+) => {
+  if (keyword === "") {
+    return [];
+  }
+  const res: any = await axios.get(
+    "http://" +
+      API_URL +
+      "/keyword?keyword=" +
+      keyword +
+      (coordinate ? "&x=" + coordinate.lon + "&y=" + coordinate.lat : "")
+  );
+  if (res.status === 200) {
+    return res.data?.documents?.map(
+      (place: {
+        distance: string;
+        id: string;
+        place_name: string;
+        road_address_name: string;
+        address_name: string;
+        x: string;
+        y: string;
+      }) => {
+        return {
+          id: place.id,
+          distance: place.distance !== "" ? Number(place.distance) : 0,
+          name: place.place_name,
+          road_address: place.road_address_name,
+          address: place.address_name,
+          lon: Number(place.x),
+          lat: Number(place.y),
+        };
+      }
+    );
+  }
+
   return [];
 };
 
@@ -204,4 +246,71 @@ export const format2DecimalNumber = (n: number) => {
     return "0" + n;
   }
   return "" + n;
+};
+
+export const AlbumTitleKor = {
+  Panoramas: "파노라마",
+  Videos: "비디오",
+  Favorites: "즐겨찾는 항목",
+  "Time-lapse": "타임랩스",
+  Hidden: "",
+  "Recently Deleted": "",
+  Recents: "최근 항목",
+  Bursts: "고속 연사 촬영",
+  "Slo-mo": "슬로 모션",
+  "Recently Added": "",
+  Selfies: "셀피",
+  Screenshots: "스크린샷",
+  Portrait: "인물 사진",
+  "Live Photos": "라이브 포토",
+  Animated: "움직이는 항목",
+  "Long Exposure": "장노출",
+  "Unable to Upload": "",
+  RAW: "RAW",
+};
+
+export const uploadPhotos = async (urls: string[]) => {
+  const formData = new FormData();
+  if (urls.length >= 1) {
+    for (let i = 0; i < urls.length; i++) {
+      const url = urls[i];
+      formData.append("photos", {
+        // @ts-ignore
+        uri: url,
+        name: url.substr(url.length > 20 ? url.length - 20 : 0),
+        type: "image/jpeg",
+      });
+    }
+
+    const res: { data: { originalname: string; location: string }[] } =
+      await axios.post("http://" + API_URL + "/uploadphoto", formData, {
+        headers: {
+          "content-type": "multipart/form-data",
+          // token: tokenVar(),
+          token: tokenVar() ?? "",
+        },
+      });
+
+    if (res.data.length === urls.length) {
+      const awsUrls = [];
+      for (let i = 0; i < urls.length; i++) {
+        const url = urls[i];
+        for (let j = 0; j < Object.keys(res.data).length; j++) {
+          if (
+            res.data[j]?.originalname ===
+            url.substr(url.length > 20 ? url.length - 20 : 0)
+          ) {
+            awsUrls.push(res.data[j].location);
+            break;
+          }
+        }
+      }
+      if (awsUrls.length === urls.length) {
+        return awsUrls;
+      }
+    } else {
+      console.log(res);
+    }
+  }
+  return [];
 };

@@ -521,7 +521,7 @@ const Profile = () => {
             color: theme.white,
           }}
         >
-          {item.title}
+          {item.title} ({item.seriesElements.length})
         </BldText13>
         <LinearGradient
           // Background Linear Gradient
@@ -536,7 +536,7 @@ const Profile = () => {
         />
         <Image
           source={{
-            uri: item.photologs[0]?.imageUrls[0] ?? BLANK_IMAGE,
+            uri: item.seriesElements[0]?.photolog.imageUrls[0] ?? BLANK_IMAGE,
           }}
           style={{
             width: pixelScaler(186),
@@ -660,44 +660,6 @@ const Profile = () => {
           ) : null;
         }}
       />
-      {/* <FlatList
-          key="moment"
-          ListHeaderComponent={() => (
-            <ProfileInfo
-              user={user}
-              tabViewIndex={tabViewIndex}
-              setTabViewIndex={setTabViewIndex}
-              refetchProfile={refetchProfile}
-            />
-          )}
-          numColumns={3}
-          data={momentData?.getMyMoments?.moments}
-          keyExtractor={(item, index) => "moment" + index}
-          renderItem={({ index }) =>
-            renderMoments({ moments: momentData?.getMyMoments?.moments, index })
-          }
-          refreshing={refreshing}
-          onRefresh={refresh}
-          onEndReached={async () => {
-            await fetchMoreLogs({
-              variables: {
-                lastId:
-                  momentData?.getMyMoments?.moments[
-                    momentData?.getMyMoments?.moments.length - 1
-                  ].id,
-                userId: user.id,
-              },
-            });
-          }}
-          ListFooterComponent={() => {
-            return momentData?.getMyMoments?.moments?.length == 0 ? (
-              <BlankContainer>
-                <RegText16>등록된 모먼트가 없습니다.</RegText16>
-              </BlankContainer>
-            ) : null;
-          }}
-        />
-      )} */}
       {user.isMe ? (
         <BottomSheetModal
           modalVisible={modalVisible}
@@ -719,7 +681,13 @@ const Profile = () => {
           <ModalButtonBox>
             <RegText20>스크랩한 게시물</RegText20>
           </ModalButtonBox>
-          <ModalButtonBox style={{ marginBottom: pixelScaler(30) }}>
+          <ModalButtonBox
+            style={{ marginBottom: pixelScaler(30) }}
+            onPress={() => {
+              setModalVisible(false);
+              navigation.push("MySplaces");
+            }}
+          >
             <RegText20>등록된 공간 관리</RegText20>
           </ModalButtonBox>
           <ModalButtonBox>

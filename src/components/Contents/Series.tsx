@@ -52,7 +52,7 @@ const Series = ({ item }: { item: SeriesType }) => {
       </TitleContianer>
 
       <FlatList
-        data={item.photologs}
+        data={item.seriesElements}
         horizontal={true}
         ListHeaderComponent={() => <View style={{ width: pixelScaler(30) }} />}
         ListFooterComponent={() => <View style={{ width: pixelScaler(20) }} />}
@@ -60,7 +60,7 @@ const Series = ({ item }: { item: SeriesType }) => {
         renderItem={({ item, index }) => {
           return (
             <Image
-              source={{ uri: item.imageUrls[0] }}
+              source={{ uri: item.photolog.imageUrls[0] }}
               style={{
                 width: pixelScaler(100),
                 height: pixelScaler(100),

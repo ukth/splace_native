@@ -8,6 +8,7 @@ export const USER_FRAGMENT = gql`
     profileImageUrl
     isFollowing
     isMe
+    authority
   }
 `;
 
@@ -58,11 +59,15 @@ export const SPLACE_FRAGMENT = gql`
     lon
     activate
     detailAddress
-    # ratingtags {
-    #   id
-    #   name
-    # }
     categories {
+      id
+      name
+    }
+    bigCategories {
+      id
+      name
+    }
+    ratingtags {
       id
       name
     }
@@ -97,9 +102,12 @@ export const SERIES_FRAGMENT = gql`
       ...UserFragment
     }
     title
-    photologs {
+    seriesElements {
       id
-      imageUrls
+      photolog {
+        id
+        imageUrls
+      }
     }
     createdAt
   }
@@ -116,9 +124,12 @@ export const LOG_FRAGMENT = gql`
       name
     }
     totalLiked
-    series {
-      title
+    seriesElements {
       id
+      series {
+        title
+        id
+      }
     }
     imageUrls
     author {
@@ -156,6 +167,7 @@ export const GET_ME = gql`
         email
         phone
         birthDay
+        authority
       }
     }
   }
@@ -184,8 +196,11 @@ export const GET_SERIES = gql`
     getLogsBySeries(seriesId: $seriesId, lastId: $lastId) {
       ok
       error
-      logs {
-        ...LogFragment
+      seriesElements {
+        id
+        photolog {
+          ...LogFragment
+        }
       }
     }
   }
@@ -243,6 +258,7 @@ export const GET_PROFILE = gql`
         totalFollowers
         totalFollowing
         totalLogsNumber
+        authority
         ...UserFragment
       }
     }
@@ -572,6 +588,28 @@ export const GET_LOG = gql`
   ${LOG_FRAGMENT}
 `;
 
+export const GET_MY_SPLACE = gql`
+  query getMySplace {
+    getMySplace {
+      ok
+      error
+      splaces {
+        ...SplaceFragment
+      }
+    }
+  }
+  ${SPLACE_FRAGMENT}
+`;
+
+export const QUIT_SPLACE_OWNER = gql`
+  mutation quitOwner($splaceId: Int!) {
+    quitOwner(splaceId: $splaceId) {
+      ok
+      error
+    }
+  }
+`;
+
 export const EDIT_PROFILE = gql`
   mutation editProfile(
     $name: String
@@ -740,12 +778,32 @@ export const GET_SPLACE_INFO = gql`
         }
         itemName
         itemPrice
+        menuUrls
         totalPhotologs
+        fixedContents {
+          id
+          title
+          imageUrls
+          createdAt
+          updatedAt
+          photoSize
+          text
+        }
       }
     }
   }
   ${SPLACE_FRAGMENT}
   ${USER_FRAGMENT}
+`;
+
+export const GET_SPLACE_BY_KAKAOID = gql`
+  mutation getSplaceByKakao($kakaoId: Int!, $keyword: String!) {
+    getSplaceByKakao(kakaoId: $kakaoId, keyword: $keyword) {
+      ok
+      error
+      splaceId
+    }
+  }
 `;
 
 export const GET_LOGS_BY_SPLACE = gql`
@@ -761,6 +819,26 @@ export const GET_LOGS_BY_SPLACE = gql`
   ${LOG_FRAGMENT}
 `;
 
+export const CREATE_SPLACE = gql`
+  mutation createSplaces(
+    $name: String!
+    $lat: Float!
+    $lon: Float!
+    $detailAddress: String
+  ) {
+    createSplaces(
+      name: $name
+      lat: $lat
+      lon: $lon
+      detailAddress: $detailAddress
+    ) {
+      ok
+      error
+      splaceId
+    }
+  }
+`;
+
 export const EDIT_SPLACE = gql`
   mutation editSplaces(
     $splaceId: Int!
@@ -774,8 +852,11 @@ export const EDIT_SPLACE = gql`
     $detailAddress: String
     $parking: Boolean
     $pets: Boolean
-    $kids: Boolean
+    $noKids: Boolean
     $thumbnail: String
+    $categories: [String]
+    $bigCategoryIds: [Int]
+    $specialTagIds: [Int]
   ) {
     editSplaces(
       splaceId: $splaceId
@@ -789,8 +870,11 @@ export const EDIT_SPLACE = gql`
       detailAddress: $detailAddress
       parking: $parking
       pets: $pets
-      kids: $kids
+      noKids: $noKids
       thumbnail: $thumbnail
+      categories: $categories
+      bigCategoryIds: $bigCategoryIds
+      specialTagIds: $specialTagIds
     ) {
       ok
       error
@@ -822,6 +906,67 @@ export const EDIT_SPLACE_TIMESETS = gql`
       fri: $fri
       sat: $sat
       holidayBreak: $holidayBreak
+    ) {
+      ok
+      error
+    }
+  }
+`;
+
+export const CREATE_CONTENT = gql`
+  mutation createContents(
+    $splaceId: Int!
+    $title: String!
+    $text: String
+    $imageUrls: [String] # $photoSize: Int
+    $photoSize: Int!
+  ) {
+    createContents(
+      splaceId: $splaceId
+      title: $title
+      text: $text
+      imageUrls: $imageUrls # photoSize: $photoSize
+      photoSize: $photoSize
+    ) {
+      ok
+      error
+    }
+  }
+`;
+
+export const EDIT_CONTENT = gql`
+  mutation editContents(
+    $title: String!
+    $text: String
+    $fixedContentId: Int!
+    $splaceId: Int!
+  ) {
+    editContents(
+      title: $title
+      text: $text
+      fixedContentId: $fixedContentId
+      splaceId: $splaceId
+    ) {
+      ok
+      error
+    }
+  }
+`;
+
+export const REGISTER_OWNER = gql`
+  mutation getOwnerAuthority(
+    $splaceId: Int!
+    $birthDay: String!
+    $name: String!
+    $corpNum: String!
+    $imageUrls: [String]
+  ) {
+    getOwnerAuthority(
+      splaceId: $splaceId
+      birthDay: $birthDay
+      name: $name
+      corpNum: $corpNum
+      imageUrls: $imageUrls
     ) {
       ok
       error

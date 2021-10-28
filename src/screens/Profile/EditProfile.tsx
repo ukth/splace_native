@@ -120,7 +120,7 @@ const EditProfile = () => {
                 url?: string;
               } = {};
               if (localUri !== "") {
-                console.log("local in");
+                // console.log("local in");
 
                 const formData = new FormData();
 
@@ -134,7 +134,7 @@ const EditProfile = () => {
                 spinner.start();
 
                 const res = await axios.post(
-                  "http://" + API_URL + "/upload",
+                  "http://" + API_URL + "/uploadphoto",
                   formData,
                   {
                     headers: {

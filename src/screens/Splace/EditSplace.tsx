@@ -3,14 +3,19 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
+import {
+  SplaceType,
+  StackGeneratorParamList,
+  ThemeType,
+  UserType,
+} from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import * as ImagePicker from "expo-image-picker";
 import Image from "../../components/Image";
-import { pixelScaler } from "../../utils";
+import { pixelScaler, uploadPhotos } from "../../utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, SafeAreaView, Switch } from "react-native";
+import { Alert, SafeAreaView, Switch, Image as LocalImage } from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
@@ -23,6 +28,7 @@ import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
 import { API_URL, tokenVar } from "../../apollo";
 import axios from "axios";
+import useMe from "../../hooks/useMe";
 
 const Container = styled.ScrollView``;
 
@@ -96,21 +102,34 @@ const EditSplace = () => {
   const [parking, setParking] = useState(splace.parking);
 
   const { spinner } = useContext(ProgressContext);
+  const me = useMe();
 
   const onCompleted = (data: any) => {
     spinner.stop();
     if (data?.editSplaces?.ok) {
-      Alert.alert("변경이 완료되었습니다.");
+      if (splace.owner?.id === me.id) {
+        Alert.alert("정보가 변경되었습니다.");
+      } else if (me.authority === "editor") {
+        Alert.alert(
+          "정보 변경 완료",
+          "건강한 커뮤니티 환경을 위해 같은 장소에 대한 정보 변경은 1시간에 한 번만 가능합니다."
+        );
+      }
+      navigation.pop();
     } else {
-      Alert.alert("정보를 변경할 수 없습니다.");
+      Alert.alert("정보 변경에 실패했습니다.");
     }
+
+    setModalVisible(false);
   };
 
   const [mutation, { loading }] = useMutation(EDIT_SPLACE, { onCompleted });
 
   navigation.addListener("focus", async () => {
-    const data = await refetch();
-    setSplace(data.data.seeSplace.splace);
+    const refetched = await refetch();
+    if (refetched?.data?.seeSplace?.ok) {
+      setSplace(refetched.data?.seeSplace.splace);
+    }
   });
 
   useEffect(() => {
@@ -132,40 +151,13 @@ const EditSplace = () => {
           onPress={async () => {
             if (localUri !== "") {
               spinner.start();
-
-              const formData = new FormData();
-
-              formData.append("photos", {
-                // @ts-ignore
-                uri: localUri,
-                name: localUri.substr(localUri.length - 10),
-                type: "image/jpeg",
-              });
-
-              spinner.start();
-
-              const res: { data: Object } = await axios.post(
-                "http://" + API_URL + "/upload",
-                formData,
-                {
-                  headers: {
-                    "content-type": "multipart/form-data",
-                    // token: tokenVar(),
-                    token: tokenVar() ?? "",
-                  },
-                }
-              );
-
-              if (Object.keys(res.data).length !== 1) {
-                Alert.alert("프로필 편집에 실패했습니다.\n(사진 업로드 실패)");
-              } else {
-                // @ts-ignore
-                const awsURL = res.data[0].location;
-                console.log("upload complete", awsURL)!;
-
-                console.log("spinner start");
+              const awsUrl = (await uploadPhotos([localUri]))[0];
+              if (awsUrl) {
                 mutation({
-                  variables: { splaceId: splace.id, url: awsURL },
+                  variables: {
+                    splaceId: splace.id,
+                    thumbnail: awsUrl,
+                  },
                 });
               }
             }
@@ -180,15 +172,27 @@ const EditSplace = () => {
     <ScreenContainer>
       <Container>
         <ThumbnailContainer>
-          <Image
-            source={{
-              uri: localUri !== "" ? localUri : splace.thumbnail ?? "",
-            }}
-            style={{
-              width: "100%",
-              height: pixelScaler(125),
-            }}
-          />
+          {localUri !== "" ? (
+            <LocalImage
+              source={{
+                uri: localUri,
+              }}
+              style={{
+                width: "100%",
+                height: pixelScaler(125),
+              }}
+            />
+          ) : (
+            <Image
+              source={{
+                uri: splace.thumbnail ?? "",
+              }}
+              style={{
+                width: "100%",
+                height: pixelScaler(125),
+              }}
+            />
+          )}
           <ThumbnailCameraButton
             onPress={() => {
               (async () => {
@@ -297,8 +301,24 @@ const EditSplace = () => {
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
-          <LabelButton onPress={() => {}}>
+          <LabelButton
+            onPress={() => navigation.push("EditSplaceCategory", { splace })}
+          >
             <RegText16>카테고리</RegText16>
+            <RegText13 style={{ color: theme.text }}></RegText13>
+            <Ionicons
+              style={{ position: "absolute", right: 0 }}
+              name="chevron-forward"
+              size={30}
+            />
+          </LabelButton>
+          <Seperator style={{ backgroundColor: theme.lightSeperator }} />
+          <LabelButton
+            onPress={() => {
+              navigation.push("FixedContents", { splace });
+            }}
+          >
+            <RegText16>안내 게시물</RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
             <Ionicons
               style={{ position: "absolute", right: 0 }}

@@ -193,6 +193,7 @@ export const cache = new InMemoryCache({
         getLogsBySplace: {
           keyArgs: ["splaceId", "orderBy"],
           merge(existing, incoming) {
+            console.log(existing, incoming);
             if (!existing) {
               return incoming;
             }

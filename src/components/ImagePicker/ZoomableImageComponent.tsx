@@ -10,37 +10,43 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import * as MediaLibrary from "expo-media-library";
 
-
-
-{
-frameWidth: number;
-frameHeight: number;
-zoom: number;
-offset_x: number;
-offset_y: number;
-isZooming: boolean;
-isMoving: boolean;
-initialZoom: number;
-initialCenter_x: number;
-initialCenter_y: number;
-initialOffset_x: number;
-initialOffset_y: number;
-initialDistance: number;
-initialX: number;
-initialY: number;
-}
-
-const ZoomableImage = ({imageWidth: number;
-  imageHeight: number;
-  frameWidth: number;
-  frameHeight: number;
-  uri: string;
-  })=> {
+export class ZoomableImage extends Component<
+  {
+    imageWidth: number;
+    imageHeight: number;
+    frameWidth: number;
+    frameHeight: number;
+    initialData: {
+      uri: string;
+      zoom: number;
+      offset_x: number;
+      offset_y: number;
+    };
+  },
+  {
+    frameWidth: number;
+    frameHeight: number;
+    zoom: number;
+    offset_x: number;
+    offset_y: number;
+    isZooming: boolean;
+    isMoving: boolean;
+    initialZoom: number;
+    initialCenter_x: number;
+    initialCenter_y: number;
+    initialOffset_x: number;
+    initialOffset_y: number;
+    initialDistance: number;
+    initialX: number;
+    initialY: number;
+  }
+> {
   constructor(props: any) {
     super(props);
 
-    this._onLayout = this._onLayout.bind(this);
+    // this._onLayout = this._onLayout.bind(this);
 
     const offset_x: number =
       this.props.imageWidth > this.props.imageHeight
@@ -52,17 +58,15 @@ const ZoomableImage = ({imageWidth: number;
         ? (this.props.imageWidth - this.props.imageHeight) / 2
         : 0;
 
-    // console.log("2", this.props.imageWidth, this.props.imageHeight);
-
     this.state = {
-      frameWidth: this.props.frameWidth,
-      frameHeight: this.props.frameHeight,
-      zoom: 1,
-      offset_x,
-      offset_y,
       isMoving: false,
       isZooming: false,
-      initialZoom: 1,
+      frameWidth: this.props.frameWidth,
+      frameHeight: this.props.frameHeight,
+      zoom: this.props.initialData.zoom,
+      initialZoom: this.props.initialData.zoom,
+      offset_x: this.props.initialData.offset_x,
+      offset_y: this.props.initialData.offset_y,
       initialCenter_x: 0,
       initialCenter_y: 0,
       initialOffset_x: offset_x,
@@ -81,7 +85,6 @@ const ZoomableImage = ({imageWidth: number;
       Math.pow(coord1.x - coord2.x, 2) + Math.pow(coord1.y - coord2.y, 2)
     );
     let center = { x: (coord1.x + coord2.x) / 2, y: (coord1.y + coord2.y) / 2 };
-    console.log(this.state.offset_x);
 
     if (!this.state.isZooming) {
       this.setState({
@@ -160,40 +163,22 @@ const ZoomableImage = ({imageWidth: number;
     }
   }
 
-  _onLayout(event: any) {
-    let layout = event.nativeEvent.layout;
-    console.log(layout);
-    console.log("dshjbfjdsbfkj");
-    // if (
-    //   layout.width === this.state.width &&
-    //   layout.height === this.state.height
-    // ) {
-    //   return;
-    // }
-    // let zoom = layout.width / this.props.imageWidth;
-    // console.log(zoom, layout);
-    // let offsetTop =
-    //   layout.height > this.props.imageHeight * zoom
-    //     ? (layout.height - this.props.imageHeight * zoom) / 2
-    //     : 0;
-    // this.setState({
-    //   layoutKnown: true,
-    //   width: layout.width,
-    //   height: layout.height,
-    //   // zoom: zoom,
-    //   // offsetTop: offsetTop,
-    //   minZoom: 0.5,
-    // });
-  }
+  // _onLayout(event) {
+
+  // }
 
   public _panResponder: PanResponderInstance = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => true,
     onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
     onMoveShouldSetPanResponder: (evt, gestureState) => true,
     onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+    onPanResponderGrant: (evt, gestureState) => {},
     onPanResponderMove: (evt, gestureState) => {
       let touches = evt.nativeEvent.touches;
       if (touches.length == 2) {
+        let touch1 = touches[0];
+        let touch2 = touches[1];
+
         this.processPinch(
           { x: touches[0].pageX, y: touches[0].pageY },
           { x: touches[1].pageX, y: touches[1].pageY }
@@ -215,20 +200,56 @@ const ZoomableImage = ({imageWidth: number;
         isMoving: false,
       });
     },
+    onPanResponderTerminate: (evt, gestureState) => {},
     onShouldBlockNativeResponder: (evt, gestureState) => true,
   });
 
+  componentDidMount() {
+    console.log("mount");
+  }
 
+  componentDidUpdate(prevProps: {
+    imageWidth: number;
+    imageHeight: number;
+    frameWidth: number;
+    frameHeight: number;
+    initialData: {
+      uri: string;
+      zoom: number;
+      offset_x: number;
+      offset_y: number;
+    };
+  }) {
+    if (prevProps.initialData.uri !== this.props.initialData.uri) {
+      this.setState({
+        isMoving: false,
+        isZooming: false,
+        zoom: this.props.initialData.zoom,
+        frameWidth: this.props.frameWidth,
+        frameHeight: this.props.frameHeight,
+        initialZoom: this.props.initialData.zoom,
+        offset_x: this.props.initialData.offset_x,
+        offset_y: this.props.initialData.offset_y,
+        initialCenter_x: 0,
+        initialCenter_y: 0,
+        initialOffset_x: 0,
+        initialOffset_y: 0,
+        initialDistance: 1,
+        initialX: 0,
+        initialY: 0,
+      });
+    }
+  }
 
+  render() {
     return (
       <View
         style={{
           width: this.props.frameWidth,
           height: this.props.frameHeight,
-          backgroundColor: "#e0f0f0",
+          backgroundColor: "#a0a0a0",
         }}
         {...this._panResponder.panHandlers}
-        onLayout={this._onLayout}
       >
         <Image
           style={{
@@ -239,43 +260,10 @@ const ZoomableImage = ({imageWidth: number;
             height: this.props.imageHeight * this.state.zoom,
           }}
           source={{
-            uri: this.props.uri,
+            uri: this.props.initialData.uri,
           }}
         />
       </View>
     );
-
+  }
 }
-
-const Market = ({ navigation }: { navigation: any }) => {
-  const [size, setSize] = useState<{ width: number; height: number }>();
-  useEffect(() => {
-    Image.getSize(
-      "https://www.surfcanarias.com/wp-content/uploads/2020/05/Surfing-Equipment-scaled.jpg",
-      (img_w, img_h) => {
-        if (img_w > img_h) {
-          setSize({
-            width: (img_w / img_h) * pixelScaler(315),
-            height: pixelScaler(315),
-          });
-        } else {
-          setSize({
-            width: pixelScaler(315),
-            height: (img_h / img_w) * pixelScaler(315),
-          });
-        }
-      }
-    );
-  }, []);
-  return (
-    <ZoomableImage
-      imageHeight={size.height}
-      imageWidth={size.width}
-      frameWidth={pixelScaler(315)}
-      frameHeight={pixelScaler(315)}
-      uri="https://www.surfcanarias.com/wp-content/uploads/2020/05/Surfing-Equipment-scaled.jpg"
-    />
-  );
-};
-
-export default Market;

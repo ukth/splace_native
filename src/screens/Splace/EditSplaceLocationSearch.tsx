@@ -88,7 +88,7 @@ const EditSplaceLocationSearch = () => {
             onChangeText={(text) => {
               setKeyword(text);
             }}
-            placeholder="Find your special splace!"
+            placeholder="정확한 주소로 검색해보세요."
             placeholderTextColor={theme.entryPlaceholder}
             style={{
               marginLeft: pixelScaler(10),
@@ -193,7 +193,13 @@ const EditSplaceLocationSearch = () => {
               variables: {
                 sourceType: "Splace location edit",
                 sourceId: splace.id,
-                reason: "",
+                reason:
+                  "lat:" +
+                  coordinate.lat +
+                  ",lon:" +
+                  coordinate.lon +
+                  "," +
+                  address,
               },
             });
           }

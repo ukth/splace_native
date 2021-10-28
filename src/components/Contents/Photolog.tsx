@@ -84,11 +84,11 @@ const PhotoLog = ({
       <SwiperContainer
         style={{
           height:
-            item.photoSize === 1
-              ? pixelScaler(394 + 10)
-              : item.photoSize === 2
+            item.photoSize === 2
+              ? pixelScaler(420 + 10)
+              : item.photoSize === 1
               ? pixelScaler(315 + 10)
-              : pixelScaler(252 + 10),
+              : pixelScaler(236.25 + 10),
         }}
       >
         <Swiper item={item} />
@@ -105,8 +105,11 @@ const PhotoLog = ({
         </TouchableOpacity>
         <Liked item={item} />
       </BottomHeader>
-      {item?.series?.length !== 0 ? (
-        <SeriesTag series={item?.series} pressMoreSeries={pressMoreSeries} />
+      {item?.seriesElements?.length !== 0 ? (
+        <SeriesTag
+          series={item?.seriesElements.map((element) => element.series)}
+          pressMoreSeries={pressMoreSeries}
+        />
       ) : null}
       <Content item={item} />
       <BottomSheetModal
@@ -168,17 +171,17 @@ const PhotoLog = ({
           )
         ) : (
           <>
-            {item.series.map((series) => (
+            {item.seriesElements.map((element) => (
               <ModalButtonBox
-                key={series.id}
+                key={element.series.id}
                 onPress={() => {
                   setModalVisible(false);
                   navigation.push("Series", {
-                    id: series.id,
+                    id: element.series.id,
                   });
                 }}
               >
-                <RegText20>{series.title}</RegText20>
+                <RegText20>{element.series.title}</RegText20>
               </ModalButtonBox>
             ))}
           </>

@@ -155,18 +155,21 @@ const ModalMapView = ({
         min_lon = splace.lon;
       }
     }
+    console.log(max_lat, max_lon, min_lat, min_lon);
 
     if (max_lat !== min_lat && max_lon !== min_lon) {
       latitudeDelta = (max_lat - min_lat) * 2;
       longitudeDelta = (max_lon - min_lon) * 1.5;
-      latitude = (max_lat + min_lat) / 2 - latitudeDelta * 0.15;
-      longitude = (max_lon + min_lon) / 2;
+    } else if (max_lat !== min_lat) {
+      latitudeDelta = (max_lat - min_lat) * 2;
+    } else if (max_lon !== min_lon) {
+      longitudeDelta = (max_lon - min_lon) * 1.5;
     }
-  } else {
-    if (splaces.length === 1) {
-      latitude = splaces[0].lat;
-      longitude = splaces[0].lon;
-    }
+    latitude = (max_lat + min_lat) / 2 - latitudeDelta * 0.15;
+    longitude = (max_lon + min_lon) / 2;
+  } else if (splaces.length === 1) {
+    latitude = splaces[0].lat;
+    longitude = splaces[0].lon;
   }
 
   const [delta, setDelta] = useState(latitudeDelta);

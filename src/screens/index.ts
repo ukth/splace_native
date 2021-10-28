@@ -14,6 +14,8 @@ import {
   TermsOfUse,
   Agreement,
   MomentView,
+  MySplaces,
+  SearchSplaceForAdd,
 } from "./Profile";
 import {
   Splace,
@@ -25,6 +27,12 @@ import {
   EditSplaceLocation,
   EditSplaceOperatingtime,
   EditSplaceLocationSearch,
+  FixedContents,
+  AddFixedContents,
+  RegisterOwner,
+  SuggestInfo,
+  EditFixedContents,
+  SplaceLogs,
 } from "./Splace";
 import Series from "./Series";
 import SignUp from "./SignUp";
@@ -36,6 +44,10 @@ import AddMembers from "./AddMembers";
 import { Folders, Folder, AddSaveFolders, AddSaveFolder } from "./Keep";
 import Log from "./Log";
 import Report from "./Report";
+import ImagesViewer from "./ImagesViewer";
+import StackPickerAlbums from "./StackPickerAlbums";
+import StackPickerAssets from "./StackPickerAssets";
+import { SuggestNewSplace, AddressSelector } from "./SuggestNewSplace";
 
 export {
   LogIn,
@@ -51,6 +63,12 @@ export {
   EditSplaceLocation,
   EditSplaceOperatingtime,
   EditSplaceLocationSearch,
+  FixedContents,
+  AddFixedContents,
+  RegisterOwner,
+  SuggestInfo,
+  EditFixedContents,
+  SplaceLogs,
   Series,
   SignUp,
   Market,
@@ -76,4 +94,11 @@ export {
   ServicePolicy,
   TermsOfUse,
   Agreement,
+  MySplaces,
+  SearchSplaceForAdd,
+  ImagesViewer,
+  StackPickerAlbums,
+  StackPickerAssets,
+  SuggestNewSplace,
+  AddressSelector,
 };

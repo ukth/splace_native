@@ -100,7 +100,7 @@ const EditSplaceLocation = () => {
             position: "absolute",
             left: pixelScaler(70),
           }}
-          placeholder="ex. 4층, A구역, 17번 부스"
+          placeholder="(ex. 4층, A구역, 17번 부스)"
           autoCorrect={false}
           placeholderTextColor={theme.entryPlaceholder}
           maxLength={30}

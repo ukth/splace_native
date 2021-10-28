@@ -37,6 +37,7 @@
     "expo-linear-gradient": "~9.2.0",
     "expo-linking": "~2.3.1",
     "expo-location": "~12.1.2",
+    "expo-media-library": "~12.1.2",
     "expo-splash-screen": "~0.11.2",
     "expo-status-bar": "~1.0.4",
     "expo-video-thumbnails": "~5.2.1",
@@ -52,10 +53,10 @@
     "react-native-flash-message": "^0.2.0",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-image-pan-zoom": "^2.1.12",
+    "react-native-image-zoom-viewer": "^3.0.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
     "react-native-maps": "0.28.0",
     "react-native-modal-datetime-picker": "^12.0.0",
-
     "react-native-qrcode-svg": "^6.1.1",
     "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.2.0",
@@ -64,7 +65,7 @@
     "react-native-svg": "^12.1.1",
     "react-native-tab-view": "^3.1.1",
     "react-native-web": "~0.13.12",
-
+    "react-native-webview": "^11.14.1",
     "styled-components": "^5.3.0",
     "subscriptions-transport-ws": "^0.9.19"
   },

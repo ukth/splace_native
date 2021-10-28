@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -9,6 +9,7 @@ import {
   FlatList,
   Image as DefaultImage,
   ScrollView,
+  Share,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -26,7 +27,7 @@ import {
   RegText13,
   RegText20,
 } from "../../components/Text";
-import { GET_LOGS_BY_SPLACE, GET_SPLACE_INFO } from "../../queries";
+import { GET_LOGS_BY_SPLACE, GET_SPLACE_INFO, REPORT } from "../../queries";
 import {
   PhotologType,
   StackGeneratorParamList,
@@ -47,6 +48,9 @@ import ModalMapView from "../../components/ModalMapView";
 import * as Linking from "expo-linking";
 import useMe from "../../hooks/useMe";
 import { Icons } from "../../icons";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { theme } from "../../../theme";
+import { ProgressContext } from "../../contexts/Progress";
 
 const ListHeaderContainer = styled.View``;
 const UpperContainer = styled.View`
@@ -71,7 +75,7 @@ const ButtonsContainer = styled.View`
 const UnfoldButtonContainer = styled.TouchableOpacity`
   position: absolute;
   /* bottom: 0px; */
-  bottom: 10px;
+  bottom: ${pixelScaler(15)}px;
   right: 0px;
 `;
 
@@ -86,28 +90,24 @@ const Button = styled.TouchableOpacity`
 
 const TextContainer = styled.View``;
 
-const RatingTagsContainer = styled.View`
+const TagsContainer = styled.View`
   flex-direction: row;
   margin-top: ${pixelScaler(10)}px;
   margin-bottom: ${pixelScaler(30)}px;
+  flex-wrap: wrap;
 `;
 
-const RatingTags = styled.View`
+const Tag = styled.View`
   height: ${pixelScaler(20)}px;
   align-items: center;
   justify-content: center;
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(15)}px;
-  border-width: ${pixelScaler(0.8)}px;
+  border-width: ${pixelScaler(0.67)}px;
+  border-color: ${({ theme, color }: { theme: ThemeType; color?: string }) =>
+    color ?? theme.text};
   margin-right: ${pixelScaler(10)}px;
-`;
-
-const FixedContent = styled.View`
-  width: ${pixelScaler(100)}px;
-  height: ${pixelScaler(100)}px;
-  margin-right: ${pixelScaler(10)}px;
-  border-radius: ${pixelScaler(10)}px;
-  background-color: #9080f0;
+  margin-bottom: ${pixelScaler(10)}px;
 `;
 
 const ContentHeaderContainer = styled.View`
@@ -192,6 +192,7 @@ const Splace = ({
 }: {
   route: RouteProp<StackGeneratorParamList, "Splace">;
 }) => {
+  const splaceId = route.params.splace.id;
   const [splace, setSplace] = useState(route.params.splace);
   const theme = useContext<ThemeType>(ThemeContext);
   const [fold, setFold] = useState<boolean>(true);
@@ -203,17 +204,8 @@ const Splace = ({
     "generated"
   );
   const [showOperatingTime, setShowOperatingTime] = useState(false);
-  const me = useMe();
-
-  const [contactList, setContactList] = useState<{
-    phone: string | undefined;
-    url: string | undefined;
-    owner: UserType | undefined;
-  }>({
-    phone: undefined,
-    url: undefined,
-    owner: undefined,
-  });
+  const me: UserType = useMe();
+  const { spinner } = useContext(ProgressContext);
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -227,6 +219,27 @@ const Splace = ({
 
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
+  const onShare = async (id: number) => {
+    try {
+      const result = await Share.share({
+        url: "https://splace.co.kr/share.php?type=Splace&id=" + id,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          setModalVisible(false);
+        } else {
+          Alert.alert("공유에 실패했습니다.");
+        }
+      } else if (result.action === Share.dismissedAction) {
+        setModalVisible(false);
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  navigation.addListener("focus", () => refetch());
 
   useEffect(() => {
     navigation.setOptions({
@@ -258,11 +271,11 @@ const Splace = ({
   }, [modalContent, modalVisible, splace]);
 
   const { data, loading, refetch } = useQuery(GET_SPLACE_INFO, {
-    variables: { splaceId: splace.id },
+    variables: { splaceId },
   });
 
   useEffect(() => {
-    if (data?.seeSplace?.ok) {
+    if (!loading && data?.seeSplace?.ok && data.seeSplace.splace.categories) {
       setSplace(data?.seeSplace?.splace);
       if (data?.seeSplace?.splace?.timeSets?.length === 7) {
         var timeSets = data?.seeSplace?.splace?.timeSets
@@ -275,7 +288,6 @@ const Splace = ({
         setOperatingTime(timeSets);
       }
     }
-    // console.log(operatingTime);
   }, [data]);
 
   useEffect(() => {
@@ -284,15 +296,6 @@ const Splace = ({
       orderBy: sortMode === "generated" ? "time" : "like",
     });
   }, [sortMode]);
-
-  useEffect(() => {
-    setContactList({
-      phone: splace.phone,
-      url: splace.url,
-      owner: splace.owner,
-    });
-    // console.log(splace);
-  }, [splace]);
 
   const refresh = async () => {
     setRefreshing(true);
@@ -316,6 +319,22 @@ const Splace = ({
       orderBy: "time",
     },
   });
+
+  // useEffect(() => {
+  //   console.log(splace.categories);
+  // }, [splace]);
+  const onCompleted = (data: any) => {
+    spinner.stop();
+    if (data.reportResources?.ok) {
+      Alert.alert("폐업, 휴점 정보 제안이 완료되었습니다.");
+    } else {
+      Alert.alert("폐업, 휴점 정보 제안에 실패했습니다.");
+    }
+  };
+  const [mutation, { loading: mutationLoading }] = useMutation(REPORT, {
+    onCompleted,
+  });
+
   return (
     <ScreenContainer>
       <FlatList
@@ -324,6 +343,7 @@ const Splace = ({
         showsVerticalScrollIndicator={false}
         data={logsData?.getLogsBySplace?.logs}
         numColumns={2}
+        onEndReachedThreshold={0.2}
         onEndReached={() => {
           fetchMore({
             variables: {
@@ -339,10 +359,18 @@ const Splace = ({
         ListHeaderComponent={
           <ListHeaderContainer>
             {splace.thumbnail && splace.thumbnail !== "" && (
-              <Image
-                source={{ uri: splace.thumbnail }}
-                style={{ width: "100%", height: pixelScaler(125) }}
-              />
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  navigation.push("ImagesViewer", {
+                    urls: [splace.thumbnail ?? ""],
+                  })
+                }
+              >
+                <Image
+                  source={{ uri: splace.thumbnail }}
+                  style={{ width: "100%", height: pixelScaler(125) }}
+                />
+              </TouchableWithoutFeedback>
             )}
             <UpperContainer>
               <TitleContainer>
@@ -362,12 +390,8 @@ const Splace = ({
               <ButtonsContainer>
                 <Button
                   onPress={() => {
-                    // console.log(contactList);
-                    if (
-                      contactList.phone ||
-                      contactList.url ||
-                      contactList.owner
-                    ) {
+                    // console.log(splace);
+                    if (splace.phone || splace.url || splace.owner) {
                       setModalContent("contact");
                       setModalVisible(true);
                     } else {
@@ -378,7 +402,12 @@ const Splace = ({
                 >
                   <RegText13>연락정보</RegText13>
                 </Button>
-                <Button onPress={() => {}} width={pixelScaler(150)}>
+                <Button
+                  onPress={() => {
+                    onShare(splace.id);
+                  }}
+                  width={pixelScaler(150)}
+                >
                   <RegText13>공유</RegText13>
                 </Button>
               </ButtonsContainer>
@@ -390,7 +419,7 @@ const Splace = ({
                     style={{ color: theme.textHighlight }}
                   >
                     {splace.address !== ""
-                      ? splace.address + (" " + splace.detailAddress ?? "")
+                      ? splace.address + (" " + (splace.detailAddress ?? ""))
                       : "주소 정보 없음"}
                     {"\n"}
                   </RegText13>
@@ -429,24 +458,50 @@ const Splace = ({
                 {splace.itemName &&
                 splace.itemPrice &&
                 splace.itemName !== "" ? (
+                  <TouchableOpacity
+                    hitSlop={{ top: pixelScaler(10) }}
+                    onPress={() => {
+                      if (splace.menuUrls) {
+                        navigation.push("ImagesViewer", {
+                          urls: splace.menuUrls,
+                        });
+                      }
+                    }}
+                  >
+                    <RegText13 style={{ lineHeight: pixelScaler(17) }}>
+                      메뉴{" "}
+                      <RegText13 style={{ color: theme.textHighlight }}>
+                        {splace.itemName +
+                          " ₩ " +
+                          priceToText(splace.itemPrice) +
+                          "\n"}
+                      </RegText13>
+                    </RegText13>
+                  </TouchableOpacity>
+                ) : null}
+                {splace?.fixedContents && splace.fixedContents.length > 0 ? (
                   <RegText13 style={{ lineHeight: pixelScaler(17) }}>
-                    메뉴{" "}
+                    안내 게시물{" "}
                     <RegText13
-                      onPress={() => {}}
-                      style={{ color: theme.textHighlight }}
+                      onPress={() =>
+                        navigation.push("FixedContents", { splace })
+                      }
+                      style={{
+                        color: theme.textHighlight,
+                        width: pixelScaler(270),
+                      }}
+                      numberOfLines={1}
                     >
-                      {splace.itemName +
-                        " ₩ " +
-                        priceToText(splace.itemPrice) +
-                        "\n"}
+                      {splace.fixedContents[0].title}
+                      {"\n"}
                     </RegText13>
                   </RegText13>
                 ) : null}
                 {splace.pets || splace.noKids || splace.parking ? (
                   <RegText13 style={{ lineHeight: pixelScaler(17) }}>
-                    {(splace.pets ? "반려동물 출입 가능 🐶" : "") +
-                      (splace.noKids ? "No kids zone 👶" : "") +
-                      (splace.parking ? "주차가능 🚘" : "") +
+                    {(splace.pets ? "반려동물 출입 가능🐶 " : "") +
+                      (splace.noKids ? "No kids zone👶 " : "") +
+                      (splace.parking ? "주차가능🚘 " : "") +
                       "\n"}
                   </RegText13>
                 ) : null}
@@ -470,29 +525,17 @@ const Splace = ({
                   {splace.intro + "\n"}
                 </RegText13>
               ) : null}
-              <RatingTagsContainer>
-                <RatingTags style={{ borderColor: theme.textHighlight }}>
-                  <RegText13 style={{ color: theme.textHighlight }}>
-                    Super Tasty!
-                  </RegText13>
-                </RatingTags>
-                <RatingTags>
-                  <RegText13>음식점</RegText13>
-                </RatingTags>
-                <RatingTags>
-                  <RegText13>햄버거</RegText13>
-                </RatingTags>
-              </RatingTagsContainer>
-              <ScrollView
-                style={{ marginBottom: pixelScaler(30) }}
-                bounces={false}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-              >
-                {[0, 0, 0, 0, 0].map((item, index) => (
-                  <FixedContent key={index} />
+              <TagsContainer>
+                {[
+                  ...(splace.ratingtags ?? []),
+                  ...(splace.bigCategories ?? []),
+                  ...(splace.categories ?? []),
+                ].map((category) => (
+                  <Tag key={category.id + ""}>
+                    <RegText13>{category.name}</RegText13>
+                  </Tag>
                 ))}
-              </ScrollView>
+              </TagsContainer>
               <ContentHeaderContainer>
                 <BldText20>
                   관련 게시물 {convertNumber(splace.totalPhotologs)}
@@ -537,6 +580,15 @@ const Splace = ({
               marginRight: pixelScaler(3),
               marginBottom: pixelScaler(3),
             }}
+            onPress={() => {
+              navigation.push("SplaceLogs", {
+                splace,
+                initialScrollIndex: index,
+                data: logsData,
+                refetch: refetchLogs,
+                fetchMore: fetchMore,
+              });
+            }}
           >
             <Image
               source={{ uri: item.imageUrls[0] }}
@@ -561,33 +613,33 @@ const Splace = ({
       >
         {modalContent === "contact" ? (
           <>
-            {contactList.phone && (
+            {splace.phone && (
               <ModalButtonBox
                 onPress={() => {
-                  Linking.openURL("tel:" + contactList.phone);
+                  Linking.openURL("tel:" + splace.phone);
                   setModalVisible(false);
                 }}
               >
-                <RegText20>{formatPhoneString(contactList.phone)}</RegText20>
+                <RegText20>{formatPhoneString(splace.phone)}</RegText20>
               </ModalButtonBox>
             )}
-            {contactList.url && (
+            {splace.url && (
               <ModalButtonBox
                 onPress={() => {
                   Linking.openURL(
-                    contactList.url?.startsWith("http")
-                      ? contactList.url
-                      : "https://" + contactList.url
+                    splace.url?.startsWith("http")
+                      ? splace.url
+                      : "https://" + splace.url
                   );
                   setModalVisible(false);
                 }}
               >
                 <RegText20 style={{ color: theme.textHighlight }}>
-                  {contactList.url}
+                  {splace.url}
                 </RegText20>
               </ModalButtonBox>
             )}
-            {contactList.owner && (
+            {splace.owner && (
               <ModalButtonBox
                 onPress={() => {
                   setModalVisible(false);
@@ -635,16 +687,75 @@ const Splace = ({
           )
         ) : (
           <>
+            {me.authority === "editor" ? (
+              <ModalButtonBox
+                onPress={() => {
+                  setModalVisible(false);
+                  navigation.push("SuggestInfo", { splace });
+                }}
+              >
+                <RegText20>정보 수정</RegText20>
+              </ModalButtonBox>
+            ) : null}
             <ModalButtonBox
               onPress={() => {
-                setModalVisible(false);
-              }}
-            >
-              <RegText20>정보 수정 제안</RegText20>
-            </ModalButtonBox>
-            <ModalButtonBox
-              onPress={() => {
-                setModalVisible(false);
+                // setModalVisible(false);
+                Alert.alert(
+                  "폐업, 휴점 정보 제안",
+                  "이 가게의 영업상태가 변경되었나요?",
+                  [
+                    {
+                      text: "폐업",
+                      onPress: () => {
+                        if (!mutationLoading) {
+                          spinner.start();
+                          mutation({
+                            variables: {
+                              sourceType: "Splace",
+                              sourceId: splace.id,
+                              reason: "closure",
+                            },
+                          });
+                        }
+                      },
+                    },
+                    {
+                      text: "휴점",
+                      onPress: () => {
+                        if (!mutationLoading) {
+                          spinner.start();
+                          mutation({
+                            variables: {
+                              sourceType: "Splace",
+                              sourceId: splace.id,
+                              reason: "break",
+                            },
+                          });
+                        }
+                      },
+                    },
+                    {
+                      text: "휴점 종료",
+                      onPress: () => {
+                        if (!mutationLoading) {
+                          spinner.start();
+                          mutation({
+                            variables: {
+                              sourceType: "Splace",
+                              sourceId: splace.id,
+                              reason: "end break",
+                            },
+                          });
+                        }
+                      },
+                    },
+                    {
+                      text: "취소",
+                      onPress: () => {},
+                      style: "cancel",
+                    },
+                  ]
+                );
               }}
             >
               <RegText20>폐업/휴점 신고</RegText20>
@@ -652,6 +763,10 @@ const Splace = ({
             <ModalButtonBox
               onPress={() => {
                 setModalVisible(false);
+                navigation.push("RegisterOwner", {
+                  splaceId: splace.id,
+                  confirmScreen: "Splace",
+                });
               }}
               style={{ marginBottom: pixelScaler(27) }}
             >

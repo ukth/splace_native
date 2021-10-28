@@ -33,15 +33,19 @@ export const theme = {
     errorText: colors.red,
     greyText: colors.apple_grey,
     tagBorder: colors.black,
-    tagGreyBorder: colors.black,
+    tagGrey: colors.grey_8e,
     tabBarGrey: colors.grey_ae,
     searchBarBackground: colors.grey_f2,
     searchBarPlaceholder: colors.grey_c7,
     dots: colors.black,
 
-    switchTrackFalse: colors.grey_76,
+    greyTextLight: colors.grey_ae,
+    greyTextAlone: colors.grey_8e,
+
+    switchTrackFalse: colors.grey_e5,
 
     greyBackground: colors.grey_f2,
+    imageViewerBackground: colors.black,
 
     editSplacePlaceholder: colors.grey_ae,
     editSplaceOperationTimeDayIndicator: colors.grey_ae,

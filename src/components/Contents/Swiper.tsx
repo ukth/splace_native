@@ -84,11 +84,11 @@ const Swiper = ({ item }: { item: PhotologType }) => {
               marginLeft: pixelScaler(20),
               width: pixelScaler(315),
               height:
-                item.photoSize === 1
-                  ? pixelScaler(394)
-                  : item.photoSize === 2
+                item.photoSize === 2
+                  ? pixelScaler(420)
+                  : item.photoSize === 1
                   ? pixelScaler(315)
-                  : pixelScaler(252),
+                  : pixelScaler(236.25),
               borderRadius: 15,
             }}
           />
@@ -106,36 +106,6 @@ const Swiper = ({ item }: { item: PhotologType }) => {
       swipeThreshold={5}
     />
   );
-
-  // return (
-  //   <ScrollView
-  //     style={{
-  //       borderRadius: pixelScaler(15),
-  //       width: "100%",
-  //       height: "100%",
-  //     }}
-  //     horizontal={true}
-  //     pagingEnabled={true}
-  //     showsHorizontalScrollIndicator={false}
-  //     bounces={false}
-  //   >
-  //     {item.imageUrls.map((url: string, index: number) => (
-  //       <Image
-  //         key={index}
-  //         source={{ uri: url }}
-  //         style={{
-  //           width: pixelScaler(315),
-  //           height:
-  //             item.photoSize === 1
-  //               ? pixelScaler(394)
-  //               : item.photoSize == 2
-  //               ? pixelScaler(315)
-  //               : pixelScaler(252),
-  //         }}
-  //       />
-  //     ))}
-  //   </ScrollView>
-  // );
 };
 
 export default Swiper;

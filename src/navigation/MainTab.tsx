@@ -2,15 +2,17 @@
  * Learn more about createBottomTabNavigator:
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
-
+import React, { useContext, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/core";
 import { createStackNavigator } from "@react-navigation/stack";
-import * as React from "react";
+
 import { Image } from "react-native";
 // import Image from "../components/Image";
 
 import Colors from "../constants/Colors";
+import { ImagePickerContext } from "../contexts/ImagePicker";
 import useColorScheme from "../hooks/useColorScheme";
 import { BottomTabParamList } from "../types";
 import { pixelScaler } from "../utils";
@@ -66,6 +68,16 @@ const TabBarIcon = ({
 
 export default function MainTab() {
   const colorScheme = "light";
+
+  const { showPicker } = useContext(ImagePickerContext);
+
+  const navigation = useNavigation<any>();
+
+  useEffect(() => {
+    if (showPicker) {
+      navigation.push("ImagePicker");
+    }
+  }, [showPicker]);
 
   return (
     <BottomTab.Navigator

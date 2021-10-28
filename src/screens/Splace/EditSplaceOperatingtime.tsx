@@ -25,6 +25,7 @@ import { Alert, Switch, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { EDIT_SPLACE, EDIT_SPLACE_TIMESETS } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
+import useMe from "../../hooks/useMe";
 
 const DaysContainer = styled.View`
   flex-direction: row;
@@ -228,15 +229,24 @@ const EditSplaceOperatingtime = () => {
   );
 
   const { spinner } = useContext(ProgressContext);
+  const me = useMe();
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
-    if (data?.editTimeSets?.ok) {
-      Alert.alert("변경이 완료되었습니다.");
+    if (data?.editSplaces?.ok) {
+      if (splace.owner?.id === me.id) {
+        Alert.alert("정보가 변경되었습니다.");
+      } else if (me.authority === "editor") {
+        Alert.alert(
+          "정보 변경 완료",
+          "건강한 커뮤니티 환경을 위해 같은 장소에 대한 정보 변경은 1시간에 한 번만 가능합니다."
+        );
+      }
       navigation.pop();
     } else {
-      Alert.alert("운영시간을 변경할 수 없습니다.");
+      if (splace.owner?.id === me.id || me.authority === "editor") {
+        Alert.alert("정보 변경에 실패했습니다.");
+      }
     }
   };
 
@@ -258,7 +268,7 @@ const EditSplaceOperatingtime = () => {
                 }
               }
               let operatingTime_vars = [];
-              console.log(selectedDays);
+
               for (let i = 0; i < 7; i++) {
                 operatingTime_vars.push([
                   ...(selectedDays.includes(i)

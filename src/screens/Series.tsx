@@ -85,17 +85,24 @@ const Series = () => {
 
   const onGetLogsCompleted = async (data: {
     getLogsBySeries: {
-      logs: PhotologType[];
+      seriesElements: {
+        id: number;
+        photolog: PhotologType;
+      }[];
       ok: boolean;
     };
   }) => {
-    // console.log(data);
     if (data?.getLogsBySeries?.ok) {
-      setSplaces(
-        data?.getLogsBySeries?.logs
-          .map((log: PhotologType) => log.splace)
-          .filter((item: any) => item !== null)
-      );
+      const splaceIds: number[] = [];
+      const tmp: SplaceType[] = [];
+      for (let i = 0; i < data.getLogsBySeries.seriesElements.length; i++) {
+        const splace = data.getLogsBySeries.seriesElements[i].photolog.splace;
+        if (splace && !splaceIds.includes(splace.id)) {
+          tmp.push(splace);
+          splaceIds.push(splace.id);
+        }
+      }
+      setSplaces(tmp);
     }
   };
 
@@ -111,9 +118,9 @@ const Series = () => {
       <FlatList
         ListHeaderComponent={<View style={{ height: pixelScaler(30) }}></View>}
         keyExtractor={(item) => "" + item.id}
-        data={logsData?.getLogsBySeries?.logs}
+        data={logsData?.getLogsBySeries?.seriesElements}
         renderItem={({ item, index }) => (
-          <PhotoLog item={item} key={index} type="Series" />
+          <PhotoLog item={item.photolog} key={index} type="Series" />
         )}
       />
       {splaces.length > 0 ? (

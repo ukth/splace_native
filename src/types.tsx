@@ -20,11 +20,13 @@ export type SplaceType = {
   id: number;
   name: string;
   address: string;
+  detailAddress?: string;
   thumbnail?: string;
   lat: number;
   lon: number;
   itemName?: string;
   itemPrice?: number;
+  menuUrls?: string[];
   intro?: string;
   url?: string;
   phone?: string;
@@ -36,8 +38,22 @@ export type SplaceType = {
   holidayBreak: boolean;
   totalPhotologs: number;
   timeSets?: TimeSetType[];
+  fixedContents?: FixedContentType[];
   activate: boolean;
-  detailAddress?: string;
+  categories?: CategoryType[];
+  bigCategories?: BigCategoryType[];
+  ratingtags?: RatingTagType[];
+};
+
+export type FixedContentType = {
+  id: number;
+  title: string;
+  imageUrls: string[];
+  createdAt: string;
+  updatedAt: string;
+  splace?: SplaceType;
+  photoSize: number;
+  text: string;
 };
 
 export type TimeSetType = {
@@ -72,6 +88,7 @@ export type UserType = {
   isFollowing?: boolean;
   totalLogsNumber?: number;
   url?: string;
+  authority: string;
 };
 
 export type MomentType = {
@@ -98,6 +115,13 @@ export type FolderType = {
   updatedAt: string;
   members: UserType[];
   saves: SaveType[];
+};
+
+export type AlbumType = {
+  title: string;
+  id: string;
+  count: number;
+  thumbnail: string;
 };
 
 export type StackGeneratorParamList = {
@@ -138,6 +162,56 @@ export type StackGeneratorParamList = {
   EditSplaceLocationSearch: {
     splace: SplaceType;
   };
+  FixedContents: {
+    splace: SplaceType;
+  };
+  AddFixedContents: {
+    splace: SplaceType;
+  };
+  EditFixedContents: {
+    fixedContent: FixedContentType;
+    splaceId: number;
+  };
+  SplaceLogs: {
+    splace: SplaceType;
+    initialScrollIndex: number;
+    data: any;
+    refetch: any;
+    fetchMore: any;
+  };
+  RegisterOwner: {
+    splaceId: number;
+    confirmScreen: string;
+  };
+  SuggestInfo: {
+    splace: SplaceType;
+  };
+  SuggestNewSplace: {
+    onConfirm: (splaceId: number) => void;
+  };
+  AddressSelector: {
+    onConfirm: ({
+      address,
+      lat,
+      lon,
+    }: {
+      address: string;
+      lat: number;
+      lon: number;
+    }) => void;
+  };
+  StackPickerAlbums: {
+    rootScreen: string;
+    params: any;
+  };
+  StackPickerAssets: {
+    rootScreen: string;
+    params: any;
+    album: AlbumType;
+  };
+
+  MySplaces: undefined;
+  SearchSplaceForAdd: undefined;
   Profile: {
     user: UserType;
   };
@@ -203,15 +277,32 @@ export type StackGeneratorParamList = {
   ServicePolicy: undefined;
   TermsOfUse: undefined;
   Agreement: undefined;
+  ImagesViewer: { urls: string[] };
 };
 
 export interface StackGeneratorProps {
   screenName: string;
 }
 
-export type HashTagType = {
+export type BigCategoryType = {
   id: number;
   name: string;
+};
+
+export type CategoryType = {
+  id: number;
+  name: string;
+};
+
+export type RatingTagType = {
+  id: number;
+  name: string;
+};
+
+export type SpecialTagType = {
+  id: number;
+  name: string;
+  color: string;
 };
 
 export type RoomType = {
@@ -250,13 +341,18 @@ export type PhotologType = {
   imageUrls: string[];
   author: UserType;
   text: string;
-  hashtags: HashTagType[];
+  categories?: CategoryType[];
+  bigCategories?: BigCategoryType[];
+  specialtags: SpecialTagType[];
   splace: SplaceType;
   liked: any[];
   totalLiked: number;
-  series: {
+  seriesElements: {
     id: number;
-    title: string;
+    series: {
+      id: number;
+      title: string;
+    };
   }[];
   isILiked: boolean;
   createdAt: string;
@@ -268,7 +364,10 @@ export type SeriesType = {
   createdAt: string;
   updatedAt: string;
   author: UserType;
-  photologs: PhotologType[];
+  seriesElements: {
+    id: number;
+    photolog: PhotologType;
+  }[];
 };
 
 export type BottomTabParamList = {
@@ -285,11 +384,29 @@ export type ThemeType = {
   errorText: string;
   greyText: string;
   tagBorder: string;
-  tagGreyBorder: string;
+  tagGrey: string;
   tabBarGrey: string;
   searchBarBackground: string;
   searchBarPlaceholder: string;
   dots: string;
+
+  greyTextLight: string;
+  greyTextAlone: string;
+
+  switchTrackFalse: string;
+
+  greyBackground: string;
+  imageViewerBackground: string;
+
+  editSplacePlaceholder: string;
+  editSplaceOperationTimeDayIndicator: string;
+
+  editSplaceBreakDayRedBackground: string;
+
+  seriesHeaderGreyText: string;
+
+  passwordChangeGreyText: string;
+  editInfoGreyText: string;
 
   imageBackground: string;
   tabActive: string;
@@ -298,12 +415,12 @@ export type ThemeType = {
 
   ratingTag: string;
   textHighlight: string;
+  borderHighlight: string;
 
   chatRoomItemBorder: string;
   chatPreviewTextRead: string;
   chatPreviewUnreadMark: string;
   chatPreviewTimeText: string;
-  searchHistorySeperator: string;
 
   chatRoomBackground: string;
 
@@ -327,6 +444,10 @@ export type ThemeType = {
   chatMemberSeperator: string;
   chatMemberUsername: string;
   chatMemberName: string;
+
+  searchHistorySeperator: string;
+  lightSeperator: string;
+
   followButton: string;
   followButtonText: string;
 
@@ -334,51 +455,40 @@ export type ThemeType = {
   profileFocusedTabBorderBottom: string;
 
   greyButton: string;
+
   greyButtonContext: string;
 
   entry: string;
   entryPlaceholder: string;
+  entrySelection: string;
 
   chatInviteSelect: string;
   chatInviteSelected: string;
   chatInviteConfirmText: string;
+
   headerConfirmText: string;
-  folderMemberCount: string;
 
   folderDeleteButtonBackground: string;
-  folderNoticeBadgeBackground: string;
   folderDeleteMinus: string;
-  profileLink: string;
-
-  seriesHeaderGreyText: string;
-
+  folderNoticeBadgeBackground: string;
   blankFolderBackground: string;
-  modalHighlight: string;
-  modalInputSubmitButton: string;
-  modalEntry: string;
-
-  editProfileSeperator: string;
-  editProfileTextGrey: string;
-  editSplaceBreakDayRedBackground: string;
-
-  greyBackground: string;
-  modalButtonRedText: string;
 
   addSaveSelectMarkBackground: string;
   addSaveSelectMark: string;
 
-  editSplaceOperationTimeDayIndicator: string;
-  editSplacePlaceholder: string;
-  borderHighlight: string;
+  folderMemberCount: string;
 
-  passwordChangeGreyText: string;
-  editInfoGreyText: string;
-  lightSeperator: string;
+  profileLink: string;
+  editProfileSeperator: string;
+  editProfileTextGrey: string;
 
-  entrySelection: string;
+  modalHighlight: string;
+  modalInputSubmitButton: string;
+  modalEntry: string;
+
+  modalButtonRedText: string;
+
   themeBackground: string;
-
-  switchTrackFalse: string;
 
   white: string;
 };

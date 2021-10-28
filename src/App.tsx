@@ -13,6 +13,7 @@ import client, { tokenVar } from "./apollo";
 import { ApolloProvider } from "@apollo/client";
 import * as Linking from "expo-linking";
 import { ProgressProvider } from "./contexts/Progress";
+import { ImagePickerProvider } from "./contexts/ImagePicker";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -51,14 +52,16 @@ export default function App() {
   } else {
     return (
       <ProgressProvider>
-        <ApolloProvider client={client}>
-          <ThemeProvider theme={theme.light}>
-            <StatusBar style="dark" />
-            <SafeAreaProvider>
-              <Navigation />
-            </SafeAreaProvider>
-          </ThemeProvider>
-        </ApolloProvider>
+        <ImagePickerProvider>
+          <ApolloProvider client={client}>
+            <ThemeProvider theme={theme.light}>
+              <StatusBar style="dark" />
+              <SafeAreaProvider>
+                <Navigation />
+              </SafeAreaProvider>
+            </ThemeProvider>
+          </ApolloProvider>
+        </ImagePickerProvider>
       </ProgressProvider>
     );
   }

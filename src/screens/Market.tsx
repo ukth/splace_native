@@ -10,9 +10,10 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { ZoomableImage } from "../components/ImagePicker/ZoomableImageComponent";
 import { pixelScaler } from "../utils";
 
-class ZoomableImage extends Component<
+class ZoomableImagea extends Component<
   {
     imageWidth: number;
     imageHeight: number;

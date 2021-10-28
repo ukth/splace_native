@@ -17,7 +17,7 @@ const Tag = styled.TouchableOpacity`
   height: ${pixelScaler(20)}px;
   border-width: ${pixelScaler(0.8)}px;
   border-radius: ${pixelScaler(10)}px;
-  border-color: ${({ theme }: { theme: ThemeType }) => theme.tagGreyBorder};
+  border-color: ${({ theme }: { theme: ThemeType }) => theme.tagGrey};
   margin-right: ${pixelScaler(10)}px;
   padding: 0 ${pixelScaler(10)}px;
   align-items: center;
@@ -44,13 +44,13 @@ const SeriesTag = ({
           });
         }}
       >
-        <RegText13 style={{ color: theme.greyText }}>
+        <RegText13 style={{ color: theme.tagGrey }}>
           {series[0].title}
         </RegText13>
       </Tag>
       {series.length > 1 ? (
         <Tag onPress={pressMoreSeries}>
-          <RegText13 style={{ color: theme.greyText }}>
+          <RegText13 style={{ color: theme.tagGrey }}>
             +{series.length - 1}
           </RegText13>
         </Tag>

@@ -10,6 +10,8 @@ import ServicePolicy from "./ServicePolicy";
 import TermsOfUse from "./TermsOfUse";
 import Agreement from "./Agreement";
 import MomentView from "./MomentView";
+import MySplaces from "./MySplaces";
+import SearchSplaceForAdd from "./SearchSplaceForAdd";
 
 export {
   Profile,
@@ -24,4 +26,6 @@ export {
   TermsOfUse,
   Agreement,
   MomentView,
+  MySplaces,
+  SearchSplaceForAdd,
 };

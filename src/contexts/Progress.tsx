@@ -1,36 +1,48 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { Alert } from "react-native";
 
-const ProgressContext = createContext({
+const ProgressContext = createContext<{
+  inProgress: boolean;
+  spinner: {
+    start: (setTimeOut?: boolean, timeOut?: number) => void;
+    stop: () => void;
+  };
+  timer: NodeJS.Timeout | undefined;
+}>({
   inProgress: false,
   spinner: {
     start: () => {},
     stop: () => {},
   },
+  timer: undefined,
 });
 
 const ProgressProvider = ({ children }: { children: any }) => {
   const [inProgress, setInProgress] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout>();
   const spinner = {
-    start: () => {
-      setTimer(
-        setTimeout(() => {
-          Alert.alert("요청시간 초과");
-          setInProgress(false);
-        }, 10000)
-      );
+    start: (setTimeOut = true, timeOut = 10) => {
+      if (setTimeOut !== false) {
+        setTimer(
+          setTimeout(() => {
+            Alert.alert("요청시간 초과");
+            setInProgress(false);
+          }, timeOut * 1000)
+        );
+      }
 
       setInProgress(true);
     },
     stop: () => {
+      console.log("hello!", timer);
       if (timer) {
         clearTimeout(timer);
+        console.log("clear!");
       }
       setInProgress(false);
     },
   };
-  const value = { inProgress, spinner };
+  const value = { inProgress, spinner, timer };
   return (
     <ProgressContext.Provider value={value}>
       {children}

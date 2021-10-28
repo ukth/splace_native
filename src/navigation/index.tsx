@@ -19,8 +19,11 @@ import AuthStack from "./AuthStack";
 import * as Linking from "expo-linking";
 import { ProgressContext } from "../contexts/Progress";
 import Spinner from "../components/Spinner";
+import ModalImagePicker from "../screens/ModalImagePicker";
 
 // const prefix = Linking.makeUrl("/");
+
+const Stack = createStackNavigator();
 
 const Navigation = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -38,9 +41,24 @@ const Navigation = () => {
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? <MainTab /> : <AuthStack />}
+      <Stack.Navigator mode="modal">
+        {isLoggedIn ? (
+          <Stack.Screen
+            name="Tabs"
+            options={{ headerShown: false }}
+            component={MainTab}
+          />
+        ) : (
+          <Stack.Screen
+            name="Auth"
+            options={{ headerShown: false }}
+            component={AuthStack}
+          />
+        )}
+        <Stack.Screen name="ImagePicker" component={ModalImagePicker} />
+        {/* <RootNavigator /> */}
+      </Stack.Navigator>
       {inProgress && <Spinner />}
-      {/* <RootNavigator /> */}
     </NavigationContainer>
   );
 };
