@@ -55,6 +55,9 @@ import {
   MySplaces,
   SuggestNewSplace,
   AddressSelector,
+  UploadLog,
+  UploadMoment,
+  UploadSeries,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -172,59 +175,7 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       }}
     >
       {screenName === "Mainfeed" ? (
-        <Stack.Screen
-          name="Mainfeed"
-          component={Mainfeed}
-          options={{
-            headerTitle: "",
-            headerLeftContainerStyle: {
-              marginLeft: pixelScaler(24),
-              marginBottom: pixelScaler(8),
-            },
-            headerLeft: () => (
-              <Image
-                style={{ height: pixelScaler(35), width: pixelScaler(59) }}
-                source={require("../../assets/images/header-left-super.png")}
-              />
-            ),
-            headerRightContainerStyle: {
-              marginRight: pixelScaler(30),
-              marginBottom: pixelScaler(12),
-            },
-            headerRight: () => (
-              <View
-                style={{
-                  width: pixelScaler(26),
-                  height: pixelScaler(26),
-                  borderRadius: pixelScaler(5),
-                  borderWidth: pixelScaler(2),
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: "#000000",
-                    height: pixelScaler(12),
-                    width: pixelScaler(2),
-                    borderRadius: pixelScaler(1),
-                  }}
-                />
-                <View
-                  style={{
-                    position: "absolute",
-                    backgroundColor: "#000000",
-                    height: pixelScaler(2),
-                    width: pixelScaler(12),
-                    borderRadius: pixelScaler(1),
-                    left: pixelScaler(5),
-                    top: pixelScaler(10),
-                  }}
-                />
-              </View>
-            ),
-          }}
-        />
+        <Stack.Screen name="Mainfeed" component={Mainfeed} />
       ) : null}
       {screenName === "Search" ? (
         <Stack.Screen name="Search" component={Search} />
@@ -301,6 +252,9 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="StackPickerAssets" component={StackPickerAssets} />
       <Stack.Screen name="SuggestNewSplace" component={SuggestNewSplace} />
       <Stack.Screen name="AddressSelector" component={AddressSelector} />
+      <Stack.Screen name="UploadLog" component={UploadLog} />
+      <Stack.Screen name="UploadMoment" component={UploadMoment} />
+      <Stack.Screen name="UploadSeries" component={UploadSeries} />
     </Stack.Navigator>
   );
 };

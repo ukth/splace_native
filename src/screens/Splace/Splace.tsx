@@ -51,6 +51,7 @@ import { Icons } from "../../icons";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { theme } from "../../../theme";
 import { ProgressContext } from "../../contexts/Progress";
+import { ModalKeep } from "../../components/ModalKeep";
 
 const ListHeaderContainer = styled.View``;
 const UpperContainer = styled.View`
@@ -215,6 +216,8 @@ const Splace = ({
     "contact" | "menu" | "operatingTime"
   >("contact");
 
+  const [modalKeepVisible, setModalKeepVisible] = useState(false);
+
   const day = new Date().getDay();
 
   const navigation =
@@ -377,8 +380,7 @@ const Splace = ({
                 <BldText33>{splace?.name}</BldText33>
                 <TouchableOpacity
                   onPress={() => {
-                    // setSaved(!saved);
-                    // navigation.push("EditSplace", { splace });
+                    setModalKeepVisible(true);
                   }}
                 >
                   <Ionicons
@@ -782,6 +784,11 @@ const Splace = ({
           </>
         )}
       </BottomSheetModal>
+      <ModalKeep
+        modalVisible={modalKeepVisible}
+        setModalVisible={setModalKeepVisible}
+        splaceId={splace.id}
+      />
     </ScreenContainer>
   );
 };

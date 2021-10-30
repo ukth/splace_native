@@ -14,6 +14,7 @@ import { ApolloProvider } from "@apollo/client";
 import * as Linking from "expo-linking";
 import { ProgressProvider } from "./contexts/Progress";
 import { ImagePickerProvider } from "./contexts/ImagePicker";
+import FlashMessage from "react-native-flash-message";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -59,6 +60,7 @@ export default function App() {
               <SafeAreaProvider>
                 <Navigation />
               </SafeAreaProvider>
+              <FlashMessage position="top" />
             </ThemeProvider>
           </ApolloProvider>
         </ImagePickerProvider>

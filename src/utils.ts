@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Dimensions } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { API_URL, tokenVar } from "./apollo";
 import { Splace } from "./screens";
 
@@ -313,4 +314,21 @@ export const uploadPhotos = async (urls: string[]) => {
     }
   }
   return [];
+};
+
+export const showFlashMessage = ({ message }: { message: string }) => {
+  showMessage({
+    message,
+    description: "",
+    backgroundColor: "#ffffff",
+    titleStyle: { color: "#000000" },
+    type: "success",
+    style: {
+      shadowOffset: { width: 0, height: pixelScaler(2) },
+      shadowOpacity: 0.25,
+      shadowRadius: pixelScaler(4),
+    },
+    floating: true,
+    hideOnPress: true,
+  });
 };

@@ -278,6 +278,9 @@ export type StackGeneratorParamList = {
   TermsOfUse: undefined;
   Agreement: undefined;
   ImagesViewer: { urls: string[] };
+  UploadLog: undefined;
+  UploadMoment: undefined;
+  UploadSeries: undefined;
 };
 
 export interface StackGeneratorProps {

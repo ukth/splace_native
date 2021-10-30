@@ -22,7 +22,8 @@ export const isLoggedInVar = makeVar<boolean>(false);
 export const tokenVar = makeVar<string | null>("");
 export const userIdVar = makeVar<number | null>(null);
 
-export const API_URL = "splacelunen.ap-northeast-2.elasticbeanstalk.com";
+export const API_URL =
+  "lunensplaceapi-env-1.eba-kfhrxqzs.ap-northeast-2.elasticbeanstalk.com";
 
 const TOKEN = "token";
 
@@ -193,7 +194,6 @@ export const cache = new InMemoryCache({
         getLogsBySplace: {
           keyArgs: ["splaceId", "orderBy"],
           merge(existing, incoming) {
-            console.log(existing, incoming);
             if (!existing) {
               return incoming;
             }
