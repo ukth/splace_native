@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -34,6 +34,7 @@ const BottomSheetModal = ({
   // height: number;
 }) => {
   const { modalVisible, setModalVisible } = props;
+  const [showModal, setShowModal] = useState(modalVisible);
   const screenHeight = Dimensions.get("screen").height;
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
@@ -62,35 +63,46 @@ const BottomSheetModal = ({
       },
       onPanResponderRelease: (event, gestureState) => {
         if (gestureState.dy > 0 && gestureState.vy > 1.5) {
-          closeModal();
+          setModalVisible(false);
         } else {
-          resetBottomSheet.start();
+          setModalVisible(true);
         }
       },
     })
   ).current;
 
   useEffect(() => {
-    if (props.modalVisible) {
-      resetBottomSheet.start();
+    if (modalVisible) {
+      openModal();
+    } else {
+      closeModal();
     }
-  }, [props.modalVisible]);
+  }, [modalVisible]);
+
+  const openModal = () => {
+    setShowModal(true);
+    resetBottomSheet.start();
+  };
 
   const closeModal = () => {
     closeBottomSheet.start(() => {
-      setModalVisible(false);
+      setShowModal(false);
     });
   };
 
   return (
     <Modal
-      visible={modalVisible}
+      visible={showModal}
       animationType={"fade"}
       transparent
       statusBarTranslucent
     >
       <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={closeModal}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
           <View style={styles.background} />
         </TouchableWithoutFeedback>
         <Animated.View

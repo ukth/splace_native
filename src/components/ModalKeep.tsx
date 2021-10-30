@@ -49,6 +49,7 @@ const ColumnBar = styled.View`
 `;
 
 const SelectedBackground = styled.TouchableOpacity`
+  position: absolute;
   height: ${pixelScaler(95)}px;
   width: ${pixelScaler(95)}px;
   background-color: rgba(255, 255, 255, 0.7);
@@ -69,6 +70,9 @@ const SelectedIndicatorBackground = styled.View`
 `;
 
 const SelectedIndicator = styled.View`
+  height: ${pixelScaler(14)}px;
+  width: ${pixelScaler(14)}px;
+  border-radius: ${pixelScaler(14)}px;
   background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.themeBackground};
 `;
@@ -85,6 +89,7 @@ export const ModalKeep = ({
   const theme = useContext(ThemeContext);
 
   const { data, refetch, fetchMore } = useQuery(GET_FOLDERS);
+  // const [];
 
   const onCreateCompleted = (data: any) => {
     const {
@@ -151,7 +156,7 @@ export const ModalKeep = ({
       style={{
         borderTopLeftRadius: pixelScaler(20),
         borderTopRightRadius: pixelScaler(20),
-        height: pixelScaler(315),
+        height: pixelScaler(325),
         paddingTop: pixelScaler(20),
       }}
     >
@@ -161,82 +166,82 @@ export const ModalKeep = ({
         data={["new", ...(data?.getFolders?.folders ?? [])]}
         numColumns={3}
         ListHeaderComponent={<View style={{ height: pixelScaler(20) }} />}
-        renderItem={({ item: folder }: { item: FolderType | "new" }) =>
-          folder === "new" ? (
-            <FolderItemContainer>
-              <FolderThumbnailContainer
-                onPress={() => {
-                  Alert.prompt(
-                    "새 폴더 생성",
-                    "새로운 폴더의 이름을 기입하세요",
-                    (text) => {
-                      if (!createMutationLoading) {
-                        createMutation({ variables: { title: text.trim() } });
-                      }
-                    },
-                    "plain-text"
-                  );
-                }}
-              >
-                <RowBar />
-                <ColumnBar />
-              </FolderThumbnailContainer>
-              <RegText13 numberOfLines={1}>새 폴더 생성</RegText13>
-            </FolderItemContainer>
-          ) : (
-            <FolderItemContainer>
-              <FolderThumbnailContainer
-                onPress={() => {
-                  if (!addMutationLoading) {
-                    addMutation({
-                      variables: {
-                        splaceIds: [splaceId],
-                        folderId: folder.id,
+        renderItem={({ item: folder }: { item: FolderType | "new" }) => {
+          if (folder === "new") {
+            return (
+              <FolderItemContainer>
+                <FolderThumbnailContainer
+                  onPress={() => {
+                    Alert.prompt(
+                      "새 폴더 생성",
+                      "새로운 폴더의 이름을 기입하세요",
+                      (text) => {
+                        if (!createMutationLoading) {
+                          createMutation({ variables: { title: text.trim() } });
+                        }
                       },
-                    });
-                  }
-                }}
-              >
-                <Image
-                  source={{ uri: folder.saves[0]?.splace?.thumbnail ?? "" }}
-                  style={{
-                    width: pixelScaler(95),
-                    height: pixelScaler(95),
-                    borderRadius: pixelScaler(10),
-                  }}
-                />
-                <RowBar />
-                <ColumnBar />
-                {() => {
-                  const saveIdx = folder.saves
-                    .map((save) => save.splace.id)
-                    .indexOf(splaceId);
-                  if (saveIdx !== -1) {
-                    return (
-                      <SelectedBackground
-                        onPress={() => {
-                          if (!removeMutationLoading) {
-                            removeMutation({
-                              variables: {
-                                saveId: folder.saves[saveIdx].id,
-                                folderId: folder.id,
-                              },
-                            });
-                          }
-                        }}
-                      >
-                        <SelectedIndicatorBackground>
-                          <SelectedIndicator />
-                        </SelectedIndicatorBackground>
-                      </SelectedBackground>
+                      "plain-text"
                     );
-                  }
-                }}
-              </FolderThumbnailContainer>
-              <RegText13 numberOfLines={1}>{folder.title}</RegText13>
-            </FolderItemContainer>
-          )
-        }
+                  }}
+                >
+                  <RowBar />
+                  <ColumnBar />
+                </FolderThumbnailContainer>
+                <RegText13 numberOfLines={1}>새 폴더 생성</RegText13>
+              </FolderItemContainer>
+            );
+          } else {
+            const saveIdx = folder.saves
+              .map((save) => save.splace.id)
+              .indexOf(splaceId);
+            return (
+              <FolderItemContainer>
+                <FolderThumbnailContainer
+                  onPress={() => {
+                    if (!addMutationLoading) {
+                      addMutation({
+                        variables: {
+                          splaceIds: [splaceId],
+                          folderId: folder.id,
+                        },
+                      });
+                    }
+                  }}
+                >
+                  <Image
+                    source={{ uri: folder.saves[0]?.splace?.thumbnail ?? "" }}
+                    style={{
+                      width: pixelScaler(95),
+                      height: pixelScaler(95),
+                      borderRadius: pixelScaler(10),
+                    }}
+                  />
+                  <RowBar />
+                  <ColumnBar />
+                  {saveIdx !== -1 ? (
+                    <SelectedBackground
+                      onPress={() => {
+                        if (!removeMutationLoading) {
+                          removeMutation({
+                            variables: {
+                              saveId: folder.saves[saveIdx].id,
+                              folderId: folder.id,
+                            },
+                          });
+                        }
+                      }}
+                    >
+                      <SelectedIndicatorBackground>
+                        <SelectedIndicator />
+                      </SelectedIndicatorBackground>
+                    </SelectedBackground>
+                  ) : null}
+                </FolderThumbnailContainer>
+                <RegText13 numberOfLines={1}>{folder.title}</RegText13>
+              </FolderItemContainer>
+            );
+          }
+        }}
         keyExtractor={(item) => (item === "new" ? item : item.id + "")}
       />
     </BottomSheetModal>
