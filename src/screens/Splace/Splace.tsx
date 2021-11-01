@@ -377,7 +377,9 @@ const Splace = ({
             )}
             <UpperContainer>
               <TitleContainer>
-                <BldText28>{splace?.name}</BldText28>
+                <BldText28 style={{ width: pixelScaler(287) }}>
+                  {splace?.name}
+                </BldText28>
                 <TouchableOpacity
                   onPress={() => {
                     setModalKeepVisible(true);

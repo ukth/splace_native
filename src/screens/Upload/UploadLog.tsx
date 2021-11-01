@@ -19,6 +19,7 @@ import { UploadContentContext } from "../../contexts/UploadContent";
 import { LinearGradient } from "expo-linear-gradient";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { CREATE_LOG } from "../../queries";
+import RatingModal from "./RatingModal";
 
 const LabelsContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
@@ -108,6 +109,7 @@ const UploadLog = () => {
 
   const { content, setContent } = useContext(UploadContentContext);
   const [logText, setLogText] = useState("");
+  const [showRating, setShowRating] = useState(false);
 
   const me = useMe();
 
@@ -115,7 +117,7 @@ const UploadLog = () => {
     spinner.stop();
     if (data?.uploadLog?.ok) {
       showFlashMessage({ message: "게시물이 업로드되었습니다." });
-      navigation.pop();
+      setShowRating(true);
     } else {
       console.log(data);
       Alert.alert("업로드에 실패했습니다.");
@@ -253,7 +255,7 @@ const UploadLog = () => {
               })
             }
           >
-            <BldText16>
+            <BldText16 numberOfLines={1}>
               {content?.splace?.name.length
                 ? content?.splace?.name
                 : "장소 / 이벤트 선택"}
@@ -346,6 +348,14 @@ const UploadLog = () => {
           </TextInputContainer>
         </LabelsContainer>
       </KeyboardAwareScrollView>
+      {content.splace ? (
+        <RatingModal
+          modalVisible={showRating}
+          setModalVisible={setShowRating}
+          onConfirm={() => navigation.pop()}
+          splace={content.splace}
+        />
+      ) : null}
     </ScreenContainer>
   );
 };

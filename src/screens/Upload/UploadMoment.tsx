@@ -45,6 +45,7 @@ import {
 } from "../../components/Text";
 import { UploadContentContext } from "../../contexts/UploadContent";
 import { UPLOAD_MOMENT } from "../../queries";
+import RatingModal from "./RatingModal";
 
 const SelectSplaceButton = styled.TouchableOpacity`
   padding-top: ${pixelScaler(40)}px;
@@ -124,13 +125,15 @@ const UploadMoment = () => {
   const [progress, setProgress] = useState(new Animated.Value(0));
   const [momentText, setMomentText] = useState("");
 
+  const [showRating, setShowRating] = useState(false);
+
   const { spinner } = useContext(ProgressContext);
 
   const onCompleted = (data: any) => {
     spinner.stop();
     if (data?.uploadMoment?.ok) {
       showFlashMessage({ message: "모먼트가 업로드되었습니다." });
-      navigation.pop();
+      setShowRating(true);
     } else {
       Alert.alert("업로드 실패");
     }
@@ -409,6 +412,14 @@ const UploadMoment = () => {
           </BottomContainer>
         </KeyboardAwareScrollView>
       )}
+      {content.splace ? (
+        <RatingModal
+          modalVisible={showRating}
+          setModalVisible={setShowRating}
+          onConfirm={() => navigation.pop()}
+          splace={content.splace}
+        />
+      ) : null}
     </ScreenContainer>
   );
 };

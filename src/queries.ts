@@ -518,8 +518,8 @@ export const ADD_FOLDER_MEMBERS = gql`
 `;
 
 export const GET_FOLDERS = gql`
-  query getFolders($lastId: Int) {
-    getFolders(lastId: $lastId) {
+  query getFolders($lastId: Int, $orderBy: String!) {
+    getFolders(lastId: $lastId, orderBy: $orderBy) {
       ok
       error
       folders {
@@ -1080,6 +1080,15 @@ export const GET_BIGCATEGORIES = gql`
         id
         name
       }
+    }
+  }
+`;
+
+export const RATE_SPLACE = gql`
+  mutation createSplaceRating($splaceId: Int!, $rating: Int!) {
+    createSplaceRating(splaceId: $splaceId, rating: $rating) {
+      ok
+      error
     }
   }
 `;

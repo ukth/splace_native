@@ -101,7 +101,9 @@ const PhotoLog = ({
             }
           }}
         >
-          <BldText20>{item.splace?.name ?? "Splace"}</BldText20>
+          <BldText20 numberOfLines={1} style={{ width: pixelScaler(270) }}>
+            {item.splace?.name ?? "Splace"}
+          </BldText20>
         </TouchableOpacity>
         <Liked item={item} />
       </BottomHeader>

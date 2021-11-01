@@ -62,6 +62,8 @@ import {
   // SearchSplaceForLog,
   SelectCategory,
   SelectSeries,
+  EditPhotolog,
+  EditSeries,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -269,6 +271,8 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       {/* <Stack.Screen name="SearchSplaceForLog" component={SearchSplaceForLog} /> */}
       <Stack.Screen name="SelectCategory" component={SelectCategory} />
       <Stack.Screen name="SelectSeries" component={SelectSeries} />
+      <Stack.Screen name="EditPhotolog" component={EditPhotolog} />
+      <Stack.Screen name="EditSeries" component={EditSeries} />
     </Stack.Navigator>
   );
 };

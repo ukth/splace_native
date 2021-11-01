@@ -57,6 +57,8 @@ import {
   SelectCategory,
   SelectSeries,
 } from "./Upload";
+import EditPhotolog from "./EditPhotolog";
+import EditSeries from "./EditSeries";
 
 export {
   LogIn,
@@ -117,4 +119,6 @@ export {
   // SearchSplaceForLog,
   SelectCategory,
   SelectSeries,
+  EditPhotolog,
+  EditSeries,
 };

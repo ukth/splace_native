@@ -88,7 +88,11 @@ export const ModalKeep = ({
 }) => {
   const theme = useContext(ThemeContext);
 
-  const { data, refetch, fetchMore } = useQuery(GET_FOLDERS);
+  const { data, refetch, fetchMore } = useQuery(GET_FOLDERS, {
+    variables: {
+      orderBy: "updatedAt",
+    },
+  });
   // const [];
 
   const onCreateCompleted = (data: any) => {
@@ -192,7 +196,7 @@ export const ModalKeep = ({
             );
           } else {
             const saveIdx = folder.saves
-              .map((save) => save.splace.id)
+              .map((save) => save?.splace?.id)
               .indexOf(splaceId);
             return (
               <FolderItemContainer>

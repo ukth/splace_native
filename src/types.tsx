@@ -293,6 +293,8 @@ export type StackGeneratorParamList = {
   SearchSplaceForLog: undefined;
   SelectCategory: undefined;
   SelectSeries: undefined;
+  EditPhotolog: { photolog: PhotologType };
+  EditSeries: { series: SeriesType };
 };
 
 export interface StackGeneratorProps {
