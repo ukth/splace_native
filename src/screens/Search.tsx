@@ -9,17 +9,11 @@ import {
   Alert,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { HashTagType, StackGeneratorParamList, ThemeType } from "../types";
+import { BigCategoryType, StackGeneratorParamList, ThemeType } from "../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler } from "../utils";
 import { useContext } from "react";
-import {
-  BldText16,
-  BldText33,
-  RegText13,
-  RegText16,
-  RegText33,
-} from "../components/Text";
+import { BldText16, RegText13 } from "../components/Text";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { BldTextInput16, BldTextInput20 } from "../components/TextInput";
@@ -31,6 +25,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ScreenContainer from "../components/ScreenContainer";
 import History from "../components/Search/History";
 import SplaceSearch from "../components/Search/SplaceSearch";
+import useBigCategories from "../hooks/useBigCategories";
+import { useQuery } from "@apollo/client";
+import { GET_RECOMMENDED_LOG } from "../queries";
 // import { TextInput } from "react-native-gesture-handler";
 
 const SearchTabMapScreen = () => {

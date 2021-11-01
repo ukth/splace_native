@@ -111,6 +111,8 @@ const Mainfeed = () => {
     onCompleted,
   });
 
+  navigation.addListener("focus", refetch);
+
   useEffect(() => {
     if (data?.getFeed?.logs && data?.getFeed?.series) {
       setFeedData({

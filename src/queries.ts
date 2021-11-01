@@ -588,6 +588,33 @@ export const REMOVE_LOG = gql`
   }
 `;
 
+export const HIDE_LOG = gql`
+  mutation hidePhotologs($targetId: Int!) {
+    hidePhotologs(targetId: $targetId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const SCRAP_LOG = gql`
+  mutation scrapLog($photologId: Int!) {
+    scrapLog(photologId: $photologId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const EDIT_LOG = gql`
+  mutation editPhotolog($photologId: Int!, $text: String, $isPrivate: Boolean) {
+    editPhotolog(photologId: $photologId, text: $text, isPrivate: $isPrivate) {
+      ok
+      error
+    }
+  }
+`;
+
 export const GET_USER_LOGS = gql`
   query getUserLogs($userId: Int!, $lastId: Int) {
     getUserLogs(userId: $userId, lastId: $lastId) {
@@ -599,6 +626,49 @@ export const GET_USER_LOGS = gql`
     }
   }
   ${LOG_FRAGMENT}
+`;
+
+export const GET_LOG = gql`
+  query seePhotolog($photologId: Int!) {
+    seePhotolog(photologId: $photologId) {
+      ok
+      error
+      log {
+        ...LogFragment
+      }
+    }
+  }
+  ${LOG_FRAGMENT}
+`;
+
+export const GET_RECOMMENDED_LOG = gql`
+  query getSuggestLogs {
+    getSuggestLogs {
+      ok
+      error
+      logs {
+        ...LogFragment
+      }
+    }
+  }
+  ${LOG_FRAGMENT}
+`;
+
+export const GET_RECOMMENDED_CATEGORIES = gql`
+  query suggestTags {
+    suggestTags {
+      ok
+      error
+      ratingtags {
+        id
+        name
+      }
+      bigCategories {
+        id
+        name
+      }
+    }
+  }
 `;
 
 export const GET_USER_SERIES = gql`
@@ -631,17 +701,31 @@ export const CREATE_SERIES = gql`
   }
 `;
 
-export const GET_LOG = gql`
-  query seePhotolog($photologId: Int!) {
-    seePhotolog(photologId: $photologId) {
+export const EDIT_SERIES = gql`
+  mutation createSeries($title: String!, $photologIds: [Int]!) {
+    createSeries(title: $title, photologIds: $photologIds) {
       ok
       error
-      log {
-        ...LogFragment
-      }
     }
   }
-  ${LOG_FRAGMENT}
+`;
+
+export const REMOVE_SERIES = gql`
+  mutation deleteSeries($seriesId: Int!) {
+    deleteSeries(seriesId: $seriesId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const HIDE_SERIES = gql`
+  mutation hideSeries($targetId: Int!) {
+    hideSeries(targetId: $targetId) {
+      ok
+      error
+    }
+  }
 `;
 
 export const GET_MY_SPLACE = gql`

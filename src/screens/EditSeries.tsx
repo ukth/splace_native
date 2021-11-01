@@ -10,7 +10,7 @@ import { BldText13, BldText16 } from "../components/Text";
 import { pixelScaler, showFlashMessage } from "../utils";
 import { Alert, FlatList, Switch } from "react-native";
 import { BldTextInput16 } from "../components/TextInput";
-import { CREATE_SERIES, GET_USER_LOGS } from "../queries";
+import { CREATE_SERIES, EDIT_SERIES, GET_USER_LOGS } from "../queries";
 import useMe from "../hooks/useMe";
 import Image from "../components/Image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -67,16 +67,21 @@ const EditSeries = () => {
   const { series } =
     useRoute<RouteProp<StackGeneratorParamList, "EditSeries">>().params;
 
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(series.title);
   const me = useMe();
-  const [photologIds, setPhotologIds] = useState<number[]>([]);
+  const [photologIds, setPhotologIds] = useState<number[]>(
+    series.seriesElements.map((element) => element.photolog.id)
+  );
+
+  const { data, refetch, fetchMore } = useQuery(GET_USER_LOGS, {
+    variables: { userId: me.id },
+  });
 
   const theme = useContext<ThemeType>(ThemeContext);
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
-      headerTitle: () => <BldText16>새 시리즈 만들기</BldText16>,
+      headerTitle: () => <BldText16>시리즈 편집</BldText16>,
     });
     refetch();
   }, []);
@@ -86,14 +91,14 @@ const EditSeries = () => {
   const onCompleted = (data: any) => {
     spinner.stop();
     if (data?.createSeries?.ok) {
-      showFlashMessage({ message: "시리즈가 생성되었습니다." });
+      showFlashMessage({ message: "시리즈가 수정되었습니다." });
       navigation.pop();
     } else {
-      Alert.alert("시리즈를 생성할 수 없습니다.");
+      Alert.alert("시리즈를 수정할 수 없습니다.");
     }
   };
 
-  const [mutation, { loading }] = useMutation(CREATE_SERIES, { onCompleted });
+  const [mutation, { loading }] = useMutation(EDIT_SERIES, { onCompleted });
 
   useEffect(() => {
     navigation.setOptions({
@@ -106,7 +111,6 @@ const EditSeries = () => {
                 mutation({
                   variables: {
                     title,
-                    isPrivate,
                     photologIds,
                   },
                 });
@@ -116,33 +120,14 @@ const EditSeries = () => {
           />
         ) : null,
     });
-  }, [title, isPrivate, photologIds]);
-
-  const { data, refetch, fetchMore } = useQuery(GET_USER_LOGS, {
-    variables: { userId: me.id },
-  });
-
-  useEffect(() => {
-    console.log(photologIds);
-  }, [photologIds]);
+  }, [title, photologIds]);
 
   return (
     <ScreenContainer>
       <LabelsContainer>
         <LabelContainer>
-          <BldText16>나만 보기</BldText16>
-          <Switch
-            trackColor={{
-              false: theme.switchTrackFalse,
-              true: theme.themeBackground,
-            }}
-            style={{ marginLeft: pixelScaler(15) }}
-            value={isPrivate}
-            onValueChange={(value) => setIsPrivate(value)}
-          />
-        </LabelContainer>
-        <LabelContainer>
           <BldTextInput16
+            value={title}
             placeholder="게시물 제목"
             selectionColor={theme.entrySelection}
             placeholderTextColor={theme.greyTextAlone}
@@ -150,7 +135,6 @@ const EditSeries = () => {
             multiline={true}
             numberOfLines={2}
             autoCorrect={false}
-            value={title}
             onChangeText={(text) => setTitle(text.trim())}
           />
         </LabelContainer>

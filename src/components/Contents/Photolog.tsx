@@ -4,7 +4,7 @@ import React, { useContext, useState, PureComponent } from "react";
 import { Alert, Share, TouchableOpacity } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { PhotologType } from "../../types";
-import { pixelScaler } from "../../utils";
+import { pixelScaler, showFlashMessage } from "../../utils";
 import BottomSheetModal from "../BottomSheetModal";
 import { BldText20, RegText20 } from "../Text";
 import Content from "./Content";
@@ -13,6 +13,14 @@ import Liked from "./Liked";
 import ModalButtonBox from "../ModalButtonBox";
 import SeriesTag from "./SeriesTag";
 import Swiper from "./Swiper";
+import { useMutation, useQuery } from "@apollo/client";
+import {
+  BLOCK,
+  GET_FEED,
+  HIDE_LOG,
+  REMOVE_LOG,
+  SCRAP_LOG,
+} from "../../queries";
 
 const Container = styled.View`
   margin-bottom: ${pixelScaler(30)}px;
@@ -76,6 +84,62 @@ const PhotoLog = ({
     setModalVisible(true);
   };
 
+  const onDeleteCompleted = (data: any) => {
+    if (data?.deletePhotolog?.ok) {
+      showFlashMessage({ message: "게시물이 삭제되었습니다." });
+      refetch();
+    } else {
+      Alert.alert("게시물을 삭제할 수 없습니다.");
+    }
+  };
+
+  const { refetch } = useQuery(GET_FEED);
+
+  const [deleteMutation, { loading: deleteMutationLoading }] = useMutation(
+    REMOVE_LOG,
+    { onCompleted: onDeleteCompleted }
+  );
+
+  const onHideCompleted = (data: any) => {
+    if (data?.hidePhotologs?.ok) {
+      showFlashMessage({ message: "숨김처리 되었습니다." });
+      refetch();
+    } else {
+      Alert.alert("숨김처리 할 수 없습니다.");
+    }
+  };
+
+  const [hideMutation, { loading: hideMutationLoading }] = useMutation(
+    HIDE_LOG,
+    { onCompleted: onHideCompleted }
+  );
+
+  const onScrapCompleted = (data: any) => {
+    if (data?.scrapLog?.ok) {
+      showFlashMessage({ message: "게시물이 저장되었습니다." });
+    } else {
+      Alert.alert("게시물을 저장할 수 없습니다.");
+    }
+  };
+
+  const [scrapMutation, { loading: scrapMutationLoading }] = useMutation(
+    SCRAP_LOG,
+    { onCompleted: onScrapCompleted }
+  );
+
+  const onBlockCompleted = (data: any) => {
+    if (data?.scrapLog?.ok) {
+      showFlashMessage({ message: "사용자가 차단되었습니다." });
+    } else {
+      Alert.alert("사용자를 차단할 수 없습니다.");
+    }
+  };
+
+  const [blockMutation, { loading: blockMutationLoading }] = useMutation(
+    BLOCK,
+    { onCompleted: onBlockCompleted }
+  );
+
   return (
     <Container>
       {type !== "Series" ? (
@@ -126,33 +190,66 @@ const PhotoLog = ({
         {modalContent === "dots" ? (
           item.author.isMe ? (
             <>
-              <ModalButtonBox>
+              {/* <ModalButtonBox>
                 <RegText20>링크 복사</RegText20>
-              </ModalButtonBox>
-              <ModalButtonBox onPress={() => onShare(item.id)}>
+              </ModalButtonBox> */}
+              {/* <ModalButtonBox onPress={() => onShare(item.id)}>
                 <RegText20>공유</RegText20>
-              </ModalButtonBox>
-
-              <ModalButtonBox>
+              </ModalButtonBox> */}
+              <ModalButtonBox
+                onPress={() => {
+                  setModalVisible(false);
+                  navigation.push("EditPhotolog", { photolog: item });
+                }}
+              >
                 <RegText20>게시물 수정</RegText20>
               </ModalButtonBox>
-              <ModalButtonBox>
+              <ModalButtonBox
+                onPress={() => {
+                  if (!deleteMutationLoading) {
+                    setModalVisible(false);
+                    deleteMutation({
+                      variables: {
+                        photologId: item.id,
+                      },
+                    });
+                  }
+                }}
+              >
                 <RegText20 style={{ color: "#FF0000" }}>게시물 삭제</RegText20>
               </ModalButtonBox>
             </>
           ) : (
             <>
-              <ModalButtonBox>
+              {/* <ModalButtonBox>
                 <RegText20>링크 복사</RegText20>
-              </ModalButtonBox>
-              <ModalButtonBox onPress={() => onShare(item.id)}>
+              </ModalButtonBox> */}
+              {/* <ModalButtonBox onPress={() => onShare(item.id)}>
                 <RegText20>공유</RegText20>
-              </ModalButtonBox>
-              <ModalButtonBox>
+              </ModalButtonBox> */}
+              <ModalButtonBox
+                onPress={() => {
+                  if (!scrapMutationLoading) {
+                    setModalVisible(false);
+                    scrapMutation({ variables: { photologId: item.id } });
+                  }
+                }}
+              >
                 <RegText20 style={{ color: "#00A4B7" }}>스크랩하기</RegText20>
               </ModalButtonBox>
 
-              <ModalButtonBox>
+              <ModalButtonBox
+                onPress={() => {
+                  if (!hideMutationLoading) {
+                    setModalVisible(false);
+                    hideMutation({
+                      variables: {
+                        targetId: item.id,
+                      },
+                    });
+                  }
+                }}
+              >
                 <RegText20>게시물 숨기기</RegText20>
               </ModalButtonBox>
               <ModalButtonBox
@@ -166,7 +263,13 @@ const PhotoLog = ({
               >
                 <RegText20>신고</RegText20>
               </ModalButtonBox>
-              <ModalButtonBox>
+              <ModalButtonBox
+                onPress={() => {
+                  if (!blockMutationLoading) {
+                    blockMutation({ variables: { targetId: item.author.id } });
+                  }
+                }}
+              >
                 <RegText20 style={{ color: "#FF0000" }}>차단</RegText20>
               </ModalButtonBox>
             </>

@@ -10,7 +10,7 @@ import { HeaderBackButton } from "../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler } from "../utils";
-import { REPORT } from "../queries";
+import { EDIT_LOG, REPORT } from "../queries";
 import { ProgressContext } from "../contexts/Progress";
 import { BldText16 } from "../components/Text";
 
@@ -36,47 +36,48 @@ const EditPhotolog = () => {
     useRoute<RouteProp<StackGeneratorParamList, "EditPhotolog">>().params;
 
   const theme = useContext<ThemeType>(ThemeContext);
-  const [reason, setReason] = useState("");
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [logText, setLogText] = useState(photolog.text);
+  const [isPrivate, setIsPrivate] = useState(photolog.isPrivate);
 
   const onCompleted = (data: any) => {
     console.log(data);
-    if (data?.reportResources?.ok) {
-      Alert.alert("신고가 접수되었습니다.\n검토에 24-72시간이 소요됩니다.");
+    if (data?.editPhotolog?.ok) {
+      Alert.alert("게시물이 수정되었습니다.");
       navigation.pop();
     } else {
-      Alert.alert(
-        "신고에 실패했습니다.\n별도의 문의사항이 있는 경우\ncontact@lunen.co.kr로 문의 바랍니다."
-      );
+      Alert.alert("게시물 수정에 실패했습니다.");
     }
-
     spinner.stop();
   };
 
-  const [mutation, { loading }] = useMutation(REPORT, { onCompleted });
+  const [mutation, { loading }] = useMutation(EDIT_LOG, { onCompleted });
 
   const { spinner } = useContext(ProgressContext);
 
   useEffect(() => {
     navigation.setOptions({
-      title: "신고",
+      headerTitle: () => <BldText16>편집모드</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
+    });
+  }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
       headerRight: () => (
         <HeaderRightConfirm
           onPress={() => {
-            if (reason.length < 10) {
-              Alert.alert("10자 이상의 사유를 입력해주세요.");
-            } else if (!loading) {
-              spinner.start();
-              mutation({
-                variables: {},
-              });
-            }
+            mutation({
+              variables: {
+                photologId: photolog.id,
+                text: logText,
+                isPrivate,
+              },
+            });
           }}
         />
       ),
     });
-  }, [reason]);
+  }, [logText, isPrivate]);
 
   return (
     <ScreenContainer>
@@ -94,10 +95,12 @@ const EditPhotolog = () => {
           />
         </LabelContainer>
         <RegTextInput13
-          onChangeText={(text) => setReason(text)}
+          value={logText}
+          onChangeText={(text) => setLogText(text)}
           placeholder="텍스트 작성"
           selectionColor={theme.chatSelection}
           placeholderTextColor={theme.greyText}
+          autoCorrect={false}
         />
       </Container>
     </ScreenContainer>
