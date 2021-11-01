@@ -25,7 +25,7 @@ import {
   EditFixedContents,
   SplaceLogs,
   Series,
-  Market,
+  // Market,
   Payment,
   Chatrooms,
   Chatroom,
@@ -64,6 +64,8 @@ import {
   SelectSeries,
   EditPhotolog,
   EditSeries,
+  LogsByCategory,
+  LogsByBigCategory,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -173,9 +175,10 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
             height: pixelScaler(95),
           },
           headerStyleInterpolator: forSlideLeft,
-          headerLeft: () => (
-            <HeaderBackButton onPress={() => navigation.pop()} />
-          ),
+          headerLeft: () =>
+            navigation.getState().routes.length > 1 ? (
+              <HeaderBackButton onPress={() => navigation.pop()} />
+            ) : null,
           // headerStyleInterpolator: HeaderStyleInterpolators.forSlideLeft,
           headerShown: !["MomentView", "ImagesViewer", "UploadMoment"].includes(
             focused
@@ -189,9 +192,9 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       {screenName === "Search" ? (
         <Stack.Screen name="Search" component={Search} />
       ) : null}
-      {screenName === "Market" ? (
+      {/* {screenName === "Market" ? (
         <Stack.Screen name="Market" component={Market} />
-      ) : null}
+      ) : null} */}
       {screenName === "Keep" ? (
         <Stack.Screen name="Folders" component={Folders} />
       ) : null}
@@ -273,6 +276,8 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="SelectSeries" component={SelectSeries} />
       <Stack.Screen name="EditPhotolog" component={EditPhotolog} />
       <Stack.Screen name="EditSeries" component={EditSeries} />
+      <Stack.Screen name="LogsByCategory" component={LogsByCategory} />
+      <Stack.Screen name="LogsByBigCategory" component={LogsByBigCategory} />
     </Stack.Navigator>
   );
 };

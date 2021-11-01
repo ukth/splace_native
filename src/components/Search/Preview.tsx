@@ -58,7 +58,7 @@ const Preview = () => {
         numColumns={2}
         ListHeaderComponent={() => (
           <TagBox>
-            {/* {recommendedCategories?.suggestTags?.ratingtags?.map(
+            {recommendedCategories?.suggestTags?.ratingtags?.map(
               (ratingTag: RatingTagType) => (
                 <Tag
                   key={ratingTag.id + ""}
@@ -77,7 +77,7 @@ const Preview = () => {
                   onPress={() => {}}
                 />
               )
-            )} */}
+            )}
           </TagBox>
         )}
         renderItem={({ item }: { item: PhotologType }) => (

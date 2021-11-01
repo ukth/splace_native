@@ -191,6 +191,7 @@ const Folder = ({
   const [sortMode, setSortMode] = useState<"generated" | "name">("generated");
   const theme = useContext<ThemeType>(ThemeContext);
   const [folder, setFolder] = useState<FolderType>(route.params.folder);
+  console.log(folder);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [showMap, setShowMap] = useState(false);
 

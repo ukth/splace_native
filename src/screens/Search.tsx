@@ -173,6 +173,8 @@ const SearchTabView = ({
   setHistory: (_: string[]) => void;
 }) => {
   const theme = useContext<ThemeType>(ThemeContext);
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   return (
     <ScreenContainer>
@@ -248,6 +250,7 @@ const Search = () => {
 
   useEffect(() => {
     navigation.setOptions({
+      headerLeft: () => null,
       headerTitle: () => (
         <SearchHeader
           searchBarFocused={searchBarFocused}

@@ -118,7 +118,7 @@ export default function MainTab() {
           return <StackGenerator screenName="Search" />;
         }}
       </BottomTab.Screen>
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Market"
         options={{
           tabBarIcon: ({ focused }) => (
@@ -129,7 +129,7 @@ export default function MainTab() {
         {() => {
           return <StackGenerator screenName="Market" />;
         }}
-      </BottomTab.Screen>
+      </BottomTab.Screen> */}
 
       <BottomTab.Screen
         name="Keep"

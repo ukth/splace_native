@@ -461,6 +461,9 @@ const Profile = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
 
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -562,9 +565,6 @@ const Profile = () => {
   };
 
   const [mutation, _] = useMutation(BLOCK, { onCompleted: onBlockCompleted });
-
-  const navigation =
-    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   const updateData = async () => {
     await refetchProfile();

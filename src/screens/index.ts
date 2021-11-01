@@ -36,7 +36,7 @@ import {
 } from "./Splace";
 import Series from "./Series";
 import SignUp from "./SignUp";
-import Market from "./Market";
+// import Market from "./Market";
 import Payment from "./Payment";
 import { Chatroom, Chatrooms } from "./Chat";
 import Members from "./Members";
@@ -59,6 +59,8 @@ import {
 } from "./Upload";
 import EditPhotolog from "./EditPhotolog";
 import EditSeries from "./EditSeries";
+import LogsByCategory from "./LogsByCategory";
+import LogsByBigCategory from "./LogsByBigCategory";
 
 export {
   LogIn,
@@ -82,7 +84,7 @@ export {
   SplaceLogs,
   Series,
   SignUp,
-  Market,
+  // Market,
   Payment,
   Chatroom,
   Chatrooms,
@@ -121,4 +123,6 @@ export {
   SelectSeries,
   EditPhotolog,
   EditSeries,
+  LogsByCategory,
+  LogsByBigCategory,
 };

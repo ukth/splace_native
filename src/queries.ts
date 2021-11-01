@@ -654,6 +654,32 @@ export const GET_RECOMMENDED_LOG = gql`
   ${LOG_FRAGMENT}
 `;
 
+export const GET_LOGS_BY_BIGCATEGORY = gql`
+  query getLogsByBigCategory {
+    getLogsByBigCategory {
+      ok
+      error
+      logs {
+        ...LogFragment
+      }
+    }
+  }
+  ${LOG_FRAGMENT}
+`;
+
+export const GET_LOGS_BY_CATEGORY = gql`
+  query getLogsByCategory {
+    getLogsByCategory {
+      ok
+      error
+      logs {
+        ...LogFragment
+      }
+    }
+  }
+  ${LOG_FRAGMENT}
+`;
+
 export const GET_RECOMMENDED_CATEGORIES = gql`
   query suggestTags {
     suggestTags {

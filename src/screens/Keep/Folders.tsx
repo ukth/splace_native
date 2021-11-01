@@ -118,10 +118,10 @@ const Folder = ({
           navigation.push("Folder", { folder });
         }}
       >
-        {folder.saves.length > 0 ? (
+        {folder?.saves?.length > 0 ? (
           <Image
             source={{
-              uri: folder.saves[0]?.splace.thumbnail ?? "",
+              uri: folder?.saves[0]?.splace?.thumbnail ?? "",
             }}
             style={{
               width: pixelScaler(145),
@@ -183,7 +183,11 @@ const Folders = ({
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const theme = useContext<ThemeType>(ThemeContext);
 
-  const { data, loading, refetch } = useQuery(GET_FOLDERS);
+  const { data, loading, refetch } = useQuery(GET_FOLDERS, {
+    variables: {
+      orderBy: "updatedAt",
+    },
+  });
 
   const [folders, setFolders] = useState<FolderType[]>([]);
 
