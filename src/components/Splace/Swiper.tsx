@@ -37,8 +37,8 @@ const Swiper = ({ item }: { item: FixedContentType }) => {
     return {
       zIndex: carouselProps.data.length - index,
       opacity: animatedValue.interpolate({
-        inputRange: [0, 1, 2],
-        outputRange: [1, 0.5, 0],
+        inputRange: [0, 1, 1.9, 2],
+        outputRange: [1, 1, 1, 0],
       }),
       transform: [
         {
@@ -48,9 +48,9 @@ const Swiper = ({ item }: { item: FixedContentType }) => {
               0,
               0,
               -width + 25,
-              -width * 2 + 50,
-              -width * 3 + 75,
-              -width * 3 + 75,
+              -width * 2 + 25,
+              -width * 3 + 24,
+              -width * 3 + 24,
             ],
             extrapolate: "clamp",
           }),
