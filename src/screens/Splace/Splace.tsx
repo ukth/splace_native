@@ -23,7 +23,7 @@ import ScreenContainer from "../../components/ScreenContainer";
 import {
   BldText16,
   BldText20,
-  BldText33,
+  BldText28,
   RegText13,
   RegText20,
 } from "../../components/Text";
@@ -377,7 +377,7 @@ const Splace = ({
             )}
             <UpperContainer>
               <TitleContainer>
-                <BldText33>{splace?.name}</BldText33>
+                <BldText28>{splace?.name}</BldText28>
                 <TouchableOpacity
                   onPress={() => {
                     setModalKeepVisible(true);

@@ -110,6 +110,7 @@ export const SERIES_FRAGMENT = gql`
       }
     }
     createdAt
+    isPrivate
   }
   ${USER_FRAGMENT}
 `;
@@ -140,6 +141,7 @@ export const LOG_FRAGMENT = gql`
     }
     isILiked
     createdAt
+    isPrivate
   }
   ${USER_FRAGMENT}
   ${SPLACE_FRAGMENT}
@@ -218,6 +220,7 @@ export const GET_SERIES_INFO = gql`
         author {
           ...UserFragment
         }
+        isPrivate
         createdAt
       }
     }
@@ -549,6 +552,42 @@ export const REMOVE_SAVE = gql`
   }
 `;
 
+export const CREATE_LOG = gql`
+  mutation uploadLog(
+    $imageUrls: [String]!
+    $photoSize: Int!
+    $text: String
+    $splaceId: Int
+    $seriesIds: [Int]!
+    $categories: [String]!
+    $bigCategoryIds: [Int]!
+    $isPrivate: Boolean!
+  ) {
+    uploadLog(
+      imageUrls: $imageUrls
+      photoSize: $photoSize
+      text: $text
+      splaceId: $splaceId
+      seriesIds: $seriesIds
+      categories: $categories
+      bigCategoryIds: $bigCategoryIds
+      isPrivate: $isPrivate
+    ) {
+      ok
+      error
+    }
+  }
+`;
+
+export const REMOVE_LOG = gql`
+  mutation deletePhotolog($photologId: Int!) {
+    deletePhotolog(photologId: $photologId) {
+      ok
+      error
+    }
+  }
+`;
+
 export const GET_USER_LOGS = gql`
   query getUserLogs($userId: Int!, $lastId: Int) {
     getUserLogs(userId: $userId, lastId: $lastId) {
@@ -573,6 +612,23 @@ export const GET_USER_SERIES = gql`
     }
   }
   ${SERIES_FRAGMENT}
+`;
+
+export const CREATE_SERIES = gql`
+  mutation createSeries(
+    $title: String!
+    $isPrivate: Boolean!
+    $photologIds: [Int]!
+  ) {
+    createSeries(
+      title: $title
+      isPrivate: $isPrivate
+      photologIds: $photologIds
+    ) {
+      ok
+      error
+    }
+  }
 `;
 
 export const GET_LOG = gql`
@@ -724,6 +780,25 @@ export const DELETE_ACCOUNT = gql`
   }
 `;
 
+export const UPLOAD_MOMENT = gql`
+  mutation uploadMoment(
+    $splaceId: Int
+    $videoUrl: String!
+    $text: String!
+    $title: String!
+  ) {
+    uploadMoment(
+      splaceId: $splaceId
+      videoUrl: $videoUrl
+      text: $text
+      title: $title
+    ) {
+      ok
+      error
+    }
+  }
+`;
+
 export const GET_MOMENTS = gql`
   query getMyMoments($lastId: Int) {
     getMyMoments(lastId: $lastId) {
@@ -801,7 +876,22 @@ export const GET_SPLACE_BY_KAKAOID = gql`
     getSplaceByKakao(kakaoId: $kakaoId, keyword: $keyword) {
       ok
       error
-      splaceId
+      splace {
+        id
+        name
+        address
+        thumbnail
+        lat
+        lon
+        bigCategories {
+          id
+          name
+        }
+        ratingtags {
+          id
+          name
+        }
+      }
     }
   }
 `;
@@ -834,7 +924,16 @@ export const CREATE_SPLACE = gql`
     ) {
       ok
       error
-      splaceId
+      splace {
+        id
+        name
+        address
+        thumbnail
+        lat
+        lon
+        activate
+        detailAddress
+      }
     }
   }
 `;
@@ -856,7 +955,6 @@ export const EDIT_SPLACE = gql`
     $thumbnail: String
     $categories: [String]
     $bigCategoryIds: [Int]
-    $specialTagIds: [Int]
   ) {
     editSplaces(
       splaceId: $splaceId
@@ -874,7 +972,6 @@ export const EDIT_SPLACE = gql`
       thumbnail: $thumbnail
       categories: $categories
       bigCategoryIds: $bigCategoryIds
-      specialTagIds: $specialTagIds
     ) {
       ok
       error
@@ -970,6 +1067,19 @@ export const REGISTER_OWNER = gql`
     ) {
       ok
       error
+    }
+  }
+`;
+
+export const GET_BIGCATEGORIES = gql`
+  query getBigCategories {
+    getBigCategories {
+      ok
+      error
+      bigCategories {
+        id
+        name
+      }
     }
   }
 `;

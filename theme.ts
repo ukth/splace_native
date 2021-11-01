@@ -41,6 +41,7 @@ export const theme = {
 
     greyTextLight: colors.grey_ae,
     greyTextAlone: colors.grey_8e,
+    cameraButtonOutline: colors.white,
 
     switchTrackFalse: colors.grey_e5,
 
@@ -140,6 +141,7 @@ export const theme = {
     themeBackground: colors.darkTheme,
 
     white: colors.white,
+    black: colors.black,
   },
   dark: {
     background: colors.white,

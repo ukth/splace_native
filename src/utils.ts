@@ -135,14 +135,36 @@ export const coords2address = async ({
 
   if (res.data?.status?.code === 0) {
     const result = res.data.results[0];
-    if (result) {
-      let addStr = "";
-      addStr += res.data.results[0]?.region?.area1?.name + " ";
-      addStr += res.data.results[0]?.region?.area2?.name + " ";
-      addStr += res.data.results[0]?.land?.name + " ";
-      addStr += res.data.results[0]?.land?.number1 + " ";
+    if (result?.name === "roadaddr") {
+      // let addStr = "";
+      return (
+        (result.region?.area1?.alias ?? result.region?.area1?.name) +
+        " " +
+        result.region?.area2?.name +
+        " " +
+        result.land?.name +
+        " " +
+        result.land?.number1
+      );
       // addStr += res.data.results[0]?.land?.addition0?.value + " ";
-      return addStr;
+    } else if (result?.name === "addr") {
+      return (
+        (result.region?.area1?.alias ?? result.region?.area1?.name) +
+        " " +
+        result.region?.area2?.name +
+        " " +
+        result.region?.area3?.name +
+        " " +
+        result.land?.number1 +
+        "-" +
+        result.land?.number2
+      );
+    } else if (result?.name === "legalcode") {
+      (result.region?.area1?.alias ?? result.region?.area1?.name) +
+        " " +
+        result.region?.area2?.name +
+        " " +
+        result.region?.area3?.name;
     }
     return "주소 정보 없음";
   } else if (res.data?.status?.code === 3) {
@@ -314,6 +336,37 @@ export const uploadPhotos = async (urls: string[]) => {
     }
   }
   return [];
+};
+
+export const uploadVideo = async (url: string) => {
+  const formData = new FormData();
+
+  formData.append("video", {
+    // @ts-ignore
+    uri: url,
+    name: url.substr(url.length > 20 ? url.length - 20 : 0),
+    type: "video/mov",
+  });
+  // console.log({
+  //   // @ts-ignore
+  //   uri: url,
+  //   name: url.substr(url.length > 20 ? url.length - 20 : 0),
+  //   type: "video/mp4",
+  // });
+
+  // console.log("in upload");
+  const res: any = await axios.post(
+    "http://" + API_URL + "/uploadvideo",
+    formData,
+    {
+      headers: {
+        "content-type": "multipart/form-data",
+        // token: tokenVar(),
+        token: tokenVar() ?? "",
+      },
+    }
+  );
+  return res?.data?.location ?? "";
 };
 
 export const showFlashMessage = ({ message }: { message: string }) => {

@@ -7,8 +7,10 @@ import { BldText16 } from "./Text";
 
 export const HeaderRightConfirm = ({
   onPress,
+  text = "완료",
 }: {
   onPress: (event: GestureResponderEvent) => void;
+  text?: string;
 }) => {
   const theme = useContext(ThemeContext);
   return (
@@ -16,7 +18,7 @@ export const HeaderRightConfirm = ({
       onPress={onPress}
       style={{ marginRight: pixelScaler(27) }}
     >
-      <BldText16 style={{ color: theme.headerConfirmText }}>완료</BldText16>
+      <BldText16 style={{ color: theme.headerConfirmText }}>{text}</BldText16>
     </TouchableOpacity>
   );
 };

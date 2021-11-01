@@ -187,7 +187,7 @@ export type StackGeneratorParamList = {
     splace: SplaceType;
   };
   SuggestNewSplace: {
-    onConfirm: (splaceId: number) => void;
+    onConfirm: (splace: SplaceType) => void;
   };
   AddressSelector: {
     onConfirm: ({
@@ -281,6 +281,18 @@ export type StackGeneratorParamList = {
   UploadLog: undefined;
   UploadMoment: undefined;
   UploadSeries: undefined;
+  SearchSplaceForUpload: {
+    listHeaderRightText: string;
+    onListHeaderRightPress: ({
+      location,
+    }: {
+      location: { lat: number; lon: number };
+    }) => void;
+    rootScreen: string;
+  };
+  SearchSplaceForLog: undefined;
+  SelectCategory: undefined;
+  SelectSeries: undefined;
 };
 
 export interface StackGeneratorProps {
@@ -359,6 +371,7 @@ export type PhotologType = {
   }[];
   isILiked: boolean;
   createdAt: string;
+  isPrivate: boolean;
 };
 
 export type SeriesType = {
@@ -371,6 +384,7 @@ export type SeriesType = {
     id: number;
     photolog: PhotologType;
   }[];
+  isPrivate: boolean;
 };
 
 export type BottomTabParamList = {
@@ -442,6 +456,8 @@ export type ThemeType = {
   chatEntryPlaceholder: string;
   chatSelection: string;
 
+  cameraButtonOutline: string;
+
   chatSendText: string;
 
   chatMemberSeperator: string;
@@ -494,4 +510,5 @@ export type ThemeType = {
   themeBackground: string;
 
   white: string;
+  black: string;
 };

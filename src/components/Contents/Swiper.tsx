@@ -37,8 +37,8 @@ const Swiper = ({ item }: { item: PhotologType }) => {
     return {
       zIndex: carouselProps.data.length - index,
       opacity: animatedValue.interpolate({
-        inputRange: [0, 1, 2],
-        outputRange: [1, 0.5, 0],
+        inputRange: [0, 1, 1.9, 2],
+        outputRange: [1, 1, 1, 0],
       }),
       transform: [
         {
@@ -48,15 +48,15 @@ const Swiper = ({ item }: { item: PhotologType }) => {
               0,
               0,
               -width + 25,
-              -width * 2 + 50,
-              -width * 3 + 75,
-              -width * 3 + 75,
+              -width * 2 + 25,
+              -width * 3 + 24,
+              -width * 3 + 24,
             ],
             extrapolate: "clamp",
           }),
           scale: animatedValue.interpolate({
             inputRange: [0, 1, 2, 3, 4],
-            outputRange: [1, 0.9, 0.8, 0.7, 0.7],
+            outputRange: [1, 0.9, 0.9, 0.9, 0.9],
             extrapolate: "clamp",
           }),
         },

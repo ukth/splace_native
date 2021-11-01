@@ -24,6 +24,7 @@ import * as Linking from "expo-linking";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ImagePickerContext } from "../contexts/ImagePicker";
+import MainfeedHeader from "../components/MainfeedHeader";
 
 const { width } = Dimensions.get("window");
 
@@ -39,6 +40,12 @@ const Mainfeed = () => {
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   const me = useMe();
+
+  useEffect(() => {
+    navigation.setOptions({
+      header: () => <MainfeedHeader />,
+    });
+  }, []);
 
   const [feed, setFeed] = useState<
     (

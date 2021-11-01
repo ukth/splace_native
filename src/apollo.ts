@@ -22,8 +22,7 @@ export const isLoggedInVar = makeVar<boolean>(false);
 export const tokenVar = makeVar<string | null>("");
 export const userIdVar = makeVar<number | null>(null);
 
-export const API_URL =
-  "lunensplaceapi-env-1.eba-kfhrxqzs.ap-northeast-2.elasticbeanstalk.com";
+export const API_URL = "api.splace.co.kr";
 
 const TOKEN = "token";
 
@@ -49,7 +48,7 @@ export const logUserOut = async () => {
 };
 
 const httpLink = createHttpLink({
-  uri: "http://" + API_URL + "/graphql",
+  uri: "https://" + API_URL + "/graphql",
 });
 
 // const uploadHttpLink = createUploadLink({
@@ -184,6 +183,7 @@ export const cache = new InMemoryCache({
               }
             }
             // console.log("not included");
+            console.log("existing,\n", existing, "\n\nincoming\n", incoming);
 
             return {
               ...incoming,

@@ -183,10 +183,11 @@ const MainfeedHeader = () => {
         >
           <Tag
             onPress={() => {
-              // navigation.push("Upload");
+              // closeButtons();
+              navigation.push("UploadLog");
             }}
           >
-            <BldText16>시리즈</BldText16>
+            <BldText16>로그</BldText16>
           </Tag>
         </Animated.View>
         <Animated.View
@@ -197,6 +198,7 @@ const MainfeedHeader = () => {
         >
           <Tag
             onPress={() => {
+              // closeButtons();
               navigation.push("UploadMoment");
             }}
           >
@@ -210,10 +212,11 @@ const MainfeedHeader = () => {
         >
           <Tag
             onPress={() => {
-              // navigation.push("Upload");
+              // closeButtons();
+              navigation.push("UploadSeries");
             }}
           >
-            <BldText16>로그</BldText16>
+            <BldText16>시리즈</BldText16>
           </Tag>
         </Animated.View>
       </Animated.View>

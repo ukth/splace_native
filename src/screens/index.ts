@@ -48,7 +48,15 @@ import ImagesViewer from "./ImagesViewer";
 import StackPickerAlbums from "./StackPickerAlbums";
 import StackPickerAssets from "./StackPickerAssets";
 import { SuggestNewSplace, AddressSelector } from "./SuggestNewSplace";
-import { UploadLog, UploadMoment, UploadSeries } from "./Upload";
+import {
+  UploadLog,
+  UploadMoment,
+  UploadSeries,
+  SearchSplaceForUpload,
+  // SearchSplaceForLog,
+  SelectCategory,
+  SelectSeries,
+} from "./Upload";
 
 export {
   LogIn,
@@ -105,4 +113,8 @@ export {
   UploadLog,
   UploadMoment,
   UploadSeries,
+  SearchSplaceForUpload,
+  // SearchSplaceForLog,
+  SelectCategory,
+  SelectSeries,
 };

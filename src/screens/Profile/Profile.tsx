@@ -41,6 +41,8 @@ import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import { Ionicons } from "@expo/vector-icons";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
+import * as VideoThumbnails from "expo-video-thumbnails";
+import { Icon } from "../../components/Icon";
 
 const UpperContainer = styled.View`
   margin-bottom: ${pixelScaler(3)}px;
@@ -343,6 +345,113 @@ const CountButton = ({ count, text }: { count: number; text: string }) => {
   );
 };
 
+const RenderMoments = ({
+  moments,
+  index,
+}: {
+  moments: MomentType[];
+  index: number;
+}) => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+  const [url, setUrl] = useState("");
+  useEffect(() => {
+    (async () => {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(
+        moments[index].videoUrl,
+        {
+          time: 50,
+        }
+      );
+      setUrl(uri);
+    })();
+  }, []);
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.push("MomentView", {
+          moments,
+          index,
+        });
+      }}
+    >
+      <Image
+        source={{
+          uri: url ?? BLANK_IMAGE,
+        }}
+        style={{
+          width: pixelScaler(186),
+          height: pixelScaler(186),
+          marginRight: pixelScaler(3),
+          marginBottom: pixelScaler(3),
+        }}
+      />
+    </TouchableOpacity>
+  );
+};
+
+const RenderSeries = ({ item, index }: { item: SeriesType; index: number }) => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+  const theme = useContext<ThemeType>(ThemeContext);
+
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.push("Series", {
+          id: item.id,
+        });
+      }}
+    >
+      <BldText13
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          left: pixelScaler(15),
+          top: pixelScaler(15),
+          color: theme.white,
+        }}
+      >
+        {item.title} ({item.seriesElements.length})
+      </BldText13>
+      {item.isPrivate ? (
+        <Icon
+          name="locked"
+          style={{
+            position: "absolute",
+            right: pixelScaler(15),
+            top: pixelScaler(12),
+            width: pixelScaler(12),
+            height: pixelScaler(17),
+          }}
+        />
+      ) : null}
+      <LinearGradient
+        // Background Linear Gradient
+        colors={["rgba(0,0,0,0.2)", "transparent"]}
+        style={{
+          top: 0,
+          position: "absolute",
+          height: pixelScaler(40),
+          width: pixelScaler(186),
+          zIndex: 3,
+        }}
+      />
+      <Image
+        source={{
+          uri: item.seriesElements[0]?.photolog.imageUrls[0] ?? BLANK_IMAGE,
+        }}
+        style={{
+          width: pixelScaler(186),
+          height: pixelScaler(186),
+          marginRight: pixelScaler(3),
+          marginBottom: pixelScaler(3),
+        }}
+      />
+    </TouchableOpacity>
+  );
+};
+
 const Profile = () => {
   const route = useRoute<RouteProp<StackGeneratorParamList, "Profile">>();
   const [user, setUser] = useState<UserType>(route.params.user);
@@ -497,89 +606,6 @@ const Profile = () => {
     />
   );
 
-  const renderSeries = ({
-    item,
-    index,
-  }: {
-    item: SeriesType;
-    index: number;
-  }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.push("Series", {
-            id: item.id,
-          });
-        }}
-      >
-        <BldText13
-          style={{
-            position: "absolute",
-            zIndex: 1,
-            left: pixelScaler(15),
-            top: pixelScaler(15),
-            color: theme.white,
-          }}
-        >
-          {item.title} ({item.seriesElements.length})
-        </BldText13>
-        <LinearGradient
-          // Background Linear Gradient
-          colors={["rgba(0,0,0,0.2)", "transparent"]}
-          style={{
-            top: 0,
-            position: "absolute",
-            height: pixelScaler(40),
-            width: pixelScaler(186),
-            zIndex: 3,
-          }}
-        />
-        <Image
-          source={{
-            uri: item.seriesElements[0]?.photolog.imageUrls[0] ?? BLANK_IMAGE,
-          }}
-          style={{
-            width: pixelScaler(186),
-            height: pixelScaler(186),
-            marginRight: pixelScaler(3),
-            marginBottom: pixelScaler(3),
-          }}
-        />
-      </TouchableOpacity>
-    );
-  };
-
-  const renderMoments = ({
-    moments,
-    index,
-  }: {
-    moments: MomentType[];
-    index: number;
-  }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.push("MomentView", {
-            moments,
-            index,
-          });
-        }}
-      >
-        <Image
-          source={{
-            uri: moments[index].videoUrl ?? BLANK_IMAGE,
-          }}
-          style={{
-            width: pixelScaler(186),
-            height: pixelScaler(186),
-            marginRight: pixelScaler(3),
-            marginBottom: pixelScaler(3),
-          }}
-        />
-      </TouchableOpacity>
-    );
-  };
-
   const [listData, setListData] = useState<any>([[], [], []]);
   useEffect(() => {
     setListData([
@@ -604,17 +630,29 @@ const Profile = () => {
         numColumns={tabViewIndex === 2 ? 3 : 2}
         data={listData[tabViewIndex]}
         keyExtractor={(item, index) => "" + index}
-        renderItem={({ item, index }) => {
-          if (tabViewIndex === 0) {
-            return renderLogs({ item, index });
-          } else if (tabViewIndex === 1) {
-            return renderSeries({ item, index });
-          }
-          return renderMoments({
-            moments: momentData?.getMyMoments?.moments,
-            index,
-          });
-        }}
+        renderItem={({ item, index }) =>
+          tabViewIndex === 0 ? (
+            renderLogs({ item, index })
+          ) : tabViewIndex === 1 ? (
+            <RenderSeries item={item} index={index} />
+          ) : (
+            <RenderMoments
+              moments={momentData?.getMyMoments?.moments}
+              index={index}
+            />
+          )
+        }
+        // {
+        //   if (tabViewIndex === 0) {
+        //     return renderLogs({ item, index });
+        //   } else if (tabViewIndex === 1) {
+        //     return renderSeries({ item, index });
+        //   }
+        //   return renderMoments({
+        //     moments: momentData?.getMyMoments?.moments,
+        //     index,
+        //   });
+        // }}
         refreshing={refreshing}
         onRefresh={refresh}
         onEndReached={async () => {

@@ -13,13 +13,7 @@ import { StackGeneratorParamList, ThemeType } from "../types";
 import { AlbumTitleKor, BLANK_IMAGE, pixelScaler } from "../utils";
 import { HeaderBackButton } from "../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
-import {
-  BldText13,
-  BldText16,
-  RegText13,
-  RegText16,
-  RegText33,
-} from "../components/Text";
+import { BldText13, BldText16, RegText13, RegText16 } from "../components/Text";
 import { ZoomableImage } from "../components/ImagePicker/ZoomableImageComponent";
 import ScreenContainer from "../components/ScreenContainer";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";

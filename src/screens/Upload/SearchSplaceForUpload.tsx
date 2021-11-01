@@ -7,6 +7,7 @@ import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import {
+  coords2address,
   formatDistance,
   keyword2Address,
   keyword2Place,
@@ -21,8 +22,10 @@ import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import * as Location from "expo-location";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalMapSingleView from "../../components/ModalMapSingleView";
-import { GET_SPLACE_BY_KAKAOID, REPORT } from "../../queries";
+import { GET_SPLACE_BY_KAKAOID, REPORT, UPLOAD_MOMENT } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
+import { UploadContentContext } from "../../contexts/UploadContent";
+import ModalMapSplaceView from "../../components/Upload/ModalMapSplaceView";
 
 const EntryBackground = styled.View`
   width: ${pixelScaler(295)}px;
@@ -61,9 +64,15 @@ const LabelContainer = styled.View`
   height: ${pixelScaler(30)}px;
 `;
 
-const SearchSplaceForAdd = () => {
+const SearchSplaceForUpload = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+  const { listHeaderRightText, onListHeaderRightPress, rootScreen } =
+    useRoute<RouteProp<StackGeneratorParamList, "SearchSplaceForUpload">>()
+      .params;
+
+  const { content, setContent } = useContext(UploadContentContext);
+  const [splace, setSplace] = useState();
 
   const theme = useContext<ThemeType>(ThemeContext);
   const [searchedAddress, setSearchedAddress] = useState<
@@ -79,6 +88,7 @@ const SearchSplaceForAdd = () => {
   >([]);
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState<{ lat: number; lon: number }>();
+  const [text, setText] = useState("");
 
   const [showMap, setShowMap] = useState<boolean>(false);
   const [address, setAddress] = useState("");
@@ -89,6 +99,7 @@ const SearchSplaceForAdd = () => {
   });
 
   const { spinner } = useContext(ProgressContext);
+  const [splaceSelected, setSplaceSelected] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -124,8 +135,9 @@ const SearchSplaceForAdd = () => {
         );
         return;
       }
-      let location = await Location.getCurrentPositionAsync({});
-      // console.log(location);
+
+      let location = await Location.getLastKnownPositionAsync();
+
       if (location) {
         setLocation({
           lat: location.coords.latitude,
@@ -144,7 +156,6 @@ const SearchSplaceForAdd = () => {
         if (data.length > 0) {
           setSearchedAddress(data);
         }
-        console.log(data);
       })();
     } else {
       setSearchedAddress([]);
@@ -153,15 +164,24 @@ const SearchSplaceForAdd = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
+    console.log(data);
+    // console.log(data);
     if (data?.getSplaceByKakao?.ok) {
-      navigation.push("RegisterOwner", {
-        splaceId: data.getSplaceByKakao.splaceId,
-        confirmScreen: "MySplace",
-      });
+      // console.log(data.getSplaceByKakao.splace);
+      setSplace(data.getSplaceByKakao.splace);
     } else {
       Alert.alert("위치정보를 불러오지 못했습니다.");
     }
   };
+
+  useEffect(() => {
+    if (splace) {
+      if (splaceSelected) {
+        setShowMap(true);
+        setSplaceSelected(false);
+      }
+    }
+  }, [splace, splaceSelected]);
 
   const [mutation, { loading }] = useMutation(GET_SPLACE_BY_KAKAOID, {
     onCompleted,
@@ -170,21 +190,15 @@ const SearchSplaceForAdd = () => {
   return (
     <ScreenContainer style={{ paddingHorizontal: pixelScaler(30) }}>
       <LabelContainer>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.push("SuggestNewSplace", {
-              onConfirm: (splace: SplaceType) =>
-                navigation.push("RegisterOwner", {
-                  splaceId: splace.id,
-                  confirmScreen: "MySplaces",
-                }),
-            })
-          }
-        >
-          <RegText13 style={{ color: theme.textHighlight }}>
-            새로운 장소/이벤트 제안
-          </RegText13>
-        </TouchableOpacity>
+        {location && (
+          <TouchableOpacity
+            onPress={() => onListHeaderRightPress({ location })}
+          >
+            <RegText13 style={{ color: theme.textHighlight }}>
+              {listHeaderRightText}
+            </RegText13>
+          </TouchableOpacity>
+        )}
       </LabelContainer>
       <FlatList
         data={searchedAddress}
@@ -194,11 +208,18 @@ const SearchSplaceForAdd = () => {
           <AddressItemContainer
             onPress={() => {
               (async () => {
-                setCoordinate({ lon: item.lon, lat: item.lat });
-                setAddress(
-                  item.road_address !== "" ? item.road_address : item.address
-                );
-                setShowMap(true);
+                if (!loading) {
+                  setSplace(undefined);
+                  setSplaceSelected(true);
+                  spinner.start();
+                  console.log("mutation!!");
+                  mutation({
+                    variables: {
+                      kakaoId: Number(item.id),
+                      keyword: item.name,
+                    },
+                  });
+                }
               })();
             }}
           >
@@ -227,26 +248,14 @@ const SearchSplaceForAdd = () => {
         )}
         ListFooterComponent={<View style={{ height: pixelScaler(200) }} />}
       />
-      <ModalMapSingleView
+      <ModalMapSplaceView
+        splace={splace}
         showMap={showMap}
         setShowMap={setShowMap}
-        coordinate={coordinate}
-        address={address}
-        onConfirm={() => {
-          if (!loading) {
-            spinner.start();
-            mutation({
-              variables: {
-                sourceType: "Splace location edit",
-                // sourceId: splace.id,
-                reason: "",
-              },
-            });
-          }
-        }}
+        rootScreen={rootScreen}
       />
     </ScreenContainer>
   );
 };
 
-export default SearchSplaceForAdd;
+export default SearchSplaceForUpload;

@@ -27,8 +27,8 @@ export const RegText20 = styled.Text`
   color: ${theme.light.text};
 `;
 
-export const RegText33 = styled.Text`
-  font-size: ${pixelScaler(33)}px;
+export const RegText28 = styled.Text`
+  font-size: ${pixelScaler(28)}px;
   font-family: "NanumSquareRound-R";
   color: ${theme.light.text};
 `;
@@ -51,8 +51,8 @@ export const BldText20 = styled.Text`
   color: ${theme.light.text};
 `;
 
-export const BldText33 = styled.Text`
-  font-size: ${pixelScaler(33)}px;
+export const BldText28 = styled.Text`
+  font-size: ${pixelScaler(28)}px;
   font-family: "NanumSquareRound-B";
   color: ${theme.light.text};
 `;

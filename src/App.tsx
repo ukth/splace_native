@@ -15,6 +15,7 @@ import * as Linking from "expo-linking";
 import { ProgressProvider } from "./contexts/Progress";
 import { ImagePickerProvider } from "./contexts/ImagePicker";
 import FlashMessage from "react-native-flash-message";
+import { UploadContentProvider } from "./contexts/UploadContent";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -54,15 +55,17 @@ export default function App() {
     return (
       <ProgressProvider>
         <ImagePickerProvider>
-          <ApolloProvider client={client}>
-            <ThemeProvider theme={theme.light}>
-              <StatusBar style="dark" />
-              <SafeAreaProvider>
-                <Navigation />
-              </SafeAreaProvider>
-              <FlashMessage position="top" />
-            </ThemeProvider>
-          </ApolloProvider>
+          <UploadContentProvider>
+            <ApolloProvider client={client}>
+              <ThemeProvider theme={theme.light}>
+                <StatusBar style="dark" />
+                <SafeAreaProvider>
+                  <Navigation />
+                </SafeAreaProvider>
+                <FlashMessage position="top" />
+              </ThemeProvider>
+            </ApolloProvider>
+          </UploadContentProvider>
         </ImagePickerProvider>
       </ProgressProvider>
     );

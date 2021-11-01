@@ -23,7 +23,7 @@ const RowContainer = styled.View`
 const SuggestNewSplace = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
-  const { onConfirm }: { onConfirm: (splaceId: number) => void } =
+  const { onConfirm }: { onConfirm: (splace: SplaceType) => void } =
     useRoute<RouteProp<StackGeneratorParamList, "SuggestNewSplace">>().params;
 
   const theme = useContext<ThemeType>(ThemeContext);
@@ -41,10 +41,10 @@ const SuggestNewSplace = () => {
         "",
         "장소/이벤트 제안이 완료되었습니다.\n검토 후 정식 splace로 등록됩니다."
       );
-      onConfirm(data?.createSplaces?.splaceId);
+      onConfirm(data?.createSplaces?.splace);
     } else {
       Alert.alert(
-        "장소/이벤트 제한에 실패했습니다.",
+        "장소/이벤트 제안에 실패했습니다.",
         data?.createSplaces?.error
       );
     }

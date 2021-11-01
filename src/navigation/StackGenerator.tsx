@@ -58,6 +58,10 @@ import {
   UploadLog,
   UploadMoment,
   UploadSeries,
+  SearchSplaceForUpload,
+  // SearchSplaceForLog,
+  SelectCategory,
+  SelectSeries,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -97,9 +101,9 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
 
   useEffect(() => {
     if (
-      focused === "Chatroom" ||
-      focused === "MomentView" ||
-      focused == "ImagesViewer"
+      ["Chatroom", "MomentView", "ImagesViewer", "UploadMoment"].includes(
+        focused
+      )
     ) {
       navigation.setOptions({
         tabBarVisible: false,
@@ -109,7 +113,7 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
         tabBarVisible: true,
       });
     }
-    if (focused === "MomentView" || focused == "ImagesViewer") {
+    if (["MomentView", "ImagesViewer", "UploadMoment"].includes(focused)) {
       setStatusBarStyle("light");
     } else {
       setStatusBarStyle("dark");
@@ -171,6 +175,9 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
             <HeaderBackButton onPress={() => navigation.pop()} />
           ),
           // headerStyleInterpolator: HeaderStyleInterpolators.forSlideLeft,
+          headerShown: !["MomentView", "ImagesViewer", "UploadMoment"].includes(
+            focused
+          ),
         };
       }}
     >
@@ -255,6 +262,13 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="UploadLog" component={UploadLog} />
       <Stack.Screen name="UploadMoment" component={UploadMoment} />
       <Stack.Screen name="UploadSeries" component={UploadSeries} />
+      <Stack.Screen
+        name="SearchSplaceForUpload"
+        component={SearchSplaceForUpload}
+      />
+      {/* <Stack.Screen name="SearchSplaceForLog" component={SearchSplaceForLog} /> */}
+      <Stack.Screen name="SelectCategory" component={SelectCategory} />
+      <Stack.Screen name="SelectSeries" component={SelectSeries} />
     </Stack.Navigator>
   );
 };
