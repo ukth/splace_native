@@ -22,6 +22,7 @@ import * as Linking from "expo-linking";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
 import { Icons } from "../icons";
+import { Icon } from "./Icon";
 
 const MarkerContainer = styled.TouchableOpacity`
   /* background-color: #d0a0f0; */
@@ -202,8 +203,8 @@ const ModalSingleMapView = ({
                 y: 1,
               }}
             >
-              <Image
-                source={Icons.location_pin}
+              <Icon
+                name="positionpin"
                 style={{
                   width: pixelScaler(23),
                   height: pixelScaler(33),

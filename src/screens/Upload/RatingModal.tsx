@@ -103,7 +103,7 @@ const RatingModal = ({
               }}
             >
               <Icon
-                name="super_soso"
+                name="super_ok"
                 style={{ width: pixelScaler(41), height: pixelScaler(38) }}
               />
             </TouchableOpacity>
@@ -125,7 +125,7 @@ const RatingModal = ({
               }}
             >
               <Icon
-                name="super_good"
+                name="super_smallheart"
                 style={{ width: pixelScaler(41), height: pixelScaler(38) }}
               />
             </TouchableOpacity>
@@ -147,7 +147,7 @@ const RatingModal = ({
               }}
             >
               <Icon
-                name="super_verygood"
+                name="super_bigheart"
                 style={{ width: pixelScaler(41), height: pixelScaler(38) }}
               />
             </TouchableOpacity>

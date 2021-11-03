@@ -1,16 +1,6 @@
-export const bigCategories = [
-  [
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-    { id: 0, name: "음식점" },
-  ],
+export const ratingtags = [
+  { id: 1, name: "Hot" },
+  { id: 2, name: "Superhot" },
+  { id: 3, name: "Tasty" },
+  { id: 4, name: "Supertasty" },
 ];

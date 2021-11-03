@@ -8,6 +8,7 @@ import {
 import {
   Mainfeed,
   Search,
+  Filter,
   Profile,
   Splace,
   EditSplace,
@@ -29,6 +30,7 @@ import {
   Payment,
   Chatrooms,
   Chatroom,
+  CreateChatroom,
   Members,
   AddMembers,
   MomentView,
@@ -49,6 +51,7 @@ import {
   TermsOfUse,
   Agreement,
   SearchSplaceForAdd,
+  Notification,
   ImagesViewer,
   StackPickerAlbums,
   StackPickerAssets,
@@ -66,6 +69,8 @@ import {
   EditSeries,
   LogsByCategory,
   LogsByBigCategory,
+  SplacesByRatingtag,
+  ScrappedContents,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -192,6 +197,9 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       {screenName === "Search" ? (
         <Stack.Screen name="Search" component={Search} />
       ) : null}
+      {screenName === "Search" ? (
+        <Stack.Screen name="Filter" component={Filter} />
+      ) : null}
       {/* {screenName === "Market" ? (
         <Stack.Screen name="Market" component={Market} />
       ) : null} */}
@@ -239,6 +247,7 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="Payment" component={Payment} />
       <Stack.Screen name="Chatrooms" component={Chatrooms} />
       <Stack.Screen name="Chatroom" component={Chatroom} />
+      <Stack.Screen name="CreateChatroom" component={CreateChatroom} />
       <Stack.Screen name="Members" component={Members} />
       <Stack.Screen name="AddMembers" component={AddMembers} />
       <Stack.Screen name="MomentView" component={MomentView} />
@@ -278,6 +287,9 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="EditSeries" component={EditSeries} />
       <Stack.Screen name="LogsByCategory" component={LogsByCategory} />
       <Stack.Screen name="LogsByBigCategory" component={LogsByBigCategory} />
+      <Stack.Screen name="Notification" component={Notification} />
+      <Stack.Screen name="SplacesByRatingtag" component={SplacesByRatingtag} />
+      <Stack.Screen name="ScrappedContents" component={ScrappedContents} />
     </Stack.Navigator>
   );
 };

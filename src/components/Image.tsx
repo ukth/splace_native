@@ -1,18 +1,16 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Image as DefaultImage } from "react-native";
+import { Image as DefaultImage, ImageStyle, StyleProp } from "react-native";
 import { ThemeContext } from "styled-components/native";
 import * as FileSystem from "expo-file-system";
 import * as Crypto from "expo-crypto";
 import { ThemeType } from "../types";
-
-type ImageType = DefaultImage["props"];
 
 const Image = ({
   source: { uri },
   ...props
 }: {
   source: { uri: string };
-  style: any;
+  style: ImageStyle;
 }) => {
   const [imgURI, setImgURI] = useState<string>("");
 

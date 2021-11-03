@@ -9,7 +9,7 @@ import { GET_RECOMMENDED_CATEGORIES, GET_RECOMMENDED_LOG } from "../../queries";
 import {
   BigCategoryType,
   PhotologType,
-  RatingTagType,
+  RatingtagType,
   StackGeneratorParamList,
   ThemeType,
 } from "../../types";
@@ -22,14 +22,11 @@ import Tag from "./Tag";
 const TagBox = styled.View`
   width: 100%;
   padding-left: ${pixelScaler(30)}px;
-  /* margin-top: ${pixelScaler(30)}px; */
+  margin-top: ${pixelScaler(30)}px;
+  margin-bottom: ${pixelScaler(15)}px;
   flex-direction: row;
   overflow: hidden;
   flex-wrap: wrap;
-`;
-
-const Recommendation = styled.View`
-  margin-top: 15px;
 `;
 
 const LogContainer = styled.TouchableOpacity`
@@ -59,12 +56,14 @@ const Preview = () => {
         ListHeaderComponent={() => (
           <TagBox>
             {recommendedCategories?.suggestTags?.ratingtags?.map(
-              (ratingTag: RatingTagType) => (
+              (ratingtag: RatingtagType) => (
                 <Tag
-                  key={ratingTag.id + ""}
-                  text={ratingTag.name}
-                  onPress={() => {}}
-                  color={theme.ratingTag}
+                  key={ratingtag.id + ""}
+                  text={ratingtag.name}
+                  onPress={() =>
+                    navigation.push("SplacesByRatingtag", { ratingtag })
+                  }
+                  color={theme.textHighlight}
                 />
               )
             )}
@@ -74,7 +73,11 @@ const Preview = () => {
                 <Tag
                   key={category.id + ""}
                   text={category.name}
-                  onPress={() => {}}
+                  onPress={() =>
+                    navigation.push("LogsByBigCategory", {
+                      bigCategory: category,
+                    })
+                  }
                 />
               )
             )}

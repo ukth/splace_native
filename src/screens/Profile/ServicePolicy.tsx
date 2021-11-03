@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { View } from "../../components/Themed";
 import { logUserOut } from "../../apollo";
 import { DELETE_ACCOUNT } from "../../queries";
+import * as Linking from "expo-linking";
 
 const ButtonContainer = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(30)}px;
@@ -47,20 +48,49 @@ const ServicePolicy = () => {
     }
   };
 
-  const [mutation, _] = useMutation(DELETE_ACCOUNT, { onCompleted });
+  const [mutation, { loading }] = useMutation(DELETE_ACCOUNT, { onCompleted });
 
   return (
     <ScreenContainer>
       <View style={{ height: pixelScaler(10) }} />
-      <ButtonContainer onPress={() => navigation.push("TermsOfUse")}>
+      <ButtonContainer
+        onPress={() =>
+          Linking.openURL("https://static.splace.co.kr/terms-of-use.html")
+        }
+      >
         <RegText16>이용 약관</RegText16>
         <Ionicons size={25} name="chevron-forward" />
       </ButtonContainer>
-      <ButtonContainer onPress={() => navigation.push("Agreement")}>
+      <ButtonContainer
+        onPress={() =>
+          Linking.openURL("https://static.splace.co.kr/privacy-policy.html")
+        }
+      >
         <RegText16>3자 개인정보 제공 동의</RegText16>
         <Ionicons size={25} name="chevron-forward" />
       </ButtonContainer>
-      <ButtonContainer onPress={() => mutation()}>
+      <ButtonContainer
+        onPress={() => {
+          Alert.alert(
+            "계정 탈퇴",
+            "splace 계정을 삭제하시겠습니까? 삭제된 계정은 복구할 수 없습니다.",
+            [
+              {
+                text: "확인",
+                onPress: () => {
+                  if (!loading) {
+                    mutation();
+                  }
+                },
+              },
+              {
+                text: "취소",
+                style: "cancel",
+              },
+            ]
+          );
+        }}
+      >
         <RegText16>회원 탈퇴</RegText16>
         <Ionicons size={25} name="chevron-forward" />
       </ButtonContainer>

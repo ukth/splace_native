@@ -168,11 +168,7 @@ const Mainfeed = () => {
   }, []);
 
   return (
-    <Container
-    // refreshControl={
-    //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    // }
-    >
+    <Container>
       <FlatList
         data={feed}
         refreshing={refreshing}

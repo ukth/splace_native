@@ -156,6 +156,8 @@ const MomentView = () => {
     }
   };
 
+  console.log(moments);
+
   return (
     <Container>
       <UpperContainer>
@@ -192,20 +194,21 @@ const MomentView = () => {
       </ProgressContainer>
       <Pressable
         onPressIn={(e) => {
-          if (Date.now() - timer > 700) {
-            timer = Date.now();
-            (async () => await video.current.pauseAsync())();
-          }
+          (async () => await video.current.pauseAsync())();
+          // if (Date.now() - timer > 700) {
+          //   timer = Date.now();
+          //   (async () => await video.current.pauseAsync())();
+          // }
         }}
         onPressOut={async (e) => {
           // console.log(Date.now() - timer);
-          if (Date.now() - timer < 700) {
-            if (e.nativeEvent?.locationX > pixelScaler(187)) {
-              next();
-            } else {
-              back();
-            }
-          }
+          // if (Date.now() - timer < 700) {
+          //   if (e.nativeEvent?.locationX > pixelScaler(187)) {
+          //     next();
+          //   } else {
+          //     back();
+          //   }
+          // }
           await video.current.playAsync();
         }}
       >

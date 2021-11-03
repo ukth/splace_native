@@ -23,6 +23,7 @@ import { Icons } from "../icons";
 import * as MediaLibrary from "expo-media-library";
 import { manipulateAsync } from "expo-image-manipulator";
 import { ProgressContext } from "../contexts/Progress";
+import { Icon } from "../components/Icon";
 
 const PickerContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
@@ -356,7 +357,10 @@ const ModalImagePicker = () => {
             navigation.pop();
           }}
         >
-          <Image source={Icons.close} />
+          <Icon
+            name="close"
+            style={{ width: pixelScaler(11), height: pixelScaler(11) }}
+          />
         </TouchableOpacity>
       ),
       headerTitle: () => <BldText16>사진 선택</BldText16>,

@@ -52,6 +52,7 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { theme } from "../../../theme";
 import { ProgressContext } from "../../contexts/Progress";
 import { ModalKeep } from "../../components/ModalKeep";
+import { Icon } from "../../components/Icon";
 
 const ListHeaderContainer = styled.View``;
 const UpperContainer = styled.View`
@@ -247,7 +248,53 @@ const Splace = ({
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
-      headerTitle: () => <Ionicons name="bicycle" size={40} />,
+      headerTitle: () => {
+        const ids = splace.ratingtags?.map((ratingtag) => ratingtag.id);
+
+        return (
+          <View style={{ width: pixelScaler(200), height: pixelScaler(40) }}>
+            <Icon
+              name={
+                ids?.includes(2)
+                  ? "super_superhot"
+                  : ids?.includes(4)
+                  ? "super_supertasty"
+                  : ids?.includes(1)
+                  ? "super_hot"
+                  : ids?.includes(3)
+                  ? "super_tasty"
+                  : "super"
+              }
+              style={{
+                position: "absolute",
+                right: pixelScaler(
+                  ids?.includes(2)
+                    ? 20
+                    : ids?.includes(4)
+                    ? 10
+                    : ids?.includes(1)
+                    ? 50
+                    : ids?.includes(3)
+                    ? 40
+                    : 70
+                ),
+                height: pixelScaler(35),
+                width: pixelScaler(
+                  ids?.includes(2)
+                    ? 121.8
+                    : ids?.includes(4)
+                    ? 138.5
+                    : ids?.includes(1)
+                    ? 85
+                    : ids?.includes(3)
+                    ? 100.11
+                    : 59
+                ),
+              }}
+            />
+          </View>
+        );
+      },
       headerRight: () =>
         me.id === splace.owner?.id ? (
           <TouchableOpacity
@@ -385,9 +432,12 @@ const Splace = ({
                     setModalKeepVisible(true);
                   }}
                 >
-                  <Ionicons
-                    name={saved ? "bookmark" : "bookmark-outline"}
-                    size={pixelScaler(26)}
+                  <Icon
+                    name={splace.isSaved ? "bookmark_fill" : "bookmark_black"}
+                    style={{
+                      width: pixelScaler(16),
+                      height: pixelScaler(24),
+                    }}
                   />
                 </TouchableOpacity>
               </TitleContainer>
@@ -530,8 +580,17 @@ const Splace = ({
                 </RegText13>
               ) : null}
               <TagsContainer>
+                {(splace.ratingtags ?? []).map((ratingtag) => (
+                  <Tag
+                    style={{ borderColor: theme.borderHighlight }}
+                    key={ratingtag.id + ""}
+                  >
+                    <RegText13 style={{ color: theme.textHighlight }}>
+                      {ratingtag.name}
+                    </RegText13>
+                  </Tag>
+                ))}
                 {[
-                  ...(splace.ratingtags ?? []),
                   ...(splace.bigCategories ?? []),
                   ...(splace.categories ?? []),
                 ].map((category) => (

@@ -117,7 +117,11 @@ const UploadLog = () => {
     spinner.stop();
     if (data?.uploadLog?.ok) {
       showFlashMessage({ message: "게시물이 업로드되었습니다." });
-      setShowRating(true);
+      if (content?.splace) {
+        setShowRating(true);
+      } else {
+        navigation.pop();
+      }
     } else {
       console.log(data);
       Alert.alert("업로드에 실패했습니다.");
@@ -165,6 +169,7 @@ const UploadLog = () => {
           />
         ) : null,
     });
+    // console.log(content.splace);
   }, [isPrivate, content, logText, images]);
 
   return (

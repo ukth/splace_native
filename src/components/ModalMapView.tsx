@@ -21,6 +21,7 @@ import Image from "./Image";
 import * as Linking from "expo-linking";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
+import { Icon } from "./Icon";
 
 const MarkerContainer = styled.TouchableOpacity`
   /* background-color: #d0a0f0; */
@@ -87,19 +88,21 @@ const FoundRouteButton = styled.TouchableOpacity`
 `;
 const TagsContainer = styled.View`
   flex-direction: row;
-  margin-bottom: ${pixelScaler(5)}px;
+  height: ${pixelScaler(45)}px;
+  width: ${pixelScaler(190)}px;
+  flex-wrap: wrap;
+  overflow: hidden;
 `;
 
-const TagContainer = styled.View`
+const Tag = styled.View`
   height: ${pixelScaler(20)}px;
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(12.5)}px;
   border-width: ${pixelScaler(0.7)}px;
-  border-color: ${({ color, theme }: { color?: string; theme: ThemeType }) =>
-    color ?? theme.tagBorder};
   align-items: center;
   justify-content: center;
   margin-right: ${pixelScaler(7)}px;
+  margin-bottom: ${pixelScaler(5)}px;
 `;
 
 const BackToMeButton = styled.TouchableOpacity`
@@ -108,7 +111,6 @@ const BackToMeButton = styled.TouchableOpacity`
   bottom: ${pixelScaler(245)}px;
   width: 50px;
   height: 50px;
-  background-color: #ff6974;
 `;
 
 const ModalMapView = ({
@@ -374,7 +376,13 @@ const ModalMapView = ({
                     {cluster.length === 1 ? (
                       cluster[0] === selectedSplaceIndex ? (
                         <MarkerContainer>
-                          <Ionicons name="location" color="#00a4b7" size={50} />
+                          <Icon
+                            name="positionpin"
+                            style={{
+                              width: pixelScaler(23),
+                              height: pixelScaler(33),
+                            }}
+                          />
                         </MarkerContainer>
                       ) : (
                         <MarkerContainer
@@ -399,13 +407,13 @@ const ModalMapView = ({
                 );
               })}
           </MapView>
-          <BackToMeButton
+          {/* <BackToMeButton
             onPress={() => {
               mapViewRef.current?.setCamera({
                 center: userLocation,
               });
             }}
-          />
+          /> */}
           <SplaceInfo>
             <UpperContainer
               onPress={() => {
@@ -449,22 +457,18 @@ const ModalMapView = ({
                 </RegText13>
 
                 <TagsContainer>
-                  <TagContainer color={theme.ratingTag}>
-                    <RegText13 style={{ color: theme.textHighlight }}>
-                      Superhot
-                    </RegText13>
-                  </TagContainer>
-                  <TagContainer>
-                    <RegText13>Superhot</RegText13>
-                  </TagContainer>
-                </TagsContainer>
-                <TagsContainer>
-                  <TagContainer>
-                    <RegText13>Superhot</RegText13>
-                  </TagContainer>
-                  <TagContainer>
-                    <RegText13>Superhot</RegText13>
-                  </TagContainer>
+                  {splaces[selectedSplaceIndex].ratingtags?.map((ratingtag) => (
+                    <Tag key={ratingtag.id}>
+                      <RegText13>{ratingtag.name}</RegText13>
+                    </Tag>
+                  ))}
+                  {splaces[selectedSplaceIndex].bigCategories?.map(
+                    (ratingtag) => (
+                      <Tag>
+                        <RegText13>{ratingtag.name}</RegText13>
+                      </Tag>
+                    )
+                  )}
                 </TagsContainer>
               </InfoContainer>
             </UpperContainer>

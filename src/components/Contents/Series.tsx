@@ -18,7 +18,14 @@ import ModalButtonBox from "../ModalButtonBox";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMutation, useQuery } from "@apollo/client";
-import { BLOCK, GET_FEED, HIDE_SERIES, REMOVE_SERIES } from "../../queries";
+import {
+  BLOCK,
+  GET_FEED,
+  HIDE_SERIES,
+  REMOVE_SERIES,
+  SCRAP_SERIES,
+  UNSCRAP_SERIES,
+} from "../../queries";
 
 const Container = styled.View`
   margin-bottom: ${pixelScaler(30)}px;
@@ -30,6 +37,10 @@ const TitleContianer = styled.TouchableOpacity`
 `;
 
 const Series = ({ item }: { item: SeriesType }) => {
+  if (item.seriesElements.length === 0) {
+    return null;
+  }
+
   const [modalVisible, setModalVisible] = useState(false);
 
   const navigation =
@@ -84,8 +95,39 @@ const Series = ({ item }: { item: SeriesType }) => {
     { onCompleted: onHideCompleted }
   );
 
-  const onBlockCompleted = (data: any) => {
+  const onScrapCompleted = (data: any) => {
     if (data?.scrapLog?.ok) {
+      showFlashMessage({ message: "게시물이 스크랩되었습니다." });
+      refetch();
+    } else {
+      Alert.alert("게시물을 스크랩 할 수 없습니다.");
+    }
+  };
+
+  const [scrapMutation, { loading: scrapMutationLoading }] = useMutation(
+    SCRAP_SERIES,
+    { onCompleted: onScrapCompleted }
+  );
+
+  const onUnscrapCompleted = (data: any) => {
+    if (data?.unscrapLog?.ok) {
+      showFlashMessage({ message: "게시물이 스크랩 목록에서 삭제되었습니다." });
+      refetch();
+    } else {
+      Alert.alert(
+        "게시물을 스크랩 목록에서 삭제할 수 없습니다.",
+        data?.unscrapLog.error
+      );
+    }
+  };
+
+  const [unscrapMutation, { loading: unscrapMutationLoading }] = useMutation(
+    UNSCRAP_SERIES,
+    { onCompleted: onUnscrapCompleted }
+  );
+
+  const onBlockCompleted = (data: any) => {
+    if (data?.blockUser?.ok) {
       showFlashMessage({ message: "사용자가 차단되었습니다." });
     } else {
       Alert.alert("사용자를 차단할 수 없습니다.");
@@ -123,8 +165,8 @@ const Series = ({ item }: { item: SeriesType }) => {
         ListHeaderComponent={() => <View style={{ width: pixelScaler(30) }} />}
         ListFooterComponent={() => <View style={{ width: pixelScaler(20) }} />}
         keyExtractor={(item) => "" + item.id}
-        renderItem={({ item, index }) => {
-          return (
+        renderItem={({ item, index }) =>
+          item.photolog ? (
             <Image
               source={{ uri: item.photolog.imageUrls[0] }}
               style={{
@@ -134,8 +176,8 @@ const Series = ({ item }: { item: SeriesType }) => {
                 borderRadius: pixelScaler(10),
               }}
             />
-          );
-        }}
+          ) : null
+        }
         showsHorizontalScrollIndicator={false}
         bounces={false}
       />
@@ -187,6 +229,31 @@ const Series = ({ item }: { item: SeriesType }) => {
             {/* <ModalButtonBox>
               <RegText20>공유</RegText20>
             </ModalButtonBox> */}
+            {item.isScraped ? (
+              <ModalButtonBox
+                onPress={() => {
+                  if (!scrapMutationLoading) {
+                    setModalVisible(false);
+                    unscrapMutation({ variables: { scrapedLogId: item.id } });
+                  }
+                }}
+              >
+                <RegText20 style={{ color: "#00A4B7" }}>
+                  스크랩 목록에서 삭제
+                </RegText20>
+              </ModalButtonBox>
+            ) : (
+              <ModalButtonBox
+                onPress={() => {
+                  if (!scrapMutationLoading) {
+                    setModalVisible(false);
+                    scrapMutation({ variables: { photologId: item.id } });
+                  }
+                }}
+              >
+                <RegText20 style={{ color: "#00A4B7" }}>스크랩하기</RegText20>
+              </ModalButtonBox>
+            )}
             <ModalButtonBox
               onPress={() => {
                 if (!hideMutationLoading) {

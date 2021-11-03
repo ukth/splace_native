@@ -23,6 +23,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
 import { Icons } from "../../icons";
 import { UploadContentContext } from "../../contexts/UploadContent";
+import { Icon } from "../Icon";
 
 const ModalDragBar = styled.View`
   position: absolute;
@@ -231,8 +232,8 @@ const ModalMapSplaceView = ({
                   y: 1,
                 }}
               >
-                <Image
-                  source={Icons.location_pin}
+                <Icon
+                  name="positionpin"
                   style={{
                     width: pixelScaler(23),
                     height: pixelScaler(33),

@@ -81,8 +81,6 @@ const AddressSelector = () => {
     lat: 37.49944853514956,
   });
 
-  const { spinner } = useContext(ProgressContext);
-
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
@@ -142,23 +140,6 @@ const AddressSelector = () => {
       setSearchedAddress([]);
     }
   }, [keyword, location]);
-
-  const onCompleted = (data: any) => {
-    spinner.stop();
-    if (data?.reportResources?.ok) {
-      Alert.alert(
-        "",
-        "신청이 접수되었습니다.\n검토까지 24-72시간이 소요되며,\n이후 확인 절차가 dm으로 안내됩니다."
-      );
-      navigation.pop();
-    } else {
-      Alert.alert(
-        "위치 업데이트 요청에 실패했습니다.\ncontact@lunen.co.kr로 문의해주세요."
-      );
-    }
-  };
-
-  const [mutation, { loading }] = useMutation(REPORT, { onCompleted });
 
   return (
     <ScreenContainer style={{ paddingHorizontal: pixelScaler(30) }}>

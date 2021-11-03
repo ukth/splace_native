@@ -29,7 +29,7 @@ const Tag = ({
 }) => {
   const theme = useContext<ThemeType>(ThemeContext);
   return (
-    <TagContainer color={color}>
+    <TagContainer onPress={onPress} color={color}>
       <RegText16 style={{ color: color ?? theme.text }}>{text}</RegText16>
     </TagContainer>
   );

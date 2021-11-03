@@ -164,7 +164,7 @@ const Folder = ({
           </MemberCountContainer>
         ) : null}
       </Item>
-      <RegText16 style={{ marginTop: pixelScaler(10) }}>
+      <RegText16 numberOfLines={1} style={{ marginTop: pixelScaler(10) }}>
         {folder.title}
       </RegText16>
     </FolderConatiner>

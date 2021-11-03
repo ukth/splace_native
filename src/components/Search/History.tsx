@@ -8,17 +8,6 @@ import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { RegText16 } from "../Text";
 
-const ItemContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  padding: 0 ${pixelScaler(30)}px;
-  height: ${pixelScaler(60)}px;
-`;
-
-const TextContainer = styled.TouchableOpacity`
-  flex: 1;
-`;
-
 const Seperator = styled.View`
   width: ${pixelScaler(315)}px;
   margin-left: ${pixelScaler(30)}px;
@@ -45,7 +34,7 @@ const History = ({
       data={[...history].reverse()}
       keyExtractor={(item, index) => "" + index}
       renderItem={({ item, index }) => (
-        <ItemContainer>
+        <ListItemContainer>
           <TextContainer>
             <RegText16>{item}</RegText16>
           </TextContainer>
@@ -66,7 +55,7 @@ const History = ({
           >
             <Ionicons name="close" size={20} />
           </TouchableOpacity>
-        </ItemContainer>
+        </ListItemContainer>
       )}
       ItemSeparatorComponent={() => <Seperator />}
     />

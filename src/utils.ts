@@ -5,7 +5,7 @@ import { API_URL, tokenVar } from "./apollo";
 import { Splace } from "./screens";
 
 export const convertNumber = (n: number) => {
-  if (n === 0) {
+  if (!n) {
     return "0";
   }
   if (n < 10) {
@@ -227,7 +227,7 @@ export const formatOperatingTime = (n: number) => {
 export const dayNameKor = ["일", "월", "화", "수", "목", "금", "토"];
 
 export const BLANK_IMAGE =
-  "http://t3.gstatic.com/licensed-image?q=tbn:ANd9GcTT0cESt5DADuWcGOffPxaqNw8BZHK1-GIqXiC5cCVCCD80BCiRvohsgU4BJZMhxLXw3pzppeprEgqAimhbl7c";
+  "https://upload.wikimedia.org/wikipedia/commons/d/d2/Blank.png";
 
 export const calcDistanceByCoords = (
   coord1: { lat: number; lon: number },
@@ -259,9 +259,31 @@ export const calcDistanceByCoords = (
 
 export const formatDistance = (d: number) => {
   if (d < 1000) {
-    return d + "m";
+    return d.toFixed(0) + "m";
   }
   return (d / 1000).toFixed(1) + "km";
+};
+
+export const formatFilterDistance = (d: number) => {
+  if (d < 0.2) {
+    return "100m";
+  }
+  if (d < 0.4) {
+    return "500m";
+  }
+  if (d < 0.6) {
+    return "1km";
+  }
+  if (d < 0.8) {
+    return "3km";
+  }
+  if (d < 1.0) {
+    return "5km";
+  }
+  if (d < 1.2) {
+    return "10km";
+  }
+  return "제한 없음";
 };
 
 export const format2DecimalNumber = (n: number) => {
@@ -384,4 +406,9 @@ export const showFlashMessage = ({ message }: { message: string }) => {
     floating: true,
     hideOnPress: true,
   });
+};
+
+export const shortenAddress = (address: string) => {
+  const words = address.split(" ");
+  return words[0].substr(0, 2) + " " + words[1].substr(0, 2);
 };

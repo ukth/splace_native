@@ -30,6 +30,7 @@ import { RouteProp, useRoute } from "@react-navigation/core";
 import ThreeDots from "../components/ThreeDots";
 import BottomSheetModal from "../components/BottomSheetModal";
 import ModalButtonBox from "../components/ModalButtonBox";
+import { Icon } from "../components/Icon";
 
 const Header = styled.View`
   align-items: center;
@@ -132,7 +133,13 @@ const Series = () => {
       ) : null}
       {splaces.length > 0 ? (
         <FloatingMapButton onPress={() => setShowMap(true)}>
-          <Ionicons name="map-outline" size={30} />
+          <Icon
+            name="map"
+            style={{
+              width: pixelScaler(20.7),
+              height: pixelScaler(22.1),
+            }}
+          />
         </FloatingMapButton>
       ) : null}
       <BottomSheetModal

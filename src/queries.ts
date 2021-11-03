@@ -59,6 +59,7 @@ export const SPLACE_FRAGMENT = gql`
     lon
     activate
     detailAddress
+    isSaved
     categories {
       id
       name
@@ -111,6 +112,7 @@ export const SERIES_FRAGMENT = gql`
     }
     createdAt
     isPrivate
+    isScraped
   }
   ${USER_FRAGMENT}
 `;
@@ -121,6 +123,10 @@ export const LOG_FRAGMENT = gql`
     photoSize
     text
     categories {
+      id
+      name
+    }
+    bigCategories {
       id
       name
     }
@@ -142,6 +148,7 @@ export const LOG_FRAGMENT = gql`
     isILiked
     createdAt
     isPrivate
+    isScraped
   }
   ${USER_FRAGMENT}
   ${SPLACE_FRAGMENT}
@@ -267,6 +274,54 @@ export const GET_PROFILE = gql`
     }
   }
   ${USER_FRAGMENT}
+`;
+
+export const GET_NOTIFICATIONS = gql`
+  query getMyActivityLogs {
+    getMyActivityLogs {
+      ok
+      error
+      followLogs {
+        id
+        requestUser {
+          id
+          username
+          profileImageUrl
+          isFollowing
+        }
+        createdAt
+        updatedAt
+      }
+      editFolderLogs {
+        id
+        target {
+          id
+          title
+        }
+        requestUser {
+          id
+          username
+          profileImageUrl
+        }
+        createdAt
+        updatedAt
+      }
+      likeLogs {
+        id
+        requestUser {
+          id
+          username
+          profileImageUrl
+        }
+        target {
+          id
+          imageUrls
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  }
 `;
 
 export const GET_FOLLOWERS = gql`
@@ -481,6 +536,19 @@ export const ADD_ROOM_MEMBERS = gql`
   }
 `;
 
+export const GET_PERSONAL_CHATROOM = gql`
+  mutation getPersonalChatroom($targetId: Int!) {
+    getPersonalChatroom(targetId: $targetId) {
+      ok
+      error
+      chatroom {
+        ...RoomFragment
+      }
+    }
+  }
+  ${ROOM_FRAGMENT}
+`;
+
 export const CREATE_FOLDER = gql`
   mutation createFolder($title: String!) {
     createFolder(title: $title) {
@@ -605,6 +673,14 @@ export const SCRAP_LOG = gql`
     }
   }
 `;
+export const UNSCRAP_LOG = gql`
+  mutation unscrapLog($scrapedLogId: Int!) {
+    unscrapLog(scrapedLogId: $scrapedLogId) {
+      ok
+      error
+    }
+  }
+`;
 
 export const EDIT_LOG = gql`
   mutation editPhotolog($photologId: Int!, $text: String, $isPrivate: Boolean) {
@@ -654,9 +730,52 @@ export const GET_RECOMMENDED_LOG = gql`
   ${LOG_FRAGMENT}
 `;
 
+export const GET_SCRAPPED_LOGS = gql`
+  query getMyScrapedLog {
+    getMyScrapedLog {
+      ok
+      error
+      logs {
+        ...LogFragment
+      }
+    }
+  }
+  ${LOG_FRAGMENT}
+`;
+
+export const SCRAP_SERIES = gql`
+  mutation scrapSeries($seriesId: Int!) {
+    scrapSeries(seriesId: $seriesId) {
+      ok
+      error
+    }
+  }
+`;
+export const UNSCRAP_SERIES = gql`
+  mutation unscrapSeries($scrapedSeriesId: Int!) {
+    unscrapSeries(scrapedSeriesId: $scrapedSeriesId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const GET_SCRAPPED_SERIES = gql`
+  query getMyScrapedSeries {
+    getMyScrapedSeries {
+      ok
+      error
+      series {
+        ...SeriesFragment
+      }
+    }
+  }
+  ${SERIES_FRAGMENT}
+`;
+
 export const GET_LOGS_BY_BIGCATEGORY = gql`
-  query getLogsByBigCategory {
-    getLogsByBigCategory {
+  query getLogsByBigCategory($tagId: Int!, $lastId: Int) {
+    getLogsByBigCategory(tagId: $tagId, lastId: $lastId) {
       ok
       error
       logs {
@@ -668,8 +787,8 @@ export const GET_LOGS_BY_BIGCATEGORY = gql`
 `;
 
 export const GET_LOGS_BY_CATEGORY = gql`
-  query getLogsByCategory {
-    getLogsByCategory {
+  query getLogsByCategory($tagId: Int!, $lastId: Int) {
+    getLogsByCategory(tagId: $tagId, lastId: $lastId) {
       ok
       error
       logs {
@@ -728,8 +847,8 @@ export const CREATE_SERIES = gql`
 `;
 
 export const EDIT_SERIES = gql`
-  mutation createSeries($title: String!, $photologIds: [Int]!) {
-    createSeries(title: $title, photologIds: $photologIds) {
+  mutation editSeries($seriesId: Int!, $title: String!, $photologIds: [Int]!) {
+    editSeries(seriesId: $seriesId, title: $title, photologIds: $photologIds) {
       ok
       error
     }
@@ -896,12 +1015,14 @@ export const UPLOAD_MOMENT = gql`
     $videoUrl: String!
     $text: String!
     $title: String!
+    $thumbnail: String!
   ) {
     uploadMoment(
       splaceId: $splaceId
       videoUrl: $videoUrl
       text: $text
       title: $title
+      thumbnail: $thumbnail
     ) {
       ok
       error
@@ -917,6 +1038,7 @@ export const GET_MOMENTS = gql`
       moments {
         id
         text
+        title
         author {
           ...UserFragment
         }
@@ -926,6 +1048,7 @@ export const GET_MOMENTS = gql`
         splace {
           ...SplaceFragment
         }
+        thumbnail
       }
     }
   }
@@ -1120,6 +1243,62 @@ export const EDIT_SPLACE_TIMESETS = gql`
   }
 `;
 
+export const SEARCH_SPLACE = gql`
+  query searchSplaces(
+    $lastId: Int
+    $type: String!
+    $keyword: String!
+    $lat: Float
+    $lon: Float
+    $distance: Int
+    $bigCategoryIds: [Int]
+    $ratingtagIds: [Int]
+    $exceptNoKids: Boolean
+    $parking: Boolean
+    $pets: Boolean
+  ) {
+    searchSplaces(
+      lastId: $lastId
+      type: $type
+      keyword: $keyword
+      lat: $lat
+      lon: $lon
+      distance: $distance
+      bigCategoryIds: $bigCategoryIds
+      ratingtagIds: $ratingtagIds
+      exceptNoKids: $exceptNoKids
+      parking: $parking
+      pets: $pets
+    ) {
+      ok
+      error
+      searchedSplaces {
+        id
+        address
+        bigCategories
+        stringBC
+        location
+        name
+        thumbnail
+        isSaved
+      }
+    }
+  }
+`;
+
+export const GET_SPLACES_BY_RATINGTAG = gql`
+  query getSplacesByRatingtag($tagId: Int!, $lastId: Int) {
+    getSplacesByRatingtag(tagId: $tagId, lastId: $lastId) {
+      ok
+      error
+      splaces {
+        ...SplaceFragment
+      }
+    }
+  }
+  ${SPLACE_FRAGMENT}
+`;
+
 export const CREATE_CONTENT = gql`
   mutation createContents(
     $splaceId: Int!
@@ -1201,4 +1380,36 @@ export const RATE_SPLACE = gql`
       error
     }
   }
+`;
+
+export const SEARCH_CATEGORY = gql`
+  query searchCategories($keyword: String!, $lastId: Int) {
+    searchCategories(keyword: $keyword, lastId: $lastId) {
+      ok
+      error
+      categories {
+        id
+        name
+        totalPhotologs
+      }
+      bigCategories {
+        id
+        name
+        totalPhotologs
+      }
+    }
+  }
+`;
+
+export const SEARCH_USER = gql`
+  query searchUsers($keyword: String!) {
+    searchUsers(keyword: $keyword) {
+      ok
+      error
+      users {
+        ...UserFragment
+      }
+    }
+  }
+  ${USER_FRAGMENT}
 `;

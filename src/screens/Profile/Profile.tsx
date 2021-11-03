@@ -17,6 +17,7 @@ import {
   BLOCK,
   FOLLOW,
   GET_MOMENTS,
+  GET_PERSONAL_CHATROOM,
   GET_PROFILE,
   GET_USER_LOGS,
   GET_USER_SERIES,
@@ -25,6 +26,7 @@ import {
 import {
   MomentType,
   PhotologType,
+  RoomType,
   SeriesType,
   StackGeneratorParamList,
   ThemeType,
@@ -136,6 +138,17 @@ const BlankContainer = styled.View`
   justify-content: center;
 `;
 
+const MomentDateContainer = styled.View`
+  align-items: center;
+  justify-content: center;
+  width: ${pixelScaler(57)}px;
+  height: ${pixelScaler(20)}px;
+  border-radius: ${pixelScaler(20)}px;
+  position: absolute;
+  bottom: ${pixelScaler(15)}px;
+  background-color: rgba(255, 255, 255, 0.8);
+`;
+
 const ProfileInfo = ({
   user,
   tabViewIndex,
@@ -161,6 +174,7 @@ const ProfileInfo = ({
   }) => {
     // { ok, error }: { ok: boolean; error: string }
     // console.log(user.id);
+
     if (ok) {
       refetchProfile();
     } else {
@@ -192,6 +206,29 @@ const ProfileInfo = ({
     UNFOLLOW,
     {
       onCompleted: onUnfollowCompleted,
+    }
+  );
+
+  const onGetPersonalRoomCompleted = ({
+    getPersonalChatroom: { ok, error, chatroom },
+  }: {
+    getPersonalChatroom: {
+      ok: boolean;
+      error: string;
+      chatroom: RoomType;
+    };
+  }) => {
+    if (ok) {
+      navigation.push("Chatroom", { room: chatroom });
+    } else {
+      Alert.alert("채팅방을 불러올 수 없습니다.", error);
+    }
+  };
+
+  const [getPersonalRoomMutation, { loading }] = useMutation(
+    GET_PERSONAL_CHATROOM,
+    {
+      onCompleted: onGetPersonalRoomCompleted,
     }
   );
 
@@ -259,6 +296,11 @@ const ProfileInfo = ({
             if (user.isMe) {
               navigation.push("Chatrooms");
             } else {
+              getPersonalRoomMutation({
+                variables: {
+                  targetId: user.id,
+                },
+              });
             }
           }}
         >
@@ -352,22 +394,21 @@ const RenderMoments = ({
   moments: MomentType[];
   index: number;
 }) => {
+  const createdAt = new Date(Number(moments[index].createdAt));
+
+  const m = createdAt.getMonth();
+  const d = createdAt.getDate();
+
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
-  const [url, setUrl] = useState("");
-  useEffect(() => {
-    (async () => {
-      const { uri } = await VideoThumbnails.getThumbnailAsync(
-        moments[index].videoUrl,
-        {
-          time: 50,
-        }
-      );
-      setUrl(uri);
-    })();
-  }, []);
+
   return (
     <TouchableOpacity
+      style={{
+        width: pixelScaler(123),
+        height: pixelScaler(186),
+        alignItems: "center",
+      }}
       onPress={() => {
         navigation.push("MomentView", {
           moments,
@@ -377,15 +418,18 @@ const RenderMoments = ({
     >
       <Image
         source={{
-          uri: url ?? BLANK_IMAGE,
+          uri: moments[index].thumbnail ?? BLANK_IMAGE,
         }}
         style={{
-          width: pixelScaler(186),
+          width: pixelScaler(123),
           height: pixelScaler(186),
           marginRight: pixelScaler(3),
           marginBottom: pixelScaler(3),
         }}
       />
+      <MomentDateContainer>
+        <RegText13>{m + "/" + d}</RegText13>
+      </MomentDateContainer>
     </TouchableOpacity>
   );
 };
@@ -416,7 +460,7 @@ const RenderSeries = ({ item, index }: { item: SeriesType; index: number }) => {
       </BldText13>
       {item.isPrivate ? (
         <Icon
-          name="locked"
+          name="lock_white"
           style={{
             position: "absolute",
             right: pixelScaler(15),
@@ -469,8 +513,15 @@ const Profile = () => {
       headerRight: () => (
         <View style={{ flexDirection: "row" }}>
           {user.isMe ? (
-            <TouchableOpacity>
-              <Ionicons name="notifications" size={20} />
+            <TouchableOpacity onPress={() => navigation.push("Notification")}>
+              <Icon
+                name="notification_1"
+                style={{
+                  width: pixelScaler(15),
+                  height: pixelScaler(20),
+                  marginRight: pixelScaler(18),
+                }}
+              />
             </TouchableOpacity>
           ) : null}
           <HeaderRightMenu onPress={() => setModalVisible(true)} />
@@ -478,7 +529,6 @@ const Profile = () => {
       ),
       title: user.username ?? "",
     });
-    console.log("RENDERED!!");
   }, []);
 
   const onShare = async (id: number) => {
@@ -564,7 +614,9 @@ const Profile = () => {
     setModalVisible(false);
   };
 
-  const [mutation, _] = useMutation(BLOCK, { onCompleted: onBlockCompleted });
+  const [mutation, { loading: blockLoading }] = useMutation(BLOCK, {
+    onCompleted: onBlockCompleted,
+  });
 
   const updateData = async () => {
     await refetchProfile();
@@ -716,7 +768,11 @@ const Profile = () => {
           >
             <RegText20>프로필 편집</RegText20>
           </ModalButtonBox>
-          <ModalButtonBox>
+          <ModalButtonBox
+            onPress={() => {
+              navigation.push("ScrappedContents");
+            }}
+          >
             <RegText20>스크랩한 게시물</RegText20>
           </ModalButtonBox>
           <ModalButtonBox
@@ -728,9 +784,9 @@ const Profile = () => {
           >
             <RegText20>등록된 공간 관리</RegText20>
           </ModalButtonBox>
-          <ModalButtonBox>
+          {/* <ModalButtonBox>
             <RegText20>프로필 공유</RegText20>
-          </ModalButtonBox>
+          </ModalButtonBox> */}
           <ModalButtonBox
             onPress={() => {
               setModalVisible(false);
@@ -750,14 +806,30 @@ const Profile = () => {
             paddingBottom: pixelScaler(44),
           }}
         >
-          <ModalButtonBox
+          {/* <ModalButtonBox
             style={{ marginBottom: pixelScaler(30) }}
             onPress={() => onShare(user.id)}
           >
             <RegText20>프로필 공유</RegText20>
-          </ModalButtonBox>
+          </ModalButtonBox> */}
           <ModalButtonBox
-            onPress={() => mutation({ variables: { targetId: user.id } })}
+            onPress={() => {
+              Alert.alert("게시물 삭제", "게시물을 삭제하시겠습니까?", [
+                {
+                  text: "확인",
+                  onPress: () => {
+                    if (!blockLoading) {
+                      setModalVisible(false);
+                      mutation({ variables: { targetId: user.id } });
+                    }
+                  },
+                },
+                {
+                  text: "취소",
+                  style: "cancel",
+                },
+              ]);
+            }}
           >
             <RegText20 style={{ color: theme.modalButtonRedText }}>
               차단
@@ -765,6 +837,7 @@ const Profile = () => {
           </ModalButtonBox>
           <ModalButtonBox
             onPress={() => {
+              setModalVisible(false);
               navigation.push("Report", { type: "user", id: user.id });
             }}
           >

@@ -10,6 +10,7 @@ import { FlatList } from "react-native";
 import { GET_LOGS_BY_CATEGORY } from "../queries";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Image from "../components/Image";
+import { RegText16 } from "../components/Text";
 
 const HeaderContainer = styled.View`
   flex-direction: row;
@@ -23,22 +24,52 @@ const LogContainer = styled.TouchableOpacity`
   margin-bottom: ${pixelScaler(3)}px;
 `;
 
+const Tag = styled.View`
+  height: ${pixelScaler(25)}px;
+  padding: 0 ${pixelScaler(10)}px;
+  border-radius: ${pixelScaler(25)}px;
+  border-width: ${pixelScaler(1)}px;
+  align-items: center;
+  justify-content: center;
+`;
+
 const LogsByCategory = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
-  const { data } = useQuery(GET_LOGS_BY_CATEGORY);
+  const { category } =
+    useRoute<RouteProp<StackGeneratorParamList, "LogsByCategory">>().params;
+
+  const { data, loading, fetchMore } = useQuery(GET_LOGS_BY_CATEGORY, {
+    variables: { tagId: category.id },
+  });
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <Tag>
+          <RegText16>{category.name}</RegText16>
+        </Tag>
+      ),
+    });
+  }, []);
 
   return (
     <ScreenContainer>
       <FlatList
         data={data?.getLogsByCategory?.logs}
-        // ListHeaderComponent={
-        //   <HeaderContainer>
-        //     <TouchableOpacity></TouchableOpacity>
-        //   </HeaderContainer>
-        // }
         numColumns={2}
+        onEndReached={() =>
+          fetchMore({
+            variables: {
+              tagId: category.id,
+              lastId:
+                data?.getLogsByCategory?.logs[
+                  data?.getLogsByCategory?.logs.length - 1
+                ].id,
+            },
+          })
+        }
         renderItem={({ item }: { item: PhotologType }) => (
           <LogContainer onPress={() => navigation.push("Log", { id: item.id })}>
             <Image

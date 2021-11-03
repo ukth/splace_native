@@ -1,41 +1,82 @@
-import React from "react";
+import { useNavigation } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useState } from "react";
 import styled from "styled-components/native";
-import { HashTagType, ThemeType } from "../../types";
-import { pixelScaler } from "../../utils";
+import {
+  BigCategoryType,
+  CategoryType,
+  SplaceType,
+  StackGeneratorParamList,
+  ThemeType,
+} from "../../types";
+import { pixelScaler, shortenAddress } from "../../utils";
 import { RegText13 } from "../Text";
+import ModalMapSplaceView from "../ModalMapSplaceView";
 
 const Container = styled.View`
   flex-direction: row;
+  width: ${pixelScaler(350)}px;
+  flex-wrap: wrap;
 `;
-const Tag = styled.View`
+
+const Tag = styled.TouchableOpacity`
   height: ${pixelScaler(20)}px;
   border-width: ${pixelScaler(0.6)}px;
   border-color: ${({ theme }: { theme: ThemeType }) => theme.tagBorder};
-  border-radius: ${({
-    borderRadius,
-  }: {
-    theme: ThemeType;
-    borderRadius: number;
-  }) => borderRadius}px;
   padding: 0 ${pixelScaler(10)}px;
   align-items: center;
   justify-content: center;
   margin-right: ${pixelScaler(10)}px;
+  margin-bottom: ${pixelScaler(10)}px;
 `;
 
-const Tags = ({ tags, address }: { tags: HashTagType[]; address: string }) => {
+const Tags = ({
+  splace,
+  bigCategories,
+  categories,
+}: {
+  splace: SplaceType | undefined;
+  bigCategories: BigCategoryType[];
+  categories: CategoryType[];
+}) => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   // console.log(tags);
+
+  const [showMap, setShowMap] = useState(false);
 
   return (
     <Container>
-      <Tag borderRadius={0}>
-        <RegText13>{address}</RegText13>
-      </Tag>
-      {tags.map(({ name }: { name: string }, index: number) => (
-        <Tag borderRadius={10} key={index}>
-          <RegText13>{name}</RegText13>
+      {splace?.address ? (
+        <Tag style={{ borderRadius: 0 }} onPress={() => setShowMap(true)}>
+          <RegText13>{shortenAddress(splace?.address)}</RegText13>
+        </Tag>
+      ) : null}
+      {bigCategories.map((bigCategory: BigCategoryType, index: number) => (
+        <Tag
+          style={{ borderRadius: pixelScaler(10) }}
+          key={index}
+          onPress={() => navigation.push("LogsByBigCategory", { bigCategory })}
+        >
+          <RegText13>{bigCategory.name}</RegText13>
         </Tag>
       ))}
+      {categories.map((category: CategoryType, index: number) => (
+        <Tag
+          style={{ borderRadius: pixelScaler(10) }}
+          key={index}
+          onPress={() => navigation.push("LogsByCategory", { category })}
+        >
+          <RegText13>{category.name}</RegText13>
+        </Tag>
+      ))}
+      {splace ? (
+        <ModalMapSplaceView
+          setShowMap={setShowMap}
+          showMap={showMap}
+          splace={splace}
+        />
+      ) : null}
     </Container>
   );
 };

@@ -20,6 +20,7 @@ import {
   HIDE_LOG,
   REMOVE_LOG,
   SCRAP_LOG,
+  UNSCRAP_LOG,
 } from "../../queries";
 
 const Container = styled.View`
@@ -35,6 +36,7 @@ const BottomHeader = styled.View`
   align-items: center;
   padding: 0 8%;
   height: ${pixelScaler(40)}px;
+  width: auto;
   justify-content: space-between;
   /* background-color: #458693; */
 `;
@@ -87,9 +89,12 @@ const PhotoLog = ({
   const onDeleteCompleted = (data: any) => {
     if (data?.deletePhotolog?.ok) {
       showFlashMessage({ message: "게시물이 삭제되었습니다." });
+      setModalVisible(false);
       refetch();
     } else {
+      setModalVisible(false);
       Alert.alert("게시물을 삭제할 수 없습니다.");
+      console.log(data);
     }
   };
 
@@ -116,9 +121,10 @@ const PhotoLog = ({
 
   const onScrapCompleted = (data: any) => {
     if (data?.scrapLog?.ok) {
-      showFlashMessage({ message: "게시물이 저장되었습니다." });
+      showFlashMessage({ message: "게시물이 스크랩되었습니다." });
+      refetch();
     } else {
-      Alert.alert("게시물을 저장할 수 없습니다.");
+      Alert.alert("게시물을 스크랩 할 수 없습니다.");
     }
   };
 
@@ -127,8 +133,25 @@ const PhotoLog = ({
     { onCompleted: onScrapCompleted }
   );
 
+  const onUnscrapCompleted = (data: any) => {
+    if (data?.unscrapLog?.ok) {
+      showFlashMessage({ message: "게시물이 스크랩 목록에서 삭제되었습니다." });
+      refetch();
+    } else {
+      Alert.alert(
+        "게시물을 스크랩 목록에서 삭제할 수 없습니다.",
+        data?.unscrapLog.error
+      );
+    }
+  };
+
+  const [unscrapMutation, { loading: unscrapMutationLoading }] = useMutation(
+    UNSCRAP_LOG,
+    { onCompleted: onUnscrapCompleted }
+  );
+
   const onBlockCompleted = (data: any) => {
-    if (data?.scrapLog?.ok) {
+    if (data?.blockUser?.ok) {
       showFlashMessage({ message: "사용자가 차단되었습니다." });
     } else {
       Alert.alert("사용자를 차단할 수 없습니다.");
@@ -159,13 +182,14 @@ const PhotoLog = ({
       </SwiperContainer>
       <BottomHeader>
         <TouchableOpacity
+          style={{ flex: 1 }}
           onPress={() => {
             if (item.splace?.activate) {
               navigation.push("Splace", { splace: item.splace });
             }
           }}
         >
-          <BldText20 numberOfLines={1} style={{ width: pixelScaler(270) }}>
+          <BldText20 numberOfLines={1}>
             {item.splace?.name ?? "Splace"}
           </BldText20>
         </TouchableOpacity>
@@ -206,14 +230,25 @@ const PhotoLog = ({
               </ModalButtonBox>
               <ModalButtonBox
                 onPress={() => {
-                  if (!deleteMutationLoading) {
-                    setModalVisible(false);
-                    deleteMutation({
-                      variables: {
-                        photologId: item.id,
+                  Alert.alert("게시물 삭제", "게시물을 삭제하시겠습니까?", [
+                    {
+                      text: "확인",
+                      onPress: () => {
+                        if (!deleteMutationLoading) {
+                          setModalVisible(false);
+                          deleteMutation({
+                            variables: {
+                              photologId: item.id,
+                            },
+                          });
+                        }
                       },
-                    });
-                  }
+                    },
+                    {
+                      text: "취소",
+                      style: "cancel",
+                    },
+                  ]);
                 }}
               >
                 <RegText20 style={{ color: "#FF0000" }}>게시물 삭제</RegText20>
@@ -227,16 +262,31 @@ const PhotoLog = ({
               {/* <ModalButtonBox onPress={() => onShare(item.id)}>
                 <RegText20>공유</RegText20>
               </ModalButtonBox> */}
-              <ModalButtonBox
-                onPress={() => {
-                  if (!scrapMutationLoading) {
-                    setModalVisible(false);
-                    scrapMutation({ variables: { photologId: item.id } });
-                  }
-                }}
-              >
-                <RegText20 style={{ color: "#00A4B7" }}>스크랩하기</RegText20>
-              </ModalButtonBox>
+              {item.isScraped ? (
+                <ModalButtonBox
+                  onPress={() => {
+                    if (!scrapMutationLoading) {
+                      setModalVisible(false);
+                      unscrapMutation({ variables: { scrapedLogId: item.id } });
+                    }
+                  }}
+                >
+                  <RegText20 style={{ color: "#00A4B7" }}>
+                    스크랩 목록에서 삭제
+                  </RegText20>
+                </ModalButtonBox>
+              ) : (
+                <ModalButtonBox
+                  onPress={() => {
+                    if (!scrapMutationLoading) {
+                      setModalVisible(false);
+                      scrapMutation({ variables: { photologId: item.id } });
+                    }
+                  }}
+                >
+                  <RegText20 style={{ color: "#00A4B7" }}>스크랩하기</RegText20>
+                </ModalButtonBox>
+              )}
 
               <ModalButtonBox
                 onPress={() => {

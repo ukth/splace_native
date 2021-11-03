@@ -57,7 +57,7 @@ import ModalMapView from "../../components/ModalMapView";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icons } from "../../icons";
-import { HeaderRightEdit } from "../../components/HeaderRightAdd";
+import { HeaderRightEdit } from "../../components/HeaderRightEdit";
 
 const SplaceItemContainer = styled.View`
   width: ${pixelScaler(170)}px;

@@ -42,7 +42,8 @@ export type SplaceType = {
   activate: boolean;
   categories?: CategoryType[];
   bigCategories?: BigCategoryType[];
-  ratingtags?: RatingTagType[];
+  ratingtags?: RatingtagType[];
+  isSaved: boolean;
 };
 
 export type FixedContentType = {
@@ -100,6 +101,7 @@ export type MomentType = {
   createdAt: string;
   updatedAt: string;
   splace?: SplaceType;
+  thumbnail: string;
 };
 
 export type SaveType = {
@@ -223,6 +225,7 @@ export type StackGeneratorParamList = {
     room: RoomType;
   };
   Chatrooms: undefined;
+  CreateChatroom: undefined;
   Members: {
     title: string;
     vars: any;
@@ -305,6 +308,10 @@ export type StackGeneratorParamList = {
   LogsByBigCategory: {
     bigCategory: BigCategoryType;
   };
+  Notification: undefined;
+  SplacesByRatingtag: { ratingtag: RatingtagType };
+  Filter: undefined;
+  ScrappedContents: undefined;
 };
 
 export interface StackGeneratorProps {
@@ -321,7 +328,7 @@ export type CategoryType = {
   name: string;
 };
 
-export type RatingTagType = {
+export type RatingtagType = {
   id: number;
   name: string;
 };
@@ -371,7 +378,7 @@ export type PhotologType = {
   categories?: CategoryType[];
   bigCategories?: BigCategoryType[];
   specialtags: SpecialTagType[];
-  splace: SplaceType;
+  splace?: SplaceType;
   liked: any[];
   totalLiked: number;
   seriesElements: {
@@ -384,6 +391,7 @@ export type PhotologType = {
   isILiked: boolean;
   createdAt: string;
   isPrivate: boolean;
+  isScraped: boolean;
 };
 
 export type SeriesType = {
@@ -397,6 +405,7 @@ export type SeriesType = {
     photolog: PhotologType;
   }[];
   isPrivate: boolean;
+  isScraped: boolean;
 };
 
 export type BottomTabParamList = {
@@ -442,7 +451,7 @@ export type ThemeType = {
   tabInactive: string;
   searchedItemBorder: string;
 
-  ratingTag: string;
+  ratingtag: string;
   textHighlight: string;
   borderHighlight: string;
 
@@ -498,6 +507,7 @@ export type ThemeType = {
   chatInviteConfirmText: string;
 
   headerConfirmText: string;
+  notificationSeperator: string;
 
   folderDeleteButtonBackground: string;
   folderDeleteMinus: string;

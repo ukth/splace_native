@@ -3,7 +3,12 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
+import {
+  BigCategoryType,
+  SplaceType,
+  StackGeneratorParamList,
+  ThemeType,
+} from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
@@ -22,7 +27,7 @@ import {
 } from "react-native";
 import { Icons } from "../../icons";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { EDIT_SPLACE } from "../../queries";
+import { EDIT_SPLACE, GET_BIGCATEGORIES } from "../../queries";
 import useMe from "../../hooks/useMe";
 import { ProgressContext } from "../../contexts/Progress";
 
@@ -101,20 +106,7 @@ const EditSplaceCategory = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryText, setCategoryText] = useState("");
 
-  const [bigCategoryList, setBigCategoryList] = useState<any[]>([
-    { id: 0, name: "음식점" },
-    { id: 1, name: "음식점" },
-    { id: 2, name: "음식점" },
-    { id: 3, name: "음식점" },
-    { id: 4, name: "음식점" },
-    { id: 5, name: "음식점" },
-    { id: 6, name: "음식점" },
-    { id: 7, name: "음식점" },
-    { id: 8, name: "음식점" },
-    { id: 9, name: "음식점" },
-    { id: 10, name: "음식점" },
-    { id: 11, name: "음식점" },
-  ]);
+  const { data } = useQuery(GET_BIGCATEGORIES);
   const theme = useContext<ThemeType>(ThemeContext);
   const me = useMe();
   const { spinner } = useContext(ProgressContext);
@@ -170,38 +162,40 @@ const EditSplaceCategory = () => {
         <RegText13 style={{ color: theme.greyTextLight }}>최대 3개</RegText13>
       </LabelContainer>
       <TagsContainer>
-        {bigCategoryList.map((bigCategory, index) => (
-          <Tag
-            key={index + ""}
-            style={
-              selectedBigCategoryIds.includes(bigCategory.id)
-                ? { backgroundColor: theme.themeBackground }
-                : { borderWidth: pixelScaler(0.67) }
-            }
-          >
-            <RegText16
+        {data?.getBigCategories?.bigCategories?.map(
+          (bigCategory: BigCategoryType, index: number) => (
+            <Tag
+              key={index + ""}
               style={
                 selectedBigCategoryIds.includes(bigCategory.id)
-                  ? { color: theme.white }
-                  : {}
+                  ? { backgroundColor: theme.themeBackground }
+                  : { borderWidth: pixelScaler(0.67) }
               }
-              onPress={() => {
-                if (selectedBigCategoryIds.includes(bigCategory.id)) {
-                  const tmp = [...selectedBigCategoryIds];
-                  tmp.splice(tmp.indexOf(bigCategory.id), 1);
-                  setSelectedBigCategoryIds(tmp);
-                } else {
-                  setSelectedBigCategoryIds([
-                    ...selectedBigCategoryIds,
-                    bigCategory.id,
-                  ]);
-                }
-              }}
             >
-              {bigCategory.name}
-            </RegText16>
-          </Tag>
-        ))}
+              <RegText16
+                style={
+                  selectedBigCategoryIds.includes(bigCategory.id)
+                    ? { color: theme.white }
+                    : {}
+                }
+                onPress={() => {
+                  if (selectedBigCategoryIds.includes(bigCategory.id)) {
+                    const tmp = [...selectedBigCategoryIds];
+                    tmp.splice(tmp.indexOf(bigCategory.id), 1);
+                    setSelectedBigCategoryIds(tmp);
+                  } else {
+                    setSelectedBigCategoryIds([
+                      ...selectedBigCategoryIds,
+                      bigCategory.id,
+                    ]);
+                  }
+                }}
+              >
+                {bigCategory.name}
+              </RegText16>
+            </Tag>
+          )
+        )}
       </TagsContainer>
       <LabelContainer
         style={{

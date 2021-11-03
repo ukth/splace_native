@@ -16,6 +16,7 @@ import { ProgressProvider } from "./contexts/Progress";
 import { ImagePickerProvider } from "./contexts/ImagePicker";
 import FlashMessage from "react-native-flash-message";
 import { UploadContentProvider } from "./contexts/UploadContent";
+import { FilterProvider } from "./contexts/Filter";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -56,15 +57,17 @@ export default function App() {
       <ProgressProvider>
         <ImagePickerProvider>
           <UploadContentProvider>
-            <ApolloProvider client={client}>
-              <ThemeProvider theme={theme.light}>
-                <StatusBar style="dark" />
-                <SafeAreaProvider>
-                  <Navigation />
-                </SafeAreaProvider>
-                <FlashMessage position="top" />
-              </ThemeProvider>
-            </ApolloProvider>
+            <FilterProvider>
+              <ApolloProvider client={client}>
+                <ThemeProvider theme={theme.light}>
+                  <StatusBar style="dark" />
+                  <SafeAreaProvider>
+                    <Navigation />
+                  </SafeAreaProvider>
+                  <FlashMessage position="top" />
+                </ThemeProvider>
+              </ApolloProvider>
+            </FilterProvider>
           </UploadContentProvider>
         </ImagePickerProvider>
       </ProgressProvider>

@@ -6,6 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
+import * as VideoThumbnails from "expo-video-thumbnails";
 
 import { Camera } from "expo-camera";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,36 +14,24 @@ import {
   Alert,
   Animated,
   Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
-// import Slider from "@react-native-community/slider";
-import * as MediaLibrary from "expo-media-library";
-import { useIsFocused } from "@react-navigation/core";
+
 import { AVPlaybackStatus, Video } from "expo-av";
 import {
   coords2address,
   pixelScaler,
   showFlashMessage,
+  uploadPhotos,
   uploadVideo,
 } from "../../utils";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { RNCamera } from "react-native-camera";
 import { Icons } from "../../icons";
 import { RegTextInput13, RegTextInput20 } from "../../components/TextInput";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { ProgressContext } from "../../contexts/Progress";
-import {
-  BldText13,
-  BldText16,
-  RegText13,
-  RegText20,
-} from "../../components/Text";
+import { BldText16, RegText20 } from "../../components/Text";
 import { UploadContentContext } from "../../contexts/UploadContent";
 import { UPLOAD_MOMENT } from "../../queries";
 import RatingModal from "./RatingModal";
@@ -73,13 +62,6 @@ const CameraButtonContainer = styled.View`
   border-radius: ${pixelScaler(60)}px;
   align-items: center;
   justify-content: center;
-`;
-
-const UpperContainer = styled.View`
-  flex: 1;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
 `;
 
 const BottomContainer = styled.View`
@@ -133,9 +115,14 @@ const UploadMoment = () => {
     spinner.stop();
     if (data?.uploadMoment?.ok) {
       showFlashMessage({ message: "모먼트가 업로드되었습니다." });
-      setShowRating(true);
+      if (content.splace) {
+        setShowRating(true);
+      } else {
+        navigation.pop();
+      }
     } else {
-      Alert.alert("업로드 실패");
+      Alert.alert("업로드 실패", data?.uploadMoment?.error);
+      console.log(data?.uploadMoment?.error);
     }
   };
 
@@ -166,10 +153,6 @@ const UploadMoment = () => {
     outputRange: [-width, 0],
     extrapolate: "clamp",
   });
-
-  // const barWidth = {
-  //   width: progressAnim,
-  // };
 
   useEffect(() => {
     if (recordedUri !== "") {
@@ -204,11 +187,23 @@ const UploadMoment = () => {
             <UploadButton
               onPress={async () => {
                 spinner.start(true, 60);
+
+                const { uri } = await VideoThumbnails.getThumbnailAsync(
+                  recordedUri,
+                  {
+                    time: 0,
+                  }
+                );
+
+                const thumbnailUrl = await uploadPhotos([uri]);
+
                 const awsUrl = await uploadVideo(recordedUri);
                 // console.log(awsUrl);
+                console.log(thumbnailUrl);
 
                 mutation({
                   variables: {
+                    thumbnail: thumbnailUrl[0],
                     videoUrl: awsUrl,
                     text: momentText,
                     ...(content?.splace

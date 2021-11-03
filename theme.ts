@@ -63,7 +63,6 @@ export const theme = {
     tabInactive: colors.black,
     searchedItemBorder: colors.grey_c4,
 
-    ratingTag: colors.theme,
     textHighlight: colors.theme,
     borderHighlight: colors.theme,
 
@@ -131,6 +130,8 @@ export const theme = {
     profileLink: colors.theme,
     editProfileSeperator: colors.grey_ae,
     editProfileTextGrey: colors.grey_8e,
+
+    notificationSeperator: colors.grey_ae,
 
     modalHighlight: colors.theme,
     modalInputSubmitButton: colors.theme,

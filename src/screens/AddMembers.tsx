@@ -9,7 +9,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import styled, { ThemeContext } from "styled-components/native";
 import Image from "../components/Image";
 import ScreenContainer from "../components/ScreenContainer";
-import { BldText16, BldText33, RegText13 } from "../components/Text";
+import { BldText16, RegText13 } from "../components/Text";
 import { BldTextInput16 } from "../components/TextInput";
 import useMe from "../hooks/useMe";
 import { GET_FOLLOWERS } from "../queries";

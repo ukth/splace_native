@@ -203,7 +203,7 @@ const UploadSeries = () => {
             </BldText13>
             {item.isPrivate ? (
               <Icon
-                name="locked"
+                name="lock_white"
                 style={{
                   position: "absolute",
                   right: pixelScaler(15),

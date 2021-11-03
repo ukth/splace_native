@@ -8,6 +8,7 @@ import styled from "styled-components/native";
 import { Icons } from "../icons";
 import { StackGeneratorParamList, ThemeType } from "../types";
 import { pixelScaler } from "../utils";
+import { Icon } from "./Icon";
 import { BldText16 } from "./Text";
 
 const Container = styled.SafeAreaView`
@@ -116,9 +117,13 @@ const MainfeedHeader = () => {
   return (
     <Container>
       <HeaderLeftContainer>
-        <Image
-          source={Icons.super_box}
-          style={{ width: pixelScaler(59), height: pixelScaler(35) }}
+        <Icon
+          name="super_necklace"
+          style={{
+            width: pixelScaler(35),
+            height: pixelScaler(35),
+            marginLeft: pixelScaler(23),
+          }}
         />
       </HeaderLeftContainer>
       <HeaderRightContainer>

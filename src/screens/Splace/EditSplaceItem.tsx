@@ -5,12 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
-import {
-  BldText16,
-  RegText13,
-  RegText16,
-  RegText33,
-} from "../../components/Text";
+import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import {

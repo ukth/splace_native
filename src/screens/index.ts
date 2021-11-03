@@ -1,6 +1,6 @@
 import LogIn from "./LogIn";
 import Mainfeed from "./Mainfeed";
-import Search from "./Search";
+import { Search, Filter } from "./Search";
 import {
   Profile,
   ProfileUsers,
@@ -16,6 +16,8 @@ import {
   MomentView,
   MySplaces,
   SearchSplaceForAdd,
+  Notification,
+  ScrappedContents,
 } from "./Profile";
 import {
   Splace,
@@ -38,7 +40,7 @@ import Series from "./Series";
 import SignUp from "./SignUp";
 // import Market from "./Market";
 import Payment from "./Payment";
-import { Chatroom, Chatrooms } from "./Chat";
+import { Chatroom, Chatrooms, CreateChatroom } from "./Chat";
 import Members from "./Members";
 import AddMembers from "./AddMembers";
 import { Folders, Folder, AddSaveFolders, AddSaveFolder } from "./Keep";
@@ -61,11 +63,13 @@ import EditPhotolog from "./EditPhotolog";
 import EditSeries from "./EditSeries";
 import LogsByCategory from "./LogsByCategory";
 import LogsByBigCategory from "./LogsByBigCategory";
+import SplacesByRatingtag from "./SplacesByRatingtag";
 
 export {
   LogIn,
   Mainfeed,
   Search,
+  Filter,
   Profile,
   Splace,
   EditSplace,
@@ -88,6 +92,7 @@ export {
   Payment,
   Chatroom,
   Chatrooms,
+  CreateChatroom,
   Members,
   AddMembers,
   MomentView,
@@ -125,4 +130,7 @@ export {
   EditSeries,
   LogsByCategory,
   LogsByBigCategory,
+  Notification,
+  ScrappedContents,
+  SplacesByRatingtag,
 };

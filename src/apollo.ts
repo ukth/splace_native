@@ -208,6 +208,18 @@ export const cache = new InMemoryCache({
         },
       },
     },
+    Mutation: {
+      fields: {
+        getBigCategories: {
+          keyArgs: ["tagId"],
+          merge(existing, incoming) {
+            console.log("existing\n", existing);
+            console.log("incoming\n", incoming);
+            return existing;
+          },
+        },
+      },
+    },
   },
 });
 

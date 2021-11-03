@@ -12,6 +12,8 @@ import Agreement from "./Agreement";
 import MomentView from "./MomentView";
 import MySplaces from "./MySplaces";
 import SearchSplaceForAdd from "./SearchSplaceForAdd";
+import Notification from "./Notifications";
+import ScrappedContents from "./ScrappedContents";
 
 export {
   Profile,
@@ -28,4 +30,6 @@ export {
   MomentView,
   MySplaces,
   SearchSplaceForAdd,
+  Notification,
+  ScrappedContents,
 };
