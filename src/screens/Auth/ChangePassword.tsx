@@ -97,14 +97,14 @@ const ChangePassword = () => {
     setStatusBarStyle("dark");
     navigation.setOptions({
       headerTitle: () => <BldText16>비밀번호 재설정</BldText16>,
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.pop()}>
-          <Icon
-            name="close"
-            style={{ width: pixelScaler(11), height: pixelScaler(11) }}
-          />
-        </TouchableOpacity>
-      ),
+      headerLeft: () =>
+        null,
+        // <TouchableOpacity onPress={() => navigation.pop()}>
+        //   <Icon
+        //     name="close"
+        //     style={{ width: pixelScaler(11), height: pixelScaler(11) }}
+        //   />
+        // </TouchableOpacity>
       headerRight: () =>
         validatePassword(password) &&
         passwordConfirm !== "" &&

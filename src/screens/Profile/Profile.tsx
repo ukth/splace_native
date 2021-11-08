@@ -217,7 +217,7 @@ const ProfileInfo = ({
   );
 
   const onGetPersonalRoomCompleted = (data: any) => {
-    console.log(data);
+    // console.log(data);
     if (data?.getPersonalChatroom?.ok) {
       navigation.push("Chatroom", { room: data.getPersonalChatroom.chatroom });
     } else {

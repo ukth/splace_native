@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
@@ -8,7 +9,7 @@ import PhotoLog from "../../components/Contents/Photolog";
 import Series from "../../components/Contents/Series";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
-import { BldText16, RegText16 } from "../../components/Text";
+import { BldText13, BldText16, RegText16 } from "../../components/Text";
 import { BLANK_IMAGE } from "../../constants";
 import { GET_SCRAPPED_LOGS, GET_SCRAPPED_SERIES } from "../../queries";
 import {
@@ -132,6 +133,29 @@ const ScrappedContents = () => {
             <ItemContainer
               onPress={() => navigation.push("Series", { id: item.id })}
             >
+              <LinearGradient
+                // Background Linear Gradient
+                colors={["rgba(0,0,0,0.2)", "transparent"]}
+                style={{
+                  top: 0,
+                  position: "absolute",
+                  height: pixelScaler(40),
+                  width: pixelScaler(186),
+                  zIndex: 1,
+                }}
+              />
+              <BldText13
+                style={{
+                  position: "absolute",
+                  zIndex: 2,
+                  left: pixelScaler(15),
+                  top: pixelScaler(15),
+                  color: theme.white,
+                  width: pixelScaler(145),
+                }}
+              >
+                {item.title} ({item.seriesElements.length})
+              </BldText13>
               <Image
                 source={{
                   uri:

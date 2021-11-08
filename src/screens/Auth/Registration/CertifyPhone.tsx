@@ -78,7 +78,7 @@ const CertifyPhone = () => {
 
   const onRequestCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
+    // console.log(data);
     if (data?.createCertificate?.ok) {
       setSent(true);
       setCertificateFailed(false);

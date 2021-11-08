@@ -102,9 +102,9 @@ const ImagePicker = ({
     );
     (async () => {
       const albums = await MediaLibrary.getAlbumsAsync();
-      console.log(albums);
+      // console.log(albums);
     })();
-    console.log(size);
+    // console.log(size);
   }, []);
 
   return (

@@ -38,7 +38,7 @@ const Image = ({
       );
       setImgURI(imageObject.uri);
     } catch (err) {
-      console.log("Image loading error:", err);
+      // console.log("Image loading error:", err);
       setImgURI(remoteURI);
     }
   };

@@ -209,7 +209,7 @@ const CreateChatroom = ({
   );
 
   const onGetPersonalRoomCompleted = (data: any) => {
-    console.log(data);
+    // console.log(data);
     spinner.stop();
     if (data?.getPersonalChatroom?.ok) {
       navigation.pop();
