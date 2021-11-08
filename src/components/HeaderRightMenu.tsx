@@ -16,6 +16,11 @@ export const HeaderRightMenu = ({
     <TouchableOpacity
       onPress={onPress}
       style={{ marginRight: pixelScaler(27) }}
+      hitSlop={{
+        top: pixelScaler(10),
+        bottom: pixelScaler(10),
+        right: pixelScaler(10),
+      }}
     >
       <Image source={Icons.menu} style={{ width: 18, height: 15 }} />
     </TouchableOpacity>

@@ -71,6 +71,7 @@ import {
   LogsByBigCategory,
   SplacesByRatingtag,
   ScrappedContents,
+  SearchSplaceForFilter,
 } from "../screens";
 import styled from "styled-components/native";
 import { Image, Platform, View, Animated } from "react-native";
@@ -110,9 +111,13 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
 
   useEffect(() => {
     if (
-      ["Chatroom", "MomentView", "ImagesViewer", "UploadMoment"].includes(
-        focused
-      )
+      [
+        "Chatroom",
+        "MomentView",
+        "ImagesViewer",
+        "UploadMoment",
+        "Filter",
+      ].includes(focused)
     ) {
       navigation.setOptions({
         tabBarVisible: false,
@@ -195,10 +200,24 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
         <Stack.Screen name="Mainfeed" component={Mainfeed} />
       ) : null}
       {screenName === "Search" ? (
-        <Stack.Screen name="Search" component={Search} />
+        <Stack.Screen
+          name="Search"
+          component={Search}
+          options={{
+            headerStyle: {
+              shadowColor: "transparent",
+            },
+          }}
+        />
       ) : null}
       {screenName === "Search" ? (
         <Stack.Screen name="Filter" component={Filter} />
+      ) : null}
+      {screenName === "Search" ? (
+        <Stack.Screen
+          name="SearchSplaceForFilter"
+          component={SearchSplaceForFilter}
+        />
       ) : null}
       {/* {screenName === "Market" ? (
         <Stack.Screen name="Market" component={Market} />

@@ -3,6 +3,7 @@ import React from "react";
 import { GestureResponderEvent, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { pixelScaler } from "../utils";
+import { Icon } from "./Icon";
 
 export const HeaderBackButton = ({
   onPress,
@@ -12,11 +13,22 @@ export const HeaderBackButton = ({
   color?: string;
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={{ marginLeft: pixelScaler(18) }}>
-      <Ionicons
-        size={pixelScaler(27)}
-        name="chevron-back"
-        color={color ?? "#000000"}
+    <TouchableOpacity
+      hitSlop={{
+        top: pixelScaler(10),
+        bottom: pixelScaler(10),
+        right: pixelScaler(10),
+        left: pixelScaler(10),
+      }}
+      onPress={onPress}
+      style={{ marginLeft: pixelScaler(27) }}
+    >
+      <Icon
+        name="header_back"
+        style={{
+          width: pixelScaler(9),
+          height: pixelScaler(17),
+        }}
       />
     </TouchableOpacity>
   );

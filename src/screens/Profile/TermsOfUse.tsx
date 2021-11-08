@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 
 import ScreenContainer from "../../components/ScreenContainer";
-import { RegText16 } from "../../components/Text";
+import { BldText16, RegText16 } from "../../components/Text";
 import { StackGeneratorParamList } from "../../types";
 
 const TermsOfUse = () => {
@@ -12,7 +12,7 @@ const TermsOfUse = () => {
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   useEffect(() => {
     navigation.setOptions({
-      title: "이용 약관",
+      headerTitle: () => <BldText16>이용 약관</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
   }, []);

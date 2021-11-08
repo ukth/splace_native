@@ -8,6 +8,7 @@ import { ThemeContext } from "styled-components/native";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { MemberComponent, Seperator } from "../../components/Members";
 import ScreenContainer from "../../components/ScreenContainer";
+import { BldTextInput16 } from "../../components/TextInput";
 import useMe from "../../hooks/useMe";
 import { GET_FOLLOWERS, GET_FOLLOWINGS } from "../../queries";
 
@@ -26,7 +27,11 @@ const ProfileUsers = ({
 
   useEffect(() => {
     navigation.setOptions({
-      title: type === "followers" ? "팔로워" : "팔로잉",
+      headerTitle: () => (
+        <BldTextInput16>
+          {type === "followers" ? "팔로워" : "팔로잉"}
+        </BldTextInput16>
+      ),
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
   }, []);

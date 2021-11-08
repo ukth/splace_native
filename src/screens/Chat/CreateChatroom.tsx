@@ -7,19 +7,25 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled, { ThemeContext } from "styled-components/native";
+import { Icon } from "../../components/Icon";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText16, RegText13 } from "../../components/Text";
 import { BldTextInput16 } from "../../components/TextInput";
+import { ProgressContext } from "../../contexts/Progress";
 import useMe from "../../hooks/useMe";
-import { CREATE_ROOM, GET_FOLLOWERS } from "../../queries";
+import {
+  CREATE_ROOM,
+  GET_FOLLOWERS,
+  GET_PERSONAL_CHATROOM,
+} from "../../queries";
 import {
   RoomType,
   StackGeneratorParamList,
   ThemeType,
   UserType,
 } from "../../types";
-import { pixelScaler } from "../../utils";
+import { BLANK_IMAGE, pixelScaler } from "../../utils";
 
 const MemberContainer = styled.TouchableOpacity`
   height: ${pixelScaler(60)}px;
@@ -105,7 +111,7 @@ const ChatMemberComponent = ({
         <MemberThumbnail>
           <Image
             source={{
-              uri: user.profileImageUrl ?? "",
+              uri: user.profileImageUrl ?? BLANK_IMAGE,
             }}
             style={{
               width: pixelScaler(32),
@@ -169,6 +175,8 @@ const CreateChatroom = ({
   const [userList, setUserList] = useState<number[]>([]);
   // console.log(me);
 
+  const { spinner } = useContext(ProgressContext);
+
   const { data, loading, refetch, fetchMore } = useQuery(GET_FOLLOWERS, {
     variables: { userId: me.id, keyword },
   });
@@ -177,14 +185,17 @@ const CreateChatroom = ({
     createChatroom: {
       ok: boolean;
       error: string;
+      chatroom: RoomType;
     };
   }) => {
+    spinner.stop();
     const {
-      createChatroom: { ok, error },
+      createChatroom: { ok, error, chatroom },
     } = data;
     console.log(data);
     if (ok) {
-      // navigation.push();
+      navigation.pop();
+      navigation.push("Chatroom", { room: chatroom });
     } else {
       Alert.alert("채팅방을 생성할 수 없습니다.");
     }
@@ -197,6 +208,25 @@ const CreateChatroom = ({
     }
   );
 
+  const onGetPersonalRoomCompleted = (data: any) => {
+    console.log(data);
+    spinner.stop();
+    if (data?.getPersonalChatroom?.ok) {
+      navigation.pop();
+      navigation.push("Chatroom", { room: data.getPersonalChatroom.chatroom });
+    } else {
+      Alert.alert(
+        "채팅방을 불러올 수 없습니다.",
+        data.getPersonalChatroom.error
+      );
+    }
+  };
+
+  const [getPersonalRoomMutation, { loading: getPersonalRoomMutationLoading }] =
+    useMutation(GET_PERSONAL_CHATROOM, {
+      onCompleted: onGetPersonalRoomCompleted,
+    });
+
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => <BldText16>생성하기</BldText16>,
@@ -204,13 +234,26 @@ const CreateChatroom = ({
         <TouchableOpacity
           onPress={() => {
             if (!loading && userList.length !== 0) {
-              createMutation({
-                variables: {
-                  title: "",
-                  memberIds: userList,
-                  isPersonal: false,
-                },
-              });
+              spinner.start();
+              if (!userList.includes(1)) {
+                if (userList.length > 1) {
+                  createMutation({
+                    variables: {
+                      title: "",
+                      memberIds: [me.id, ...userList],
+                      isPersonal: false,
+                    },
+                  });
+                } else {
+                  if (!getPersonalRoomMutationLoading) {
+                    getPersonalRoomMutation({
+                      variables: {
+                        targetId: userList[0],
+                      },
+                    });
+                  }
+                }
+              }
             }
           }}
         >
@@ -241,11 +284,14 @@ const CreateChatroom = ({
   return (
     <ScreenContainer>
       <FollowerSearchEntry>
-        <Ionicons
-          name="search"
-          size={26}
-          color={theme.entryPlaceholder}
-          style={{ marginLeft: 5, marginRight: 5 }}
+        <Icon
+          name="search_grey"
+          style={{
+            width: pixelScaler(20),
+            height: pixelScaler(20),
+            marginLeft: pixelScaler(15),
+            marginRight: pixelScaler(5),
+          }}
         />
         <BldTextInput16
           onChangeText={(text) => {

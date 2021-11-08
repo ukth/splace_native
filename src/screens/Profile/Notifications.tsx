@@ -19,6 +19,7 @@ import { FOLLOW, GET_NOTIFICATIONS } from "../../queries";
 import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
 import { BLANK_IMAGE, pixelScaler } from "../../utils";
 import { gql, useMutation } from "@apollo/client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ItemContainer = styled.View`
   height: ${pixelScaler(75)}px;
@@ -102,10 +103,13 @@ const Notification = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
+  const d = new Date();
+
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => <BldText16>알림</BldText16>,
     });
+    AsyncStorage.setItem("check_notification", d.valueOf() + "");
   }, []);
 
   navigation.addListener("focus", refetch);

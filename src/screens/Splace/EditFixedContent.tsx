@@ -12,7 +12,6 @@ import {
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler, uploadPhotos } from "../../utils";
 import { BldText16, RegText13 } from "../../components/Text";
-import { bigCategories } from "../../constants";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import {
   Alert,

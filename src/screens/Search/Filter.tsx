@@ -17,7 +17,12 @@ import {
 } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { FilterContext } from "../../contexts/Filter";
-import { formatDistance, formatFilterDistance, pixelScaler } from "../../utils";
+import {
+  coords2address,
+  formatDistance,
+  formatFilterDistance,
+  pixelScaler,
+} from "../../utils";
 import { Alert, ScrollView, Switch, View } from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -28,21 +33,23 @@ import { useQuery } from "@apollo/client";
 import { GET_BIGCATEGORIES } from "../../queries";
 import { ratingtags } from "../../constants";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
+import { BldTextInput16 } from "../../components/TextInput";
 
 const LabelContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const FiltersDeactivate = styled.View`
   position: absolute;
   z-index: 1;
-  width: 100%;
+  width: ${pixelScaler(330)}px;
   height: ${pixelScaler(600)}px;
   background-color: rgba(255, 255, 255, 0.8);
 `;
 
-const LocationSelector = styled.View`
+const LocationSelector = styled.TouchableOpacity`
   flex-direction: row;
   width: auto;
   height: ${pixelScaler(35)}px;
@@ -68,6 +75,7 @@ const Tag = styled.TouchableOpacity`
   border-radius: ${pixelScaler(25)}px;
   margin-right: ${pixelScaler(5)}px;
   margin-bottom: ${pixelScaler(15)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const Filter = () => {
@@ -84,10 +92,10 @@ const Filter = () => {
   const theme = useContext<ThemeType>(ThemeContext);
 
   const { data } = useQuery(GET_BIGCATEGORIES);
-  var sliderTimeoutId: NodeJS.Timeout;
 
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: () => <BldTextInput16>검색 필터 설정</BldTextInput16>,
       headerRight: () => (
         <HeaderRightConfirm
           text="초기화"
@@ -152,6 +160,12 @@ const Filter = () => {
             <TouchableOpacity
               onPress={() => {
                 if (location) {
+                  (async () => {
+                    const address = await coords2address({
+                      lat: location.lat,
+                      lon: location.lon,
+                    });
+                  })();
                   setFilter({
                     ...filter,
                     lat: location.lat,
@@ -167,7 +181,11 @@ const Filter = () => {
               ) : null}
             </TouchableOpacity>
           </LabelContainer>
-          <LocationSelector>
+          <LocationSelector
+            onPress={() => {
+              navigation.push("SearchSplaceForFilter");
+            }}
+          >
             <Icon
               name="search_grey"
               style={{
@@ -176,6 +194,15 @@ const Filter = () => {
                 marginLeft: pixelScaler(15),
               }}
             />
+            <RegText16
+              style={{
+                marginLeft: pixelScaler(8),
+                marginTop: pixelScaler(1.3),
+                color: filter.locationText ? theme.text : theme.greyTextLight,
+              }}
+            >
+              {filter.locationText ?? "지하철역, 장소명으로 지정해 보세요"}
+            </RegText16>
           </LocationSelector>
           <LabelContainer>
             <BldText16>검색반경</BldText16>

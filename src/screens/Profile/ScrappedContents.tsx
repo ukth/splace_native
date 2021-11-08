@@ -50,13 +50,17 @@ const ScrappedContents = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <BldText16>스크랩한 로그</BldText16>,
+      headerTitle: () => <BldText16>스크랩한 게시물</BldText16>,
     });
   }, []);
+  useEffect(() => {
+    console.log(logData);
+  }, [logData]);
   return (
     <ScreenContainer>
       <LabelContainer>
         <TouchableOpacity
+          onPress={() => setContent("log")}
           hitSlop={{
             top: pixelScaler(10),
             bottom: pixelScaler(10),
@@ -72,6 +76,7 @@ const ScrappedContents = () => {
           )}
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => setContent("series")}
           hitSlop={{
             top: pixelScaler(10),
             bottom: pixelScaler(10),

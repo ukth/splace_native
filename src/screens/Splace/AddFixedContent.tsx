@@ -7,7 +7,6 @@ import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler, uploadPhotos } from "../../utils";
 import { BldText16, RegText13 } from "../../components/Text";
-import { bigCategories } from "../../constants";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import {
   Alert,
@@ -24,6 +23,7 @@ import { BldTextInput16, RegTextInput13 } from "../../components/TextInput";
 import { CREATE_CONTENT } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
 import { exp } from "react-native-reanimated";
+import { Icon } from "../../components/Icon";
 
 const MinusButton = styled.TouchableOpacity`
   width: ${pixelScaler(25)}px;
@@ -164,7 +164,14 @@ const AddFixedContents = () => {
                   style={{ position: "absolute", bottom: 0 }}
                   onPress={() => setShowPicker(true)}
                 >
-                  <Ionicons name="camera" size={30} />
+                  <Icon
+                    name="gallery_black"
+                    style={{
+                      zIndex: 1,
+                      width: pixelScaler(25),
+                      height: pixelScaler(20),
+                    }}
+                  />
                 </SelectImageButton>
               </ImageItemContainer>
             }

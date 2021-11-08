@@ -1,7 +1,7 @@
-import { useLazyQuery, useQuery } from "@apollo/client";
-// import { RouteProp } from "@react-navigation/native";
+import { useQuery } from "@apollo/client";
+
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, FlatList, Share, Text, View } from "react-native";
+import { Alert, FlatList, Share, View } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { CardBox } from "../../components/CardRowBox";
 import Image from "../../components/Image";
@@ -12,11 +12,13 @@ import {
   BldText20,
   RegText13,
   RegText20,
+  BldText16,
 } from "../../components/Text";
 import {
   BLOCK,
   FOLLOW,
   GET_MOMENTS,
+  GET_NOTIFICATIONS,
   GET_PERSONAL_CHATROOM,
   GET_PROFILE,
   GET_USER_LOGS,
@@ -32,7 +34,7 @@ import {
   ThemeType,
   UserType,
 } from "../../types";
-import { BLANK_IMAGE, convertNumber, pixelScaler } from "../../utils";
+import { BLANK_IMAGE, pixelScaler } from "../../utils";
 import * as Linking from "expo-linking";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -41,10 +43,11 @@ import { gql, useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
-import { Ionicons } from "@expo/vector-icons";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
-import * as VideoThumbnails from "expo-video-thumbnails";
 import { Icon } from "../../components/Icon";
+import { logUserOut } from "../../apollo";
+import { HeaderRightIcon } from "../../components/HeaderRightIcon";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const UpperContainer = styled.View`
   margin-bottom: ${pixelScaler(3)}px;
@@ -105,15 +108,15 @@ const TabViewContainer = styled.View`
   flex-direction: row;
   height: ${pixelScaler(60)}px;
   justify-content: center;
-  border-bottom-width: ${pixelScaler(0.6)}px;
+  border-bottom-width: ${pixelScaler(0.3)}px;
   border-bottom-color: ${({ theme }: { theme: ThemeType }) =>
     theme.profileTabBarBorderBottom};
+  margin-left: ${pixelScaler(30)}px;
+  margin-right: ${pixelScaler(30)}px;
 `;
 
 const Tab = styled.TouchableOpacity`
   flex: 1;
-  margin-left: ${pixelScaler(30)}px;
-  margin-right: ${pixelScaler(30)}px;
   align-items: center;
   justify-content: center;
   border-bottom-width: ${pixelScaler(1.7)}px;
@@ -172,9 +175,6 @@ const ProfileInfo = ({
       error: string;
     };
   }) => {
-    // { ok, error }: { ok: boolean; error: string }
-    // console.log(user.id);
-
     if (ok) {
       refetchProfile();
     } else {
@@ -209,19 +209,15 @@ const ProfileInfo = ({
     }
   );
 
-  const onGetPersonalRoomCompleted = ({
-    getPersonalChatroom: { ok, error, chatroom },
-  }: {
-    getPersonalChatroom: {
-      ok: boolean;
-      error: string;
-      chatroom: RoomType;
-    };
-  }) => {
-    if (ok) {
-      navigation.push("Chatroom", { room: chatroom });
+  const onGetPersonalRoomCompleted = (data: any) => {
+    console.log(data);
+    if (data?.getPersonalChatroom?.ok) {
+      navigation.push("Chatroom", { room: data.getPersonalChatroom.chatroom });
     } else {
-      Alert.alert("채팅방을 불러올 수 없습니다.", error);
+      Alert.alert(
+        "채팅방을 불러올 수 없습니다.",
+        data.getPersonalChatroom.error
+      );
     }
   };
 
@@ -241,7 +237,7 @@ const ProfileInfo = ({
       <ProfileImageContainer>
         <Image
           source={{
-            uri: user.profileImageUrl ?? "https://i.stack.imgur.com/mwFzF.png",
+            uri: user.profileImageUrl ?? BLANK_IMAGE,
           }}
           style={{
             width: pixelScaler(105),
@@ -270,7 +266,13 @@ const ProfileInfo = ({
       {user.profileMessage || user.url ? (
         <ProfileMessageContainer>
           {user.profileMessage ? (
-            <RegText13 style={{ width: pixelScaler(315), textAlign: "center" }}>
+            <RegText13
+              style={{
+                width: pixelScaler(315),
+                textAlign: "center",
+                lineHeight: pixelScaler(17),
+              }}
+            >
               {user.profileMessage}
             </RegText13>
           ) : null}
@@ -283,7 +285,10 @@ const ProfileInfo = ({
                     : "https://" + user.url
                 )
               }
-              style={{ color: theme.profileLink }}
+              style={{
+                color: theme.profileLink,
+                lineHeight: pixelScaler(17),
+              }}
             >
               {user.url}
             </RegText13>
@@ -296,11 +301,13 @@ const ProfileInfo = ({
             if (user.isMe) {
               navigation.push("Chatrooms");
             } else {
-              getPersonalRoomMutation({
-                variables: {
-                  targetId: user.id,
-                },
-              });
+              if (!loading) {
+                getPersonalRoomMutation({
+                  variables: {
+                    targetId: user.id,
+                  },
+                });
+              }
             }
           }}
         >
@@ -359,18 +366,50 @@ const ProfileInfo = ({
           ))}
       </ButtonsContainer>
       <TabViewContainer>
-        <Tab onPress={() => setTabViewIndex(0)} isFocused={tabViewIndex === 0}>
-          <RegText16>게시물</RegText16>
+        <Tab
+          style={{ marginRight: pixelScaler(30) }}
+          onPress={() => setTabViewIndex(0)}
+          isFocused={tabViewIndex === 0}
+        >
+          <RegText16
+            style={{
+              color: tabViewIndex === 0 ? theme.text : theme.greyTextLight,
+            }}
+          >
+            로그
+          </RegText16>
         </Tab>
-        <Tab onPress={() => setTabViewIndex(1)} isFocused={tabViewIndex === 1}>
-          <RegText16>시리즈</RegText16>
+        <Tab
+          style={{
+            marginRight: pixelScaler(30),
+            marginLeft: pixelScaler(30),
+          }}
+          onPress={() => setTabViewIndex(1)}
+          isFocused={tabViewIndex === 1}
+        >
+          <RegText16
+            style={{
+              color: tabViewIndex === 1 ? theme.text : theme.greyTextLight,
+            }}
+          >
+            시리즈
+          </RegText16>
         </Tab>
         {user.isMe ? (
           <Tab
+            style={{
+              marginLeft: pixelScaler(30),
+            }}
             onPress={() => setTabViewIndex(2)}
             isFocused={tabViewIndex === 2}
           >
-            <RegText16>모먼트</RegText16>
+            <RegText16
+              style={{
+                color: tabViewIndex === 2 ? theme.text : theme.greyTextLight,
+              }}
+            >
+              모먼트
+            </RegText16>
           </Tab>
         ) : null}
       </TabViewContainer>
@@ -503,21 +542,63 @@ const Profile = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const theme = useContext<ThemeType>(ThemeContext);
 
+  const [newNotification, setNewNotification] = useState(false);
+
   const [modalVisible, setModalVisible] = useState(false);
 
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
+  const { data: notificationData, refetch: refetchNotifications } =
+    useQuery(GET_NOTIFICATIONS);
+
+  useEffect(() => {
+    if (notificationData?.getMyActivityLogs?.ok) {
+      (async () => {
+        const followLogs = notificationData.getMyActivityLogs.followLogs;
+        const editFolderLogs =
+          notificationData.getMyActivityLogs.editFolderLogs;
+        const likeLogs = notificationData.getMyActivityLogs.likeLogs;
+        const checkNotifications = Number(
+          (await AsyncStorage.getItem("check_notification")) ?? 0
+        );
+        console.log(checkNotifications);
+        if (
+          (followLogs?.length &&
+            followLogs[followLogs.length - 1].createdAt > checkNotifications) ||
+          (editFolderLogs?.length &&
+            editFolderLogs[editFolderLogs.length - 1].createdAt >
+              checkNotifications) ||
+          (likeLogs?.length &&
+            likeLogs[likeLogs.length - 1].createdAt > checkNotifications)
+        ) {
+          setNewNotification(true);
+          console.log("set true");
+        } else {
+          setNewNotification(false);
+          console.log("set false");
+        }
+      })();
+    }
+  }, [notificationData]);
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           {user.isMe ? (
-            <TouchableOpacity onPress={() => navigation.push("Notification")}>
+            <TouchableOpacity
+              hitSlop={{
+                top: pixelScaler(10),
+                bottom: pixelScaler(10),
+                left: pixelScaler(10),
+              }}
+              onPress={() => navigation.push("Notification")}
+            >
               <Icon
-                name="notification_1"
+                name={newNotification ? "notification_new" : "notification"}
                 style={{
-                  width: pixelScaler(15),
+                  width: pixelScaler(newNotification ? 17.3 : 15),
                   height: pixelScaler(20),
                   marginRight: pixelScaler(18),
                 }}
@@ -527,9 +608,9 @@ const Profile = () => {
           <HeaderRightMenu onPress={() => setModalVisible(true)} />
         </View>
       ),
-      title: user.username ?? "",
+      headerTitle: () => <BldText16>{user.username ?? ""}</BldText16>,
     });
-  }, []);
+  }, [user, newNotification]);
 
   const onShare = async (id: number) => {
     try {
@@ -556,6 +637,10 @@ const Profile = () => {
     }
   };
 
+  if (!route.params?.user?.id) {
+    logUserOut();
+  }
+
   const {
     loading,
     error,
@@ -563,7 +648,7 @@ const Profile = () => {
     refetch: refetchProfile,
   } = useQuery(GET_PROFILE, {
     variables: {
-      userId: route.params.user.id,
+      userId: route?.params?.user?.id,
     },
     onCompleted,
   });
@@ -603,7 +688,6 @@ const Profile = () => {
   } = useQuery(GET_MOMENTS);
 
   const onBlockCompleted = (data: any) => {
-    console.log(data);
     if (data?.blockUser?.ok) {
       Alert.alert(
         "사용자를 차단하였습니다.\n메인피드에서 해당 사용자의 게시물이 더 이상 보이지 않습니다."
@@ -623,6 +707,7 @@ const Profile = () => {
     await refetchLogs();
     await refetchSereis();
     await refetchMoment();
+    await refetchNotifications();
   };
 
   const refresh = async () => {
@@ -666,6 +751,8 @@ const Profile = () => {
       momentData?.getMyMoments?.moments,
     ]);
   }, [logsData, seriesData, momentData]);
+
+  navigation.addListener("focus", () => updateData());
 
   return (
     <ScreenContainer>
@@ -740,7 +827,7 @@ const Profile = () => {
               <RegText16>
                 등록된{" "}
                 {tabViewIndex === 0
-                  ? "게시물이 "
+                  ? "로그가 "
                   : tabViewIndex === 1
                   ? "시리즈가 "
                   : "모먼트가 "}
@@ -770,6 +857,7 @@ const Profile = () => {
           </ModalButtonBox>
           <ModalButtonBox
             onPress={() => {
+              setModalVisible(false);
               navigation.push("ScrappedContents");
             }}
           >

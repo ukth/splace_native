@@ -17,7 +17,7 @@ import { RegTextInput16 } from "../../components/TextInput";
 import { pixelScaler } from "../../utils";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import styled, { ThemeContext } from "styled-components/native";
-import { RegText16 } from "../../components/Text";
+import { BldText16, RegText16 } from "../../components/Text";
 import { View } from "../../components/Themed";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import useMe from "../../hooks/useMe";
@@ -82,7 +82,7 @@ const EditInfo = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "개인정보 수정",
+      headerTitle: () => <BldText16>개인정보 수정</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerRight: () => (
         <HeaderRightConfirm

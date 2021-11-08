@@ -213,15 +213,15 @@ export const ModalKeep = ({
                   }}
                 >
                   <Image
-                    source={{ uri: folder.saves[0]?.splace?.thumbnail ?? "" }}
+                    source={{
+                      uri: folder.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE,
+                    }}
                     style={{
                       width: pixelScaler(95),
                       height: pixelScaler(95),
                       borderRadius: pixelScaler(10),
                     }}
                   />
-                  <RowBar />
-                  <ColumnBar />
                   {saveIdx !== -1 ? (
                     <SelectedBackground
                       onPress={() => {

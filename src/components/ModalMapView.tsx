@@ -22,6 +22,7 @@ import * as Linking from "expo-linking";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
 import { Icon } from "./Icon";
+import * as Location from "expo-location";
 
 const MarkerContainer = styled.TouchableOpacity`
   /* background-color: #d0a0f0; */
@@ -107,10 +108,15 @@ const Tag = styled.View`
 
 const BackToMeButton = styled.TouchableOpacity`
   position: absolute;
-  right: ${pixelScaler(30)}px;
-  bottom: ${pixelScaler(245)}px;
-  width: 50px;
-  height: 50px;
+  right: ${pixelScaler(15)}px;
+  top: ${pixelScaler(30)}px;
+  width: ${pixelScaler(35)}px;
+  height: ${pixelScaler(35)}px;
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.white};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  border-radius: ${pixelScaler(10)}px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ModalMapView = ({
@@ -157,7 +163,6 @@ const ModalMapView = ({
         min_lon = splace.lon;
       }
     }
-    console.log(max_lat, max_lon, min_lat, min_lon);
 
     if (max_lat !== min_lat && max_lon !== min_lon) {
       latitudeDelta = (max_lat - min_lat) * 2;
@@ -277,6 +282,27 @@ const ModalMapView = ({
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   const mapViewRef = useRef<any>();
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "splace는 위치정보가 필요합니다. 설정에서 권한을 부여해주세요."
+        );
+        return;
+      }
+
+      let location = await Location.getLastKnownPositionAsync();
+
+      if (location) {
+        setUserLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+      }
+    })();
+  }, []);
 
   return (
     <Modal
@@ -407,13 +433,21 @@ const ModalMapView = ({
                 );
               })}
           </MapView>
-          {/* <BackToMeButton
+          <BackToMeButton
             onPress={() => {
               mapViewRef.current?.setCamera({
                 center: userLocation,
               });
             }}
-          /> */}
+          >
+            <Icon
+              name="myposition"
+              style={{
+                width: pixelScaler(19),
+                height: pixelScaler(19),
+              }}
+            />
+          </BackToMeButton>
           <SplaceInfo>
             <UpperContainer
               onPress={() => {

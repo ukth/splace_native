@@ -12,7 +12,7 @@ import {
 import styled, { ThemeContext } from "styled-components/native";
 import * as ImagePicker from "expo-image-picker";
 import Image from "../../components/Image";
-import { pixelScaler, uploadPhotos } from "../../utils";
+import { BLANK_IMAGE, pixelScaler, uploadPhotos } from "../../utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { Alert, SafeAreaView, Switch, Image as LocalImage } from "react-native";
@@ -29,6 +29,7 @@ import { ProgressContext } from "../../contexts/Progress";
 import { API_URL, tokenVar } from "../../apollo";
 import axios from "axios";
 import useMe from "../../hooks/useMe";
+import { Icon } from "../../components/Icon";
 
 const Container = styled.ScrollView``;
 
@@ -185,7 +186,7 @@ const EditSplace = () => {
           ) : (
             <Image
               source={{
-                uri: splace.thumbnail ?? "",
+                uri: splace.thumbnail ?? BLANK_IMAGE,
               }}
               style={{
                 width: "100%",
@@ -231,10 +232,12 @@ const EditSplace = () => {
             >
               내용
             </RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
@@ -246,10 +249,12 @@ const EditSplace = () => {
               <RegText16 style={{ color: theme.textHighlight }}>*</RegText16>
             </RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
@@ -260,10 +265,12 @@ const EditSplace = () => {
           >
             <RegText16>운영시간</RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
@@ -272,10 +279,12 @@ const EditSplace = () => {
           >
             <RegText16>상품</RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
@@ -284,20 +293,24 @@ const EditSplace = () => {
           >
             <RegText16>소개글</RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
           <LabelButton onPress={() => setModalVisible(true)}>
             <RegText16>체크리스트</RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
@@ -306,10 +319,12 @@ const EditSplace = () => {
           >
             <RegText16>카테고리</RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.lightSeperator }} />
@@ -320,10 +335,12 @@ const EditSplace = () => {
           >
             <RegText16>안내 게시물</RegText16>
             <RegText13 style={{ color: theme.text }}></RegText13>
-            <Ionicons
-              style={{ position: "absolute", right: 0 }}
-              name="chevron-forward"
-              size={30}
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
             />
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.text }} />

@@ -54,6 +54,8 @@ const PhotoLog = ({
   const [modalContent, setModalContent] = useState("dots");
   // const [liked, setLiked] = useState<boolean>(false);
 
+  console.log(item);
+
   const onShare = async (id: number) => {
     try {
       const result = await Share.share({

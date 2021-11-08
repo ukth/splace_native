@@ -12,7 +12,7 @@ import {
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
 import { FolderType, StackGeneratorParamList, ThemeType } from "../../types";
-import { pixelScaler, strCmpFunc } from "../../utils";
+import { BLANK_IMAGE, pixelScaler, strCmpFunc } from "../../utils";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -41,6 +41,7 @@ import {
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
+import { Icon } from "../../components/Icon";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -121,7 +122,7 @@ const Folder = ({
         {folder?.saves?.length > 0 ? (
           <Image
             source={{
-              uri: folder?.saves[0]?.splace?.thumbnail ?? "",
+              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE,
             }}
             style={{
               width: pixelScaler(145),
@@ -139,22 +140,6 @@ const Folder = ({
             }}
           />
         )}
-        <View
-          style={{
-            width: 1,
-            height: pixelScaler(145),
-            position: "absolute",
-            backgroundColor: "#ffffff",
-          }}
-        />
-        <View
-          style={{
-            width: pixelScaler(145),
-            height: 1,
-            position: "absolute",
-            backgroundColor: "#ffffff",
-          }}
-        />
         {folder.members.length > 1 ? (
           <MemberCountContainer>
             <Ionicons name="person" color={theme.folderMemberCount} />
@@ -177,13 +162,13 @@ const Folders = ({
   route: RouteProp<StackGeneratorParamList, "Folders">;
 }) => {
   const [editing, setEditing] = useState<boolean>(false);
-  const [sortMode, setSortMode] = useState<"edited" | "generated" | "name">(
-    "edited"
+  const [sortMode, setSortMode] = useState<"updatedAt" | "createdAt" | "name">(
+    "updatedAt"
   );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const theme = useContext<ThemeType>(ThemeContext);
 
-  const { data, loading, refetch } = useQuery(GET_FOLDERS, {
+  const { data, loading, refetch, fetchMore } = useQuery(GET_FOLDERS, {
     variables: {
       orderBy: "updatedAt",
     },
@@ -214,7 +199,14 @@ const Folders = ({
               setEditing(!editing);
             }}
           >
-            <Ionicons name="pencil" size={26} />
+            <Icon
+              name="edit"
+              style={{
+                width: pixelScaler(16),
+                height: pixelScaler(16),
+                marginRight: pixelScaler(30),
+              }}
+            />
           </TouchableOpacity>
         ),
     });
@@ -222,14 +214,14 @@ const Folders = ({
 
   const updateData = async (data: any) => {
     if (data?.getFolders?.folders) {
-      if (sortMode === "generated") {
+      if (sortMode === "createdAt") {
         setFolders(
           [...data?.getFolders?.folders].sort(
             (a: FolderType, b: FolderType) =>
               Number(b.createdAt) - Number(a.createdAt)
           )
         );
-      } else if (sortMode === "edited") {
+      } else if (sortMode === "updatedAt") {
         setFolders(
           [...data?.getFolders?.folders].sort(
             (a: FolderType, b: FolderType) =>
@@ -248,7 +240,12 @@ const Folders = ({
 
   useEffect(() => {
     updateData(data);
+    console.log(data);
   }, [sortMode, data]);
+
+  useEffect(() => {
+    refetch({ orderBy: sortMode });
+  }, [sortMode]);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -286,13 +283,16 @@ const Folders = ({
     <ScreenContainer>
       {loading ? null : (
         <FlatList
-          style={{ left: pixelScaler(17.5), width: pixelScaler(340) }}
+          style={{
+            left: pixelScaler(17.5),
+            width: pixelScaler(340),
+          }}
           refreshing={refreshing}
           onRefresh={refresh}
           ListHeaderComponent={() => (
             <EditButtonsContainer>
               {editing ? (
-                <NewFolderButton
+                <RegText13
                   onPress={() => {
                     Alert.prompt(
                       "새 폴더 생성",
@@ -303,19 +303,32 @@ const Folders = ({
                       "plain-text"
                     );
                   }}
+                  style={{
+                    // backgroundColor: "#98f",
+                    marginTop: pixelScaler(20),
+                    color: theme.textHighlight,
+                  }}
                 >
-                  <RegText13>+ 새 폴더</RegText13>
-                </NewFolderButton>
+                  {"새 폴더 추가"}
+                </RegText13>
               ) : (
                 <SortButton onPress={() => setModalVisible(true)}>
-                  <RegText13>
-                    {sortMode === "edited"
+                  <RegText13 style={{}}>
+                    {sortMode === "updatedAt"
                       ? "최근 편집 순"
-                      : sortMode === "generated"
+                      : sortMode === "createdAt"
                       ? "최근 생성 순"
                       : "가나다 순"}
                   </RegText13>
-                  <Ionicons name="chevron-down" />
+                  <Icon
+                    name="arrow_right"
+                    style={{
+                      width: pixelScaler(5),
+                      height: pixelScaler(10.7),
+                      transform: [{ rotate: "90deg" }],
+                      marginLeft: pixelScaler(6),
+                    }}
+                  />
                 </SortButton>
               )}
             </EditButtonsContainer>
@@ -329,6 +342,14 @@ const Folders = ({
               refetch={refetch}
             />
           )}
+          onEndReached={() => {
+            fetchMore({
+              variables: {
+                lastId: folders[folders.length - 1].id,
+                orderBy: sortMode,
+              },
+            });
+          }}
           keyExtractor={(item, index) => "" + index}
           numColumns={2}
         />
@@ -344,13 +365,14 @@ const Folders = ({
       >
         <ModalButtonBox
           onPress={() => {
-            setSortMode("edited");
+            setSortMode("updatedAt");
             setModalVisible(false);
           }}
         >
           <RegText20
             style={{
-              color: sortMode === "edited" ? theme.modalHighlight : theme.text,
+              color:
+                sortMode === "updatedAt" ? theme.modalHighlight : theme.text,
             }}
           >
             최근 편집 순
@@ -358,14 +380,14 @@ const Folders = ({
         </ModalButtonBox>
         <ModalButtonBox
           onPress={() => {
-            setSortMode("generated");
+            setSortMode("createdAt");
             setModalVisible(false);
           }}
         >
           <RegText20
             style={{
               color:
-                sortMode === "generated" ? theme.modalHighlight : theme.text,
+                sortMode === "createdAt" ? theme.modalHighlight : theme.text,
             }}
           >
             최근 생성 순

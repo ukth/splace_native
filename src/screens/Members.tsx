@@ -50,7 +50,6 @@ const Members = ({
     } else if (data?.seeFolder?.ok) {
       setMembers(data.seeFolder.folder.members);
     }
-    console.log(members, "!!!!!");
   };
 
   const refresh = async () => {

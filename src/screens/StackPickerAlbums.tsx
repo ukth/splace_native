@@ -20,6 +20,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Icons } from "../icons";
 import * as MediaLibrary from "expo-media-library";
 import { ImagePickerContext } from "../contexts/ImagePicker";
+import { Icon } from "../components/Icon";
 
 const AlbumContainer = styled.TouchableOpacity`
   height: ${pixelScaler(75)}px;
@@ -143,7 +144,10 @@ const StackPickerAlbums = () => {
             navigation.pop();
           }}
         >
-          <Image source={Icons.close} />
+          <Icon
+            name="close"
+            style={{ width: pixelScaler(11), height: pixelScaler(11) }}
+          />
         </TouchableOpacity>
       ),
       headerRight: () => (

@@ -4,7 +4,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { BldTextInput20 } from "../../components/TextInput";
-import { BldText13 } from "../../components/Text";
+import { BldText13, BldText16 } from "../../components/Text";
 import { StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler } from "../../utils";
@@ -53,7 +53,7 @@ const ChangePassword = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "비밀번호 변경",
+      headerTitle: () => <BldText16>비밀번호 변경</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerRight: () => (
         <HeaderRightConfirm

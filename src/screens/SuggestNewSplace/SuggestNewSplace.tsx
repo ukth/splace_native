@@ -57,12 +57,18 @@ const SuggestNewSplace = () => {
     lon: number;
   }>();
 
-  // useEffect(() => {}, []);
-
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerTitle: () => <BldText16>위치 정보</BldText16>,
+      headerStyle: {
+        shadowColor: "transparent",
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
       headerRight: () => (
         <HeaderRightConfirm
           onPress={() => {

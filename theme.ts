@@ -3,14 +3,14 @@ import { color } from "react-native-reanimated";
 const colors = {
   white: "#ffffff",
   black: "#000000",
-  red: "#e84118",
-  red_ff: "#ff1a1a",
+  red: "#ff0000",
   grey_76: "#767577",
   grey_8e: "#8e8e93",
   grey_a: "#a0a0a0",
   grey_b: "#b0b0b0",
   grey_c: "#c0c0c0",
   grey_d: "#d0d0d0",
+  grey_d1: "#d1d1d1",
   grey_e: "#e0e0e0",
   grey_f: "#f0f0f0",
   grey_f8: "#f8f8f8",
@@ -40,6 +40,7 @@ export const theme = {
     dots: colors.black,
 
     greyTextLight: colors.grey_ae,
+    greyTextLighter: colors.grey_d1,
     greyTextAlone: colors.grey_8e,
     cameraButtonOutline: colors.white,
 
@@ -120,7 +121,7 @@ export const theme = {
     folderDeleteButtonBackground: colors.grey_e5,
     folderDeleteMinus: colors.black,
     folderNoticeBadgeBackground: colors.theme,
-    blankFolderBackground: colors.grey_e5,
+    blankFolderBackground: colors.grey_d1,
 
     addSaveSelectMarkBackground: colors.grey_f2,
     addSaveSelectMark: colors.darkTheme,
@@ -137,7 +138,7 @@ export const theme = {
     modalInputSubmitButton: colors.theme,
     modalEntry: colors.grey_ae,
 
-    modalButtonRedText: colors.red_ff,
+    modalButtonRedText: colors.red,
 
     themeBackground: colors.darkTheme,
 

@@ -23,6 +23,7 @@ import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalMapSingleView from "../../components/ModalMapSingleView";
 import { REPORT } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
+import { Icon } from "../../components/Icon";
 
 const EntryBackground = styled.View`
   width: ${pixelScaler(280)}px;
@@ -78,11 +79,13 @@ const EditSplaceLocationSearch = () => {
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerTitle: () => (
         <EntryBackground>
-          <Ionicons
-            name="search"
-            size={30}
-            style={{ marginLeft: pixelScaler(10) }}
-            color={theme.entryPlaceholder}
+          <Icon
+            name="search_grey"
+            style={{
+              width: pixelScaler(26),
+              height: pixelScaler(26),
+              marginLeft: pixelScaler(10),
+            }}
           />
           <BldTextInput16
             onChangeText={(text) => {

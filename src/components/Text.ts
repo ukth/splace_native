@@ -33,6 +33,12 @@ export const RegText28 = styled.Text`
   color: ${theme.light.text};
 `;
 
+export const BldText9 = styled.Text`
+  font-size: ${pixelScaler(9)}px;
+  font-family: "NanumSquareRound-B";
+  color: ${theme.light.text};
+`;
+
 export const BldText13 = styled.Text`
   font-size: ${pixelScaler(13)}px;
   font-family: "NanumSquareRound-B";

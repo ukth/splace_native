@@ -227,7 +227,7 @@ export const formatOperatingTime = (n: number) => {
 export const dayNameKor = ["일", "월", "화", "수", "목", "금", "토"];
 
 export const BLANK_IMAGE =
-  "https://upload.wikimedia.org/wikipedia/commons/d/d2/Blank.png";
+  "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/super_blank.png";
 
 export const calcDistanceByCoords = (
   coord1: { lat: number; lon: number },
@@ -410,5 +410,5 @@ export const showFlashMessage = ({ message }: { message: string }) => {
 
 export const shortenAddress = (address: string) => {
   const words = address.split(" ");
-  return words[0].substr(0, 2) + " " + words[1].substr(0, 2);
+  return words[0].substr(0, 2) + ", " + words[1].substr(0, 2);
 };

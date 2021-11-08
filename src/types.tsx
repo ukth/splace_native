@@ -1,19 +1,18 @@
-/**
- * Learn more about using TypeScript with React Navigation:
- * https://reactnavigation.org/docs/typescript/
- */
-
-import {
-  ApolloCache,
-  DefaultContext,
-  MutationFunctionOptions,
-  OperationVariables,
-} from "@apollo/client";
-import { Text } from "react-native";
-
 export type AuthStackParamList = {
+  InitialScreen: undefined;
   LogIn: undefined;
-  SignUp: undefined;
+  RegistrationStack: undefined;
+  CertifyForUsername: undefined;
+  CertifyForPassword: undefined;
+  ShowUsername: { token: string };
+  ChangePassword: { token: string };
+};
+
+export type RegistrationStackParamList = {
+  CertifyPhone: undefined;
+  SignUp: { token: string; phone: string };
+  SignUpConfirm: { username: string };
+  TasteCup: undefined;
 };
 
 export type SplaceType = {
@@ -312,6 +311,7 @@ export type StackGeneratorParamList = {
   SplacesByRatingtag: { ratingtag: RatingtagType };
   Filter: undefined;
   ScrappedContents: undefined;
+  SearchSplaceForFilter: undefined;
 };
 
 export interface StackGeneratorProps {
@@ -533,4 +533,61 @@ export type ThemeType = {
 
   white: string;
   black: string;
+  greyTextLighter: string;
 };
+
+export type IconName =
+  | "bigcoins"
+  | "arrow_right"
+  | "header_back"
+  | "bookmark_thin"
+  | "bookmark_black"
+  | "bookmark_color"
+  | "bookmark_fill"
+  | "box_plus"
+  | "box"
+  | "super"
+  | "super_necklace"
+  | "super_sad"
+  | "super_ok"
+  | "super_smallheart"
+  | "super_bigheart"
+  | "super_hot"
+  | "super_superhot"
+  | "super_tasty"
+  | "super_supertasty"
+  | "super_inbox"
+  | "edit"
+  | "empty_heart"
+  | "filter"
+  | "gallery_black"
+  | "gallery_white"
+  | "heart_colorfill"
+  | "heartplus"
+  | "home_black"
+  | "home_color"
+  | "lock_black"
+  | "lock_white"
+  | "map"
+  | "messagebox"
+  | "myposition"
+  | "notification"
+  | "notification_new"
+  | "positionpin"
+  | "profile_black"
+  | "profile_color"
+  | "purchaselist"
+  | "search_black"
+  | "search_color"
+  | "search_grey"
+  | "shop_black"
+  | "shop_color"
+  | "smallcoins_pisa"
+  | "smallcoins_straight"
+  | "threedot"
+  | "menu"
+  | "uplog"
+  | "wishlist"
+  | "close_white"
+  | "close"
+  | "messagebox_add";

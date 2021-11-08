@@ -27,6 +27,7 @@ import { ProgressContext } from "../../contexts/Progress";
 import { EDIT_SPLACE } from "../../queries";
 import Image from "../../components/Image";
 import useMe from "../../hooks/useMe";
+import { Icon } from "../../components/Icon";
 
 const LabelContainer = styled.View`
   flex-direction: row;
@@ -210,6 +211,7 @@ const EditSplaceItem = () => {
             style={{ width: pixelScaler(230) }}
             placeholder="상품 이름"
             placeholderTextColor={theme.greyTextLight}
+            autoCorrect={false}
             maxLength={30}
           />
         </LabelContainer>
@@ -249,7 +251,14 @@ const EditSplaceItem = () => {
               style={{ position: "absolute", bottom: 0 }}
               onPress={() => setShowPicker(true)}
             >
-              <Ionicons name="camera" size={30} />
+              <Icon
+                name="gallery_black"
+                style={{
+                  zIndex: 1,
+                  width: pixelScaler(25),
+                  height: pixelScaler(20),
+                }}
+              />
             </SelectImageButton>
           </ImageItemContainer>
         }

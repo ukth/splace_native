@@ -1,12 +1,23 @@
 import React from "react";
-import { Animated, ScrollView, View } from "react-native";
-import { CardBoxPropType, PhotologType } from "../../types";
+import {
+  Animated,
+  ScrollView,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import {
+  CardBoxPropType,
+  PhotologType,
+  StackGeneratorParamList,
+} from "../../types";
 import { pixelScaler } from "../../utils";
 import Image from "../Image";
 import Carousel, {
   CarouselProps,
   getInputRangeFromIndexes,
 } from "react-native-snap-carousel";
+import { useNavigation } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const Swiper = ({ item }: { item: PhotologType }) => {
   const scrollInterpolator = (
@@ -64,18 +75,17 @@ const Swiper = ({ item }: { item: PhotologType }) => {
     };
   };
 
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
   return (
     <Carousel
       data={item.imageUrls}
       renderItem={({ item: url, index }) => (
-        <View
-          style={{
-            // shadowColor: "#000000",
-            // shadowOffset: { width: 4, height: 4 },
-            // shadowOpacity: 0.3,
-            // shadowRadius: 4,
-            borderRadius: 15,
-          }}
+        <TouchableWithoutFeedback
+          onPress={() =>
+            navigation.push("ImagesViewer", { urls: item.imageUrls })
+          }
         >
           <Image
             source={{ uri: url }}
@@ -89,10 +99,10 @@ const Swiper = ({ item }: { item: PhotologType }) => {
                   : item.photoSize === 1
                   ? pixelScaler(315)
                   : pixelScaler(236.25),
-              borderRadius: 15,
+              borderRadius: pixelScaler(15),
             }}
           />
-        </View>
+        </TouchableWithoutFeedback>
       )}
       sliderWidth={400}
       itemWidth={380}

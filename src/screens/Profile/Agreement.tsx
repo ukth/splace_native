@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 
 import ScreenContainer from "../../components/ScreenContainer";
-import { RegText16 } from "../../components/Text";
+import { BldText16, RegText16 } from "../../components/Text";
 import { StackGeneratorParamList } from "../../types";
 
 const Agreement = () => {
@@ -12,7 +12,7 @@ const Agreement = () => {
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   useEffect(() => {
     navigation.setOptions({
-      title: "3자 개인정보 제공 동의",
+      headerTitle: () => <BldText16>3자 개인정보 제공 동의"</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
   }, []);

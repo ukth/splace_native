@@ -46,6 +46,7 @@ import { fromPromise, useMutation, useQuery } from "@apollo/client";
 import ModalMapView from "../../components/ModalMapView";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
+import { Icon } from "../../components/Icon";
 
 const SaveItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -252,7 +253,11 @@ const Folder = ({
       headerTitle: () =>
         editing ? (
           <TouchableOpacity
-            style={{ flexDirection: "row" }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              // backgroundColor: "#de0",
+            }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             onPress={() => {
               Alert.prompt(
@@ -281,7 +286,14 @@ const Folder = ({
             }}
           >
             <BldText16>{folder.title}</BldText16>
-            <Ionicons name="pencil" size={20} />
+            <Icon
+              name="edit"
+              style={{
+                width: pixelScaler(18),
+                height: pixelScaler(18),
+                marginLeft: pixelScaler(10),
+              }}
+            />
           </TouchableOpacity>
         ) : (
           <View style={{ flexDirection: "row" }}>
@@ -401,7 +413,15 @@ const Folder = ({
                 <RegText13>
                   {sortMode === "generated" ? "최근 생성 순" : "가나다 순"}
                 </RegText13>
-                <Ionicons name="chevron-down" />
+                <Icon
+                  name="arrow_right"
+                  style={{
+                    width: pixelScaler(5),
+                    height: pixelScaler(10.7),
+                    transform: [{ rotate: "90deg" }],
+                    marginLeft: pixelScaler(6),
+                  }}
+                />
               </SortButton>
             ) : null}
           </EditButtonsContainer>
@@ -436,7 +456,7 @@ const Folder = ({
                 splaceIds: [],
               });
             }}
-            style={{ color: theme.textHighlight }}
+            style={{ color: theme.textHighlight, lineHeight: pixelScaler(23) }}
           >
             장소 추가하기
           </RegText16>
@@ -486,7 +506,13 @@ const Folder = ({
       ) : null}
       {editing ? null : (
         <FloatingMapButton onPress={() => setShowMap(true)}>
-          <Ionicons name="map-outline" size={30} />
+          <Icon
+            name="map"
+            style={{
+              width: pixelScaler(20),
+              height: pixelScaler(20),
+            }}
+          />
         </FloatingMapButton>
       )}
     </ScreenContainer>

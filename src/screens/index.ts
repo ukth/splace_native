@@ -1,6 +1,5 @@
-import LogIn from "./LogIn";
 import Mainfeed from "./Mainfeed";
-import { Search, Filter } from "./Search";
+import { Search, Filter, SearchSplaceForFilter } from "./Search";
 import {
   Profile,
   ProfileUsers,
@@ -37,7 +36,6 @@ import {
   SplaceLogs,
 } from "./Splace";
 import Series from "./Series";
-import SignUp from "./SignUp";
 // import Market from "./Market";
 import Payment from "./Payment";
 import { Chatroom, Chatrooms, CreateChatroom } from "./Chat";
@@ -66,10 +64,10 @@ import LogsByBigCategory from "./LogsByBigCategory";
 import SplacesByRatingtag from "./SplacesByRatingtag";
 
 export {
-  LogIn,
   Mainfeed,
   Search,
   Filter,
+  SearchSplaceForFilter,
   Profile,
   Splace,
   EditSplace,
@@ -87,7 +85,6 @@ export {
   EditFixedContents,
   SplaceLogs,
   Series,
-  SignUp,
   // Market,
   Payment,
   Chatroom,

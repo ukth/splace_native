@@ -23,13 +23,17 @@ import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalMapSingleView from "../../components/ModalMapSingleView";
 import { REPORT } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
+import { Icon } from "../../components/Icon";
 
 const EntryBackground = styled.View`
-  width: ${pixelScaler(280)}px;
-  height: ${pixelScaler(40)}px;
+  width: ${pixelScaler(290)}px;
+  height: ${pixelScaler(35)}px;
+  margin-left: ${pixelScaler(25)}px;
   flex-direction: row;
   align-items: center;
   border-radius: ${pixelScaler(10)}px;
+  background-color: ${({ theme }: { theme: ThemeType }) =>
+    theme.greyBackground};
 `;
 
 const AddressItemContainer = styled.TouchableOpacity`
@@ -42,6 +46,7 @@ const InfoContainer = styled.View`
   width: ${pixelScaler(315)}px;
   height: ${pixelScaler(40)}px;
   justify-content: center;
+  /* background-color: #9d0; */
 `;
 
 const Seperator = styled.View`
@@ -86,11 +91,13 @@ const AddressSelector = () => {
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerTitle: () => (
         <EntryBackground>
-          <Ionicons
-            name="search"
-            size={30}
-            style={{ marginLeft: pixelScaler(10) }}
-            color={theme.entryPlaceholder}
+          <Icon
+            name="search_grey"
+            style={{
+              width: pixelScaler(20),
+              height: pixelScaler(20),
+              marginLeft: pixelScaler(15),
+            }}
           />
           <BldTextInput16
             onChangeText={(text) => {
@@ -106,6 +113,9 @@ const AddressSelector = () => {
           />
         </EntryBackground>
       ),
+      headerStyle: {
+        shadowColor: "transparent",
+      },
     });
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -158,12 +168,19 @@ const AddressSelector = () => {
             }}
           >
             <InfoContainer>
-              <RegText16 style={{ width: pixelScaler(275) }}>
+              <RegText16
+                style={{ width: pixelScaler(275), lineHeight: pixelScaler(20) }}
+              >
                 {item.roadAddress}
               </RegText16>
               {item.distance !== 0 ? (
                 <RegText13
-                  style={{ position: "absolute", right: 0, bottom: 0 }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0,
+                    color: theme.greyTextAlone,
+                  }}
                 >
                   {formatDistance(item.distance)}
                 </RegText13>

@@ -6,6 +6,7 @@ const FilterContext = createContext<{
   filter: {
     lat?: number;
     lon?: number;
+    locationText?: string;
     distance: number;
     bigCategoryIds: number[];
     ratingtagIds: number[];
@@ -17,6 +18,7 @@ const FilterContext = createContext<{
     React.SetStateAction<{
       lat?: number | undefined;
       lon?: number | undefined;
+      locationText?: string;
       distance: number;
       bigCategoryIds: number[];
       ratingtagIds: number[];
@@ -45,6 +47,7 @@ const FilterProvider = ({ children }: { children: any }) => {
   const [filter, setFilter] = useState<{
     lat?: number;
     lon?: number;
+    locationText?: string;
     distance: number;
     bigCategoryIds: number[];
     ratingtagIds: number[];

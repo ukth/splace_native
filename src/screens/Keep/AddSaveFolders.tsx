@@ -48,6 +48,7 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
+import { Icon } from "../../components/Icon";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -99,22 +100,6 @@ const Folder = ({
             }}
           />
         )}
-        <View
-          style={{
-            width: 1,
-            height: pixelScaler(145),
-            position: "absolute",
-            backgroundColor: "#ffffff",
-          }}
-        />
-        <View
-          style={{
-            width: pixelScaler(145),
-            height: 1,
-            position: "absolute",
-            backgroundColor: "#ffffff",
-          }}
-        />
       </Item>
       <RegText16 style={{ marginTop: pixelScaler(10) }}>
         {folder.title}
@@ -128,13 +113,15 @@ const AddSaveFolders = ({
 }: {
   route: RouteProp<StackGeneratorParamList, "AddSaveFolders">;
 }) => {
-  const [sortMode, setSortMode] = useState<"edited" | "generated" | "name">(
-    "edited"
+  const [sortMode, setSortMode] = useState<"updatedAt" | "createdAt" | "name">(
+    "updatedAt"
   );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const theme = useContext<ThemeType>(ThemeContext);
 
-  const { data, loading, refetch } = useQuery(GET_FOLDERS);
+  const { data, loading, refetch, fetchMore } = useQuery(GET_FOLDERS, {
+    variables: { orderBy: "updatedAt" },
+  });
 
   const [folders, setFolders] = useState<FolderType[]>([]);
 
@@ -180,14 +167,14 @@ const AddSaveFolders = ({
 
   const updateData = async (data: any) => {
     if (data?.getFolders?.folders) {
-      if (sortMode === "generated") {
+      if (sortMode === "createdAt") {
         setFolders(
           [...data?.getFolders?.folders].sort(
             (a: FolderType, b: FolderType) =>
               Number(b.createdAt) - Number(a.createdAt)
           )
         );
-      } else if (sortMode === "edited") {
+      } else if (sortMode === "updatedAt") {
         setFolders(
           [...data?.getFolders?.folders].sort(
             (a: FolderType, b: FolderType) =>
@@ -208,6 +195,10 @@ const AddSaveFolders = ({
     updateData(data);
   }, [sortMode, data]);
 
+  useEffect(() => {
+    refetch({ orderBy: sortMode });
+  }, [sortMode]);
+
   return (
     <ScreenContainer>
       {loading ? null : (
@@ -217,13 +208,21 @@ const AddSaveFolders = ({
             <EditButtonsContainer>
               <SortButton onPress={() => setModalVisible(true)}>
                 <RegText13>
-                  {sortMode === "edited"
+                  {sortMode === "updatedAt"
                     ? "최근 편집 순"
-                    : sortMode === "generated"
+                    : sortMode === "createdAt"
                     ? "최근 생성 순"
                     : "가나다 순"}
                 </RegText13>
-                <Ionicons name="chevron-down" />
+                <Icon
+                  name="arrow_right"
+                  style={{
+                    width: pixelScaler(5),
+                    height: pixelScaler(10.7),
+                    marginLeft: pixelScaler(6),
+                    transform: [{ rotate: "90deg" }],
+                  }}
+                />
               </SortButton>
             </EditButtonsContainer>
           )}
@@ -233,6 +232,14 @@ const AddSaveFolders = ({
           )}
           keyExtractor={(item, index) => "" + index}
           numColumns={2}
+          onEndReached={() => {
+            fetchMore({
+              variables: {
+                lastId: folders[folders.length - 1].id,
+                orderBy: sortMode,
+              },
+            });
+          }}
         />
       )}
 
@@ -247,13 +254,14 @@ const AddSaveFolders = ({
       >
         <ModalButtonBox
           onPress={() => {
-            setSortMode("edited");
+            setSortMode("updatedAt");
             setModalVisible(false);
           }}
         >
           <RegText20
             style={{
-              color: sortMode === "edited" ? theme.modalHighlight : theme.text,
+              color:
+                sortMode === "updatedAt" ? theme.modalHighlight : theme.text,
             }}
           >
             최근 편집 순
@@ -261,14 +269,14 @@ const AddSaveFolders = ({
         </ModalButtonBox>
         <ModalButtonBox
           onPress={() => {
-            setSortMode("generated");
+            setSortMode("createdAt");
             setModalVisible(false);
           }}
         >
           <RegText20
             style={{
               color:
-                sortMode === "generated" ? theme.modalHighlight : theme.text,
+                sortMode === "createdAt" ? theme.modalHighlight : theme.text,
             }}
           >
             최근 생성 순

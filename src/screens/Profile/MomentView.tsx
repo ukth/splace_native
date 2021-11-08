@@ -22,6 +22,7 @@ import { MomentType, StackGeneratorParamList } from "../../types";
 import { StackNavigationProp } from "@react-navigation/stack";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import BottomSheetModal from "../../components/BottomSheetModal";
+import { Icon } from "../../components/Icon";
 
 const Container = styled.View`
   flex: 1;
@@ -167,11 +168,12 @@ const MomentView = () => {
               navigation.pop();
             }}
           >
-            <Ionicons
-              style={{ left: -8 }}
-              name="chevron-back"
-              color="#ffffff"
-              size={26}
+            <Icon
+              name="close"
+              style={{
+                width: pixelScaler(12.7),
+                height: pixelScaler(27),
+              }}
             />
           </TouchableOpacity>
           <ThreeDots color={"#ffffff"} onPress={() => {}} />

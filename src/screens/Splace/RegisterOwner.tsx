@@ -29,6 +29,7 @@ import Image from "../../components/Image";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import { Icon } from "../../components/Icon";
 
 const LabelContainer = styled.View`
   flex-direction: row;
@@ -126,34 +127,39 @@ const RegisterOwner = () => {
               corpNum !== "" &&
               images.length > 0
             ) {
-              spinner.start(false, 30);
-              const formattedImages = [];
-              for (let i = 0; i < images.length; i++) {
-                const image = images[i];
-                const manipResult = await manipulateAsync(image.url, [], {
-                  compress: 1,
-                  format: SaveFormat.JPEG,
-                });
-                formattedImages.push(manipResult.uri);
-              }
+              try {
+                spinner.start(false, 30);
+                const formattedImages = [];
+                for (let i = 0; i < images.length; i++) {
+                  const image = images[i];
+                  const manipResult = await manipulateAsync(image.url, [], {
+                    compress: 1,
+                    format: SaveFormat.JPEG,
+                  });
+                  formattedImages.push(manipResult.uri);
+                }
 
-              const awsUrls = await uploadPhotos(formattedImages);
-              console.log(awsUrls);
-              setImages([]);
-              if (awsUrls.length === images.length) {
-                mutation({
-                  variables: {
-                    splaceId,
-                    birthDay,
-                    name,
-                    corpNum,
-                    imageUrls: awsUrls,
-                  },
-                });
-              } else {
+                const awsUrls = await uploadPhotos(formattedImages);
+                console.log(awsUrls);
+                setImages([]);
+                if (awsUrls.length === images.length) {
+                  mutation({
+                    variables: {
+                      splaceId,
+                      birthDay,
+                      name,
+                      corpNum,
+                      imageUrls: awsUrls,
+                    },
+                  });
+                } else {
+                  spinner.stop();
+                  Alert.alert("업로드에 실패했습니다.");
+                  return;
+                }
+              } catch (e) {
                 spinner.stop();
-                Alert.alert("업로드에 실패했습니다.");
-                return;
+                Alert.alert("사진 업로드에 실패했습니다.");
               }
             } else {
               Alert.alert("필수정보가 모두 입력되지 않았습니다.");
@@ -255,8 +261,14 @@ const RegisterOwner = () => {
                 });
               }}
             >
-              <Ionicons name="camera" size={30} />
-              <BldText16>+</BldText16>
+              <Icon
+                name="gallery_black"
+                style={{
+                  zIndex: 1,
+                  width: pixelScaler(25),
+                  height: pixelScaler(20),
+                }}
+              />
             </SelectImageButton>
           </ImageItemContainer>
         }

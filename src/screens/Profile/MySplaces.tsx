@@ -37,7 +37,12 @@ import {
   RegText16,
   RegText20,
 } from "../../components/Text";
-import { BLANK_IMAGE, pixelScaler, strCmpFunc } from "../../utils";
+import {
+  BLANK_IMAGE,
+  pixelScaler,
+  shortenAddress,
+  strCmpFunc,
+} from "../../utils";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
@@ -58,6 +63,8 @@ import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icons } from "../../icons";
 import { HeaderRightEdit } from "../../components/HeaderRightEdit";
+import { Icon } from "../../components/Icon";
+import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 
 const SplaceItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -171,7 +178,7 @@ const SplaceItem = ({
         <BldText13>{splace.name}</BldText13>
         <BadgesContainer>
           <AddressBadge>
-            <RegText13>{splace.address}</RegText13>
+            <RegText13>{shortenAddress(splace.address)}</RegText13>
           </AddressBadge>
         </BadgesContainer>
       </InfoContainer>
@@ -199,7 +206,14 @@ const MySplaces = ({
         editing ? (
           <HeaderRightConfirm onPress={() => setEditing(false)} />
         ) : (
-          <HeaderRightEdit onPress={() => setEditing(true)} />
+          <HeaderRightIcon
+            onPress={() => setEditing(true)}
+            iconName="edit"
+            iconStyle={{
+              width: pixelScaler(18),
+              height: pixelScaler(18),
+            }}
+          />
         ),
       headerTitle: () => <BldText16>등록된 공간 관리</BldText16>,
     });

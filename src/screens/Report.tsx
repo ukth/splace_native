@@ -12,6 +12,7 @@ import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler } from "../utils";
 import { REPORT } from "../queries";
 import { ProgressContext } from "../contexts/Progress";
+import { BldText16 } from "../components/Text";
 
 const Container = styled.View`
   flex: 1;
@@ -46,7 +47,7 @@ const Report = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "신고",
+      headerTitle: () => <BldText16>신고</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerRight: () => (
         <HeaderRightConfirm

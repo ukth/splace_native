@@ -23,6 +23,8 @@ import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalMapSingleView from "../../components/ModalMapSingleView";
 import { GET_SPLACE_BY_KAKAOID, REPORT } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
+import { Icon } from "../../components/Icon";
+import ModalMapSplaceConfirm from "../../components/Upload/ModalMapSplaceConfirm";
 
 const EntryBackground = styled.View`
   width: ${pixelScaler(295)}px;
@@ -66,6 +68,7 @@ const SearchSplaceForAdd = () => {
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   const theme = useContext<ThemeType>(ThemeContext);
+  const [splace, setSplace] = useState();
   const [searchedAddress, setSearchedAddress] = useState<
     {
       id: string;
@@ -89,17 +92,20 @@ const SearchSplaceForAdd = () => {
   });
 
   const { spinner } = useContext(ProgressContext);
+  const [splaceSelected, setSplaceSelected] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerTitle: () => (
         <EntryBackground>
-          <Ionicons
-            name="search"
-            size={30}
-            style={{ marginLeft: pixelScaler(10) }}
-            color={theme.entryPlaceholder}
+          <Icon
+            name="search_grey"
+            style={{
+              width: pixelScaler(20),
+              height: pixelScaler(20),
+              marginLeft: pixelScaler(10),
+            }}
           />
           <BldTextInput16
             onChangeText={(text) => {
@@ -115,6 +121,9 @@ const SearchSplaceForAdd = () => {
           />
         </EntryBackground>
       ),
+      headerStyle: {
+        shadowColor: "transparent",
+      },
     });
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -153,15 +162,24 @@ const SearchSplaceForAdd = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
+    console.log(data);
+    // console.log(data);
     if (data?.getSplaceByKakao?.ok) {
-      navigation.push("RegisterOwner", {
-        splaceId: data.getSplaceByKakao.splaceId,
-        confirmScreen: "MySplace",
-      });
+      // console.log(data.getSplaceByKakao.splace);
+      setSplace(data.getSplaceByKakao.splace);
     } else {
       Alert.alert("위치정보를 불러오지 못했습니다.");
     }
   };
+
+  useEffect(() => {
+    if (splace) {
+      if (splaceSelected) {
+        setShowMap(true);
+        setSplaceSelected(false);
+      }
+    }
+  }, [splace, splaceSelected]);
 
   const [mutation, { loading }] = useMutation(GET_SPLACE_BY_KAKAOID, {
     onCompleted,
@@ -194,11 +212,18 @@ const SearchSplaceForAdd = () => {
           <AddressItemContainer
             onPress={() => {
               (async () => {
-                setCoordinate({ lon: item.lon, lat: item.lat });
-                setAddress(
-                  item.road_address !== "" ? item.road_address : item.address
-                );
-                setShowMap(true);
+                if (!loading) {
+                  setSplace(undefined);
+                  setSplaceSelected(true);
+                  spinner.start();
+                  console.log("mutation!!");
+                  mutation({
+                    variables: {
+                      kakaoId: Number(item.id),
+                      keyword: item.name,
+                    },
+                  });
+                }
               })();
             }}
           >
@@ -227,22 +252,16 @@ const SearchSplaceForAdd = () => {
         )}
         ListFooterComponent={<View style={{ height: pixelScaler(200) }} />}
       />
-      <ModalMapSingleView
+      <ModalMapSplaceConfirm
         showMap={showMap}
         setShowMap={setShowMap}
-        coordinate={coordinate}
-        address={address}
-        onConfirm={() => {
-          if (!loading) {
-            spinner.start();
-            mutation({
-              variables: {
-                sourceType: "Splace location edit",
-                // sourceId: splace.id,
-                reason: "",
-              },
-            });
-          }
+        splace={splace}
+        onConfirm={(splace: SplaceType) => {
+          setShowMap(false);
+          navigation.push("RegisterOwner", {
+            splaceId: splace.id,
+            confirmScreen: "MySplaces",
+          });
         }}
       />
     </ScreenContainer>

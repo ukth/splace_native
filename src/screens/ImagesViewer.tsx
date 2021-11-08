@@ -19,6 +19,7 @@ import { pixelScaler } from "../utils";
 import ImageViewer from "react-native-image-zoom-viewer";
 import { RegText13 } from "../components/Text";
 import { Icons } from "../icons";
+import { Icon } from "../components/Icon";
 
 const CloseButton = styled.TouchableOpacity`
   position: absolute;
@@ -76,7 +77,10 @@ const ImagesViewer = () => {
             bottom: pixelScaler(10),
           }}
         >
-          <Image source={Icons.close_white} />
+          <Icon
+            name="close_white"
+            style={{ width: pixelScaler(11), height: pixelScaler(11) }}
+          />
         </CloseButton>
 
         <ImageViewer

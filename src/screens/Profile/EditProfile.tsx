@@ -20,13 +20,15 @@ import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldTextInput16, RegTextInput16 } from "../../components/TextInput";
 import { StackGeneratorParamList, ThemeType } from "../../types";
-import { pixelScaler } from "../../utils";
+import { BLANK_IMAGE, pixelScaler } from "../../utils";
 import * as ImagePicker from "expo-image-picker";
-import { EDIT_PROFILE } from "../../queries";
+import { EDIT_PROFILE, VALIDATE_USERNAME } from "../../queries";
 import axios from "axios";
 import { API_URL, tokenVar } from "../../apollo";
 import { ProgressContext } from "../../contexts/Progress";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
+import { Icon } from "../../components/Icon";
+import { BldText16, RegText13 } from "../../components/Text";
 
 const ProfileImageContainer = styled.TouchableOpacity`
   height: ${pixelScaler(195)}px;
@@ -48,7 +50,7 @@ const EntryContainer = styled.View`
 const Seperator = styled.View`
   background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.editProfileSeperator};
-  height: ${pixelScaler(0.7)}px;
+  height: ${pixelScaler(0.67)}px;
   width: ${pixelScaler(315)}px;
 `;
 
@@ -75,6 +77,41 @@ const EditProfile = () => {
   const [localUri, setLocalUri] = useState<string>("");
   const { spinner } = useContext(ProgressContext);
   const [valueChanged, setValueChanged] = useState(false);
+  const [isUsernameValid, setIsUsernameValid] = useState(true);
+
+  const onValidateCompleted = (data: any) => {
+    console.log(data, username);
+    if (data?.checkUsername?.ok) {
+      setIsUsernameValid(true);
+    } else {
+      setIsUsernameValid(false);
+    }
+  };
+
+  const [validateUsernameQuery, { loading: validateLoading }] = useLazyQuery(
+    VALIDATE_USERNAME,
+    {
+      onCompleted: onValidateCompleted,
+    }
+  );
+
+  useEffect(() => {
+    if (username) {
+      if (username === old_username) {
+        setIsUsernameValid(true);
+      } else {
+        if (username.length >= 4) {
+          if (!validateLoading) {
+            console.log("exec!");
+            validateUsernameQuery({ variables: { username } });
+          }
+        } else if (username !== "") {
+          console.log("hello");
+          setIsUsernameValid(false);
+        }
+      }
+    }
+  }, [username]);
 
   const validateUsername = (text: string) => {
     const exp = /^[0-9a-z._]*$/;
@@ -94,99 +131,102 @@ const EditProfile = () => {
       error: string;
     };
   }) => {
+    spinner.stop();
+    console.log("hello");
     if (ok) {
       Alert.alert("프로필이 수정되었습니다.");
       navigation.pop();
     } else {
       Alert.alert("프로필 수정에 실패했습니다.\n" + error);
     }
-    spinner.stop();
   };
 
   const [mutation, { loading }] = useMutation(EDIT_PROFILE, { onCompleted });
 
   useEffect(() => {
     navigation.setOptions({
-      title: "프로필 편집",
+      headerTitle: () => <BldText16>프로필 편집</BldText16>,
       headerRight: () => {
         return valueChanged ? (
           <HeaderRightConfirm
             onPress={async () => {
-              let variables: {
-                name?: string;
-                username?: string;
-                profileMessage?: string;
-                profileImageUrl?: string;
-                url?: string;
-              } = {};
-              if (localUri !== "") {
-                // console.log("local in");
+              if (isUsernameValid) {
+                let variables: {
+                  name?: string;
+                  username?: string;
+                  profileMessage?: string;
+                  profileImageUrl?: string;
+                  url?: string;
+                } = {};
+                if (localUri !== "") {
+                  // console.log("local in");
 
-                const formData = new FormData();
+                  const formData = new FormData();
 
-                formData.append("photos", {
-                  // @ts-ignore
-                  uri: localUri,
-                  name: localUri.substr(localUri.length - 10),
-                  type: "image/jpeg",
-                });
+                  formData.append("photos", {
+                    // @ts-ignore
+                    uri: localUri,
+                    name: localUri.substr(localUri.length - 10),
+                    type: "image/jpeg",
+                  });
 
-                spinner.start();
-
-                const res = await axios.post(
-                  "http://" + API_URL + "/uploadphoto",
-                  formData,
-                  {
-                    headers: {
-                      "content-type": "multipart/form-data",
-                      // token: tokenVar(),
-                      token: tokenVar() ?? "",
-                    },
-                  }
-                );
-
-                if (Object.keys(res.data).length !== 1) {
-                  Alert.alert(
-                    "프로필 편집에 실패했습니다.\n(사진 업로드 실패)"
+                  const res = await axios.post(
+                    "http://" + API_URL + "/uploadphoto",
+                    formData,
+                    {
+                      headers: {
+                        "content-type": "multipart/form-data",
+                        // token: tokenVar(),
+                        token: tokenVar() ?? "",
+                      },
+                    }
                   );
-                } else {
-                  // @ts-ignore
-                  const awsURL = res.data[0].location;
-                  variables.profileImageUrl = awsURL;
-                  console.log("upload complete", awsURL)!;
-                }
-              }
-              console.log(variables);
-              if (url && url.trim() !== old_url) {
-                variables.url = url.trim();
-              }
-              if (username && username.trim() !== old_username) {
-                variables.username = username.trim();
-              }
-              if (name && name !== old_name) {
-                variables.name = name;
-              }
-              if (profileMessage && profileMessage !== old_profileMessage) {
-                variables.profileMessage = profileMessage;
-              }
 
-              console.log(variables);
-              if (Object.keys(variables).length !== 0) {
-                if ("username" in variables) {
-                  if (!validateUsername(variables.username ?? "")) {
-                    Alert.alert("적절하지 않은 아이디입니다.");
-                    return;
+                  if (Object.keys(res.data).length !== 1) {
+                    Alert.alert(
+                      "프로필 편집에 실패했습니다.\n(사진 업로드 실패)"
+                    );
+                  } else {
+                    // @ts-ignore
+                    const awsURL = res.data[0].location;
+                    variables.profileImageUrl = awsURL;
+                    console.log("upload complete", awsURL)!;
                   }
                 }
-                if ("url" in variables) {
-                  if (!validateUrl(variables.url ?? "")) {
-                    Alert.alert("적절하지 않은 링크입니다.");
-                    return;
-                  }
+                console.log(variables);
+                if (url && url.trim() !== old_url) {
+                  variables.url = url.trim();
                 }
-                spinner.start();
-                console.log("spinner start");
-                mutation({ variables });
+                if (username && username.trim() !== old_username) {
+                  variables.username = username.trim();
+                }
+                if (name && name !== old_name) {
+                  variables.name = name;
+                }
+                if (profileMessage && profileMessage !== old_profileMessage) {
+                  variables.profileMessage = profileMessage;
+                }
+
+                console.log(variables);
+                if (Object.keys(variables).length !== 0) {
+                  if ("username" in variables) {
+                    if (!validateUsername(variables.username ?? "")) {
+                      Alert.alert("적절하지 않은 아이디입니다.");
+                      return;
+                    }
+                  }
+                  if ("url" in variables) {
+                    if (!validateUrl(variables.url ?? "")) {
+                      Alert.alert("적절하지 않은 링크입니다.");
+                      return;
+                    }
+                  }
+                  spinner.start();
+                  console.log("spinner start");
+                  mutation({ variables });
+                }
+              } else {
+                Alert.alert("유효하지 않은 아이디입니다.");
               }
             }}
           />
@@ -217,11 +257,19 @@ const EditProfile = () => {
     } else {
       setValueChanged(false);
     }
-  }, [username, name, url, profileMessage, localUri, valueChanged]);
+  }, [
+    username,
+    name,
+    url,
+    profileMessage,
+    localUri,
+    valueChanged,
+    isUsernameValid,
+  ]);
 
   return (
     <ScreenContainer>
-      <KeyboardAwareScrollView extraScrollHeight={20}>
+      <KeyboardAwareScrollView extraScrollHeight={40}>
         <ProfileImageContainer
           onPress={() => {
             (async () => {
@@ -240,13 +288,13 @@ const EditProfile = () => {
             })();
           }}
         >
-          <Ionicons
+          <Icon
+            name="gallery_black"
             style={{
-              position: "absolute",
-              zIndex: 1,
+              zIndex: 2,
+              width: pixelScaler(25),
+              height: pixelScaler(20),
             }}
-            size={40}
-            name="camera-outline"
           />
           <View
             style={{
@@ -261,9 +309,10 @@ const EditProfile = () => {
           {localUri === "" ? (
             <Image
               source={{
-                uri: me.profileImageUrl ?? "",
+                uri: me.profileImageUrl ?? BLANK_IMAGE,
               }}
               style={{
+                position: "absolute",
                 width: pixelScaler(105),
                 height: pixelScaler(105),
                 borderRadius: pixelScaler(105),
@@ -273,12 +322,25 @@ const EditProfile = () => {
             <DefaultImage
               source={{ uri: localUri }}
               style={{
+                position: "absolute",
                 width: pixelScaler(105),
                 height: pixelScaler(105),
                 borderRadius: pixelScaler(105),
               }}
             />
           )}
+          {!isUsernameValid ? (
+            <RegText13
+              style={{
+                color: theme.errorText,
+                position: "absolute",
+                right: pixelScaler(30),
+                bottom: pixelScaler(5),
+              }}
+            >
+              유효하지 않은 아이디입니다.
+            </RegText13>
+          ) : null}
         </ProfileImageContainer>
         <EntriesContainer>
           <Seperator />
@@ -338,13 +400,19 @@ const EditProfile = () => {
             />
           </EntryContainer>
           <Seperator />
-          <EntryContainer>
+          <EntryContainer
+            style={{
+              height: pixelScaler(200),
+              alignItems: "flex-start",
+              paddingTop: pixelScaler(25),
+            }}
+          >
             <RegTextInput16
               value={profileMessage}
               style={{
-                marginTop: pixelScaler(23),
                 color: theme.text,
                 flex: 1,
+                lineHeight: pixelScaler(20),
               }}
               onChangeText={(text) => setProfileMessage(text)}
               placeholder="소개글"

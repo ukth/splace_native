@@ -213,7 +213,9 @@ const ModalSingleMapView = ({
             </Marker>
           </MapView>
           <AddressContainer>
-            <BldText16>{address}</BldText16>
+            <BldText16 style={{ lineHeight: pixelScaler(20) }}>
+              {address}
+            </BldText16>
             <ConfirmButton
               onPress={() => {
                 setShowMap(false);

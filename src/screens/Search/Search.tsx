@@ -35,13 +35,16 @@ import {
   RegText16,
 } from "../../components/Text";
 import { Icon } from "../../components/Icon";
-import { BldTextInput16 } from "../../components/TextInput";
+import { BldTextInput16, RegTextInput16 } from "../../components/TextInput";
 import ScreenContainer from "../../components/ScreenContainer";
 import { FilterContext } from "../../contexts/Filter";
 import { Item } from "../../components/Folder";
 import { Ionicons } from "@expo/vector-icons";
 import { ProgressContext } from "../../contexts/Progress";
 import { ModalKeep } from "../../components/ModalKeep";
+import { FloatingMapButton } from "../../components/FloatingMapButton";
+import ModalMapSplaceView from "../../components/ModalMapSplaceView";
+import ModalMapView from "../../components/ModalMapView";
 // import { TextInput } from "react-native-gesture-handler";
 
 const HeaderContainer = styled.View`
@@ -50,11 +53,17 @@ const HeaderContainer = styled.View`
 
 const TabBar = styled.View`
   width: 100%;
-  height: ${pixelScaler(60)}px;
+  height: ${pixelScaler(45)}px;
   padding: 0 ${pixelScaler(35)}px;
-  margin-bottom: ${pixelScaler(20)}px;
   flex-direction: row;
   justify-content: space-between;
+`;
+
+const TabBarBottomBorder = styled.View`
+  width: ${pixelScaler(315)}px;
+  height: ${pixelScaler(0.33)}px;
+  background-color: ${({ theme }: { theme: ThemeType }) =>
+    theme.lightSeperator};
 `;
 
 const TopTab = styled.TouchableOpacity`
@@ -69,22 +78,26 @@ const TopTab = styled.TouchableOpacity`
     theme: ThemeType;
     focused: boolean;
   }) => (focused ? 1 : 0)}px;
+  padding-bottom: ${pixelScaler(10)}px;
 `;
 
 const HeaderEntryContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  width: ${pixelScaler(315)}px;
-  height: ${pixelScaler(40)}px;
+  width: ${pixelScaler(375)}px;
+  height: ${pixelScaler(35)}px;
+  padding-right: ${pixelScaler(30)}px;
+  padding-left: ${pixelScaler(30)}px;
 `;
 const SearchBar = styled.View`
   flex: 1;
-  height: ${pixelScaler(40)}px;
+  height: ${pixelScaler(35)}px;
   border-radius: ${pixelScaler(10)}px;
   flex-direction: row;
   align-items: center;
   background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.searchBarBackground};
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const Tag = styled.View`
@@ -93,6 +106,7 @@ const Tag = styled.View`
   border-width: ${pixelScaler(0.67)}px;
   align-items: center;
   justify-content: center;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const SplaceItemContainer = styled.View`
@@ -125,7 +139,7 @@ const CloseButton = styled.TouchableOpacity`
 `;
 
 const SearchModeSelector = styled.View`
-  height: ${pixelScaler(60)}px;
+  height: ${pixelScaler(50)}px;
   padding-left: ${pixelScaler(30)}px;
   flex-direction: row;
   align-items: center;
@@ -134,6 +148,7 @@ const SearchModeSelector = styled.View`
 const SearchModeButton = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(3)}px;
   margin-right: ${pixelScaler(10)}px;
+  margin-bottom: ${pixelScaler(5)}px;
 `;
 
 const Seperator = styled.View`
@@ -141,6 +156,13 @@ const Seperator = styled.View`
   height: ${pixelScaler(0.67)}px;
   background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.lightSeperator};
+`;
+
+const BlankMessageContainer = styled.View`
+  flex: 1;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Search = () => {
@@ -172,6 +194,10 @@ const Search = () => {
   const [splaceId, setSplaceId] = useState(1);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
+  const [showMap, setShowMap] = useState(false);
+
+  const entryRef = useRef<any>();
+
   const [searchedSplaces, setSearchedSplaces] = useState<
     {
       address: string;
@@ -193,7 +219,9 @@ const Search = () => {
   >([]);
 
   const onCompleted = (data: any) => {
-    setSplaceSearched(true);
+    if (keyword !== "") {
+      setSplaceSearched(true);
+    }
   };
 
   const refresh = async () => {
@@ -224,67 +252,92 @@ const Search = () => {
       headerTitle: () => (
         <HeaderContainer>
           {searchBarFocused && !splaceSearched ? (
-            <TabBar>
-              <TopTab
-                focused={tabViewIndex === 0}
-                onPress={() => {
-                  setTabViewIndex(0);
-                  setKeyword("");
-                  console.log(tabViewIndex);
-                }}
-              >
-                <RegText16
-                  style={{
-                    color: tabViewIndex === 0 ? theme.text : theme.tabBarGrey,
+            <>
+              <TabBar>
+                <TopTab
+                  focused={tabViewIndex === 0}
+                  onPress={() => {
+                    setTabViewIndex(0);
+                    setKeyword("");
                   }}
                 >
-                  장소
-                </RegText16>
-              </TopTab>
-              <TopTab
-                focused={tabViewIndex === 1}
-                onPress={() => {
-                  setTabViewIndex(1);
-                  setKeyword("");
-                  console.log(tabViewIndex);
-                }}
-              >
-                <RegText16
-                  style={{
-                    color: tabViewIndex === 1 ? theme.text : theme.tabBarGrey,
+                  {tabViewIndex === 0 ? (
+                    <BldText16>공간</BldText16>
+                  ) : (
+                    <RegText16 style={{ color: theme.tabBarGrey }}>
+                      공간
+                    </RegText16>
+                  )}
+                </TopTab>
+                <TopTab
+                  focused={tabViewIndex === 1}
+                  onPress={() => {
+                    setTabViewIndex(1);
+                    setKeyword("");
                   }}
                 >
-                  태그
-                </RegText16>
-              </TopTab>
-              <TopTab
-                focused={tabViewIndex === 2}
-                onPress={() => {
-                  setTabViewIndex(2);
-                  setKeyword("");
-                  // console.log(tabViewIndex);
-                }}
-              >
-                <RegText16
-                  style={{
-                    color: tabViewIndex === 2 ? theme.text : theme.tabBarGrey,
+                  {tabViewIndex === 1 ? (
+                    <BldText16>카테고리</BldText16>
+                  ) : (
+                    <RegText16 style={{ color: theme.tabBarGrey }}>
+                      카테고리
+                    </RegText16>
+                  )}
+                </TopTab>
+                <TopTab
+                  focused={tabViewIndex === 2}
+                  onPress={() => {
+                    setTabViewIndex(2);
+                    setKeyword("");
                   }}
                 >
-                  계정
-                </RegText16>
-              </TopTab>
-            </TabBar>
+                  {tabViewIndex === 2 ? (
+                    <BldText16>계정</BldText16>
+                  ) : (
+                    <RegText16 style={{ color: theme.tabBarGrey }}>
+                      계정
+                    </RegText16>
+                  )}
+                </TopTab>
+              </TabBar>
+              <TabBarBottomBorder />
+            </>
           ) : null}
-          <HeaderEntryContainer>
-            {searchBarFocused && !splaceSearched ? (
+          <HeaderEntryContainer
+            style={
+              searchBarFocused && !splaceSearched
+                ? {
+                    marginTop: pixelScaler(15),
+                  }
+                : {
+                    marginTop: pixelScaler(5),
+                  }
+            }
+          >
+            {searchBarFocused || (!searchBarFocused && splaceSearched) ? (
               <TouchableOpacity
-                // style={{ backgroundColor: "#2030a0" }}
                 onPress={() => {
-                  Keyboard.dismiss();
-                  setSearchBarFocused(false);
+                  if (searchBarFocused) {
+                    setSearchBarFocused(false);
+                    setSplaceSearched(false);
+                    entryRef.current?.clear();
+                    entryRef.current?.blur();
+                    Keyboard.dismiss();
+                  } else {
+                    Keyboard.dismiss();
+                    setSearchBarFocused(true);
+                    setSplaceSearched(false);
+                  }
                 }}
               >
-                <Ionicons name="chevron-back" size={pixelScaler(27)} />
+                <Icon
+                  name="header_back"
+                  style={{
+                    width: pixelScaler(8),
+                    height: pixelScaler(15),
+                    marginRight: pixelScaler(21),
+                  }}
+                />
               </TouchableOpacity>
             ) : null}
             <SearchBar>
@@ -293,22 +346,22 @@ const Search = () => {
                 style={{
                   width: pixelScaler(20),
                   height: pixelScaler(20),
-                  marginLeft: pixelScaler(11),
-                  marginRight: pixelScaler(2),
+                  marginLeft: pixelScaler(15),
                 }}
               />
-              <BldTextInput16
-                // value={keyword}
-                selectionColor={theme.searchBarPlaceholder}
+              <RegTextInput16
+                ref={entryRef}
+                selectionColor={theme.entrySelection}
                 style={{
                   flex: 1,
-                  marginLeft: pixelScaler(5),
+                  marginLeft: pixelScaler(10),
+                  marginTop: pixelScaler(1.3),
                 }}
                 onFocus={() => {
                   setSearchBarFocused(true);
                   setSplaceSearched(false);
                 }}
-                placeholder={"Find your special splace!"}
+                placeholder={"Find your special place!"}
                 placeholderTextColor={theme.searchBarPlaceholder}
                 // onChangeText={(text) => {
                 //   setKeyword(text);
@@ -331,22 +384,25 @@ const Search = () => {
                   }
                 }}
               />
-              <TouchableOpacity onPress={() => navigation.push("Filter")}>
-                <Icon
-                  name="filter"
-                  style={{
-                    width: pixelScaler(17),
-                    height: pixelScaler(16.2),
-                    marginRight: pixelScaler(16),
-                  }}
-                />
-              </TouchableOpacity>
+              {searchBarFocused || splaceSearched ? (
+                <TouchableOpacity onPress={() => navigation.push("Filter")}>
+                  <Icon
+                    name="filter"
+                    style={{
+                      width: pixelScaler(17),
+                      height: pixelScaler(16.2),
+                      marginRight: pixelScaler(16),
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : null}
             </SearchBar>
           </HeaderEntryContainer>
         </HeaderContainer>
       ),
       headerStyle: {
-        height: pixelScaler(searchBarFocused && !splaceSearched ? 175 : 95),
+        height: pixelScaler(searchBarFocused && !splaceSearched ? 145 : 95),
+        shadowColor: "transparent",
       },
     });
   }, [keyword, tabViewIndex, searchBarFocused, splaceSearched]);
@@ -399,7 +455,7 @@ const Search = () => {
                   : {}),
               }),
         };
-        // console.log(variables);
+
         setSearchVars(variables);
         spinner.start(false);
         const res = await refetchSplaces({ ...variables });
@@ -408,9 +464,11 @@ const Search = () => {
           if (splaceSearchType === "splace") {
             setSearchedSplaces(res.data.searchSplaces.searchedSplaces ?? []);
             setSplaceSearched(true);
+            setSearchBarFocused(false);
           } else {
             setSearchedLogs(res.data.searchSplaces.searchedSplaces ?? []);
             setSplaceSearched(true);
+            setSearchBarFocused(false);
           }
         }
       }
@@ -460,10 +518,8 @@ const Search = () => {
         searchSplaceByKeyword(keyword);
       }
     } else if (tabViewIndex === 1 && keyword !== "") {
-      console.log("refetch category");
       refetchCategory({ keyword });
     } else if (tabViewIndex === 2 && keyword !== "") {
-      console.log("refetch user", keyword);
       refetchUser({ keyword });
     }
   }, [keyword]);
@@ -472,25 +528,18 @@ const Search = () => {
     navigation.setOptions({
       headerStyle: {
         height: pixelScaler(searchBarFocused ? 175 : 95),
-        borderBottomWidth: 0.2,
+        shadowColor: "transparent",
       },
     });
     (async () => {
       const historyData = await AsyncStorage.getItem("search_history");
       if (historyData) {
         setHistory(historyData.split(",").slice(0, 10));
-        // console.log(historyData);
       }
     })();
-    // setHistory([]);
-    // AsyncStorage.setItem("search_history", "");
   }, []);
 
-  useEffect(() => {
-    console.log(categoryData?.searchCategories?.categories);
-  }, [categoryData]);
-
-  return searchBarFocused ? (
+  return searchBarFocused || splaceSearched ? (
     <ScreenContainer>
       {tabViewIndex === 0 ? (
         splaceSearched ? (
@@ -515,55 +564,34 @@ const Search = () => {
             </SearchModeSelector>
             {splaceSearchType === "splace" ? (
               <>
-                <FlatList
-                  data={searchedSplaces}
-                  refreshing={refreshing}
-                  onRefresh={refresh}
-                  numColumns={2}
-                  style={{ marginLeft: pixelScaler(30) }}
-                  onEndReachedThreshold={0.5}
-                  onEndReached={async () => {
-                    // console.log("onendreached");
-                    if (Object.keys(searchVars).length > 2) {
-                      const res = await fetchMoreSplaces({
-                        variables: {
-                          ...searchVars,
-                          lastId: searchedSplaces.length,
-                        },
-                      });
-                      if (res?.data?.searchSplaces?.ok) {
-                        setSearchedSplaces([
-                          ...searchedSplaces,
-                          ...(res.data.searchSplaces.searchedSplaces ?? []),
-                        ]);
-                        setSplaceSearched(true);
-                      }
-                    }
-                  }}
-                  renderItem={({ item: splaceResult }) => (
-                    <SplaceItemContainer>
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.push("Splace", {
-                            splace: {
-                              id: splaceResult.id,
-                            },
-                          })
+                {searchedSplaces.length > 0 ? (
+                  <FlatList
+                    data={searchedSplaces}
+                    refreshing={refreshing}
+                    onRefresh={refresh}
+                    numColumns={2}
+                    style={{ marginLeft: pixelScaler(30) }}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={async () => {
+                      // console.log("onendreached");
+                      if (Object.keys(searchVars).length > 2) {
+                        const res: any = await fetchMoreSplaces({
+                          variables: {
+                            ...searchVars,
+                            lastId: searchedSplaces.length,
+                          },
+                        });
+                        if (res?.data?.searchSplaces?.ok) {
+                          setSearchedSplaces([
+                            ...searchedSplaces,
+                            ...(res.data.searchSplaces.searchedSplaces ?? []),
+                          ]);
+                          setSplaceSearched(true);
                         }
-                      >
-                        <Image
-                          source={{
-                            uri: splaceResult.thumbnail ?? BLANK_IMAGE,
-                          }}
-                          style={{
-                            width: pixelScaler(145),
-                            height: pixelScaler(145),
-                            borderRadius: pixelScaler(10),
-                            marginBottom: pixelScaler(12),
-                          }}
-                        />
-                      </TouchableOpacity>
-                      <LabelContainer>
+                      }
+                    }}
+                    renderItem={({ item: splaceResult }) => (
+                      <SplaceItemContainer>
                         <TouchableOpacity
                           onPress={() =>
                             navigation.push("Splace", {
@@ -573,76 +601,171 @@ const Search = () => {
                             })
                           }
                         >
-                          <BldText13
-                            style={{ width: pixelScaler(130) }}
-                            numberOfLines={1}
-                          >
-                            {splaceResult.name}
-                          </BldText13>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setSplaceId(splaceResult.id);
-                            setModalKeepVisible(true);
-                          }}
-                          hitSlop={{
-                            top: pixelScaler(10),
-                            bottom: pixelScaler(10),
-                            left: pixelScaler(10),
-                            right: pixelScaler(10),
-                          }}
-                        >
-                          <Icon
-                            name={
-                              splaceResult.isSaved
-                                ? "bookmark_fill"
-                                : "bookmark_black"
-                            }
+                          <Image
+                            source={{
+                              uri:
+                                splaceResult.thumbnail &&
+                                splaceResult.thumbnail !== ""
+                                  ? splaceResult.thumbnail
+                                  : BLANK_IMAGE,
+                            }}
                             style={{
-                              width: pixelScaler(12),
-                              height: pixelScaler(18),
+                              width: pixelScaler(145),
+                              height: pixelScaler(145),
+                              borderRadius: pixelScaler(10),
+                              marginBottom: pixelScaler(12),
                             }}
                           />
                         </TouchableOpacity>
-                      </LabelContainer>
+                        <LabelContainer>
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.push("Splace", {
+                                splace: {
+                                  id: splaceResult.id,
+                                },
+                              })
+                            }
+                          >
+                            <BldText13
+                              style={{
+                                width: pixelScaler(130),
+                                marginTop: pixelScaler(1),
+                              }}
+                              numberOfLines={1}
+                            >
+                              {splaceResult.name}
+                            </BldText13>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setSplaceId(splaceResult.id);
+                              setModalKeepVisible(true);
+                            }}
+                            hitSlop={{
+                              top: pixelScaler(10),
+                              bottom: pixelScaler(10),
+                              left: pixelScaler(10),
+                              right: pixelScaler(10),
+                            }}
+                          >
+                            <Icon
+                              name={
+                                splaceResult.isSaved
+                                  ? "bookmark_fill"
+                                  : "bookmark_thin"
+                              }
+                              style={{
+                                width: pixelScaler(14.3),
+                                height: pixelScaler(18.5),
+                              }}
+                            />
+                          </TouchableOpacity>
+                        </LabelContainer>
 
-                      <TagsContainer>
-                        <Tag
-                          style={{
-                            height: pixelScaler(20),
-                          }}
-                        >
-                          <RegText13>
-                            {shortenAddress(splaceResult.address)}
-                          </RegText13>
-                        </Tag>
-                        {splaceResult.stringBC !== "" &&
-                        splaceResult.stringBC?.split(" ").length ? (
+                        <TagsContainer>
                           <Tag
                             style={{
                               height: pixelScaler(20),
                             }}
                           >
                             <RegText13>
-                              {splaceResult.stringBC?.split(" ")[0]}
+                              {shortenAddress(splaceResult.address)}
                             </RegText13>
                           </Tag>
-                        ) : null}
-                      </TagsContainer>
-                    </SplaceItemContainer>
-                  )}
-                  keyExtractor={(item) => item.id + ""}
-                />
+                          {splaceResult.stringBC !== "" &&
+                          splaceResult.stringBC?.split(" ").length ? (
+                            <Tag
+                              style={{
+                                height: pixelScaler(20),
+                              }}
+                            >
+                              <RegText13>
+                                {splaceResult.stringBC?.split(" ")[0]}
+                              </RegText13>
+                            </Tag>
+                          ) : null}
+                        </TagsContainer>
+                      </SplaceItemContainer>
+                    )}
+                    keyExtractor={(item) => item.id + ""}
+                  />
+                ) : (
+                  <BlankMessageContainer>
+                    <RegText16
+                      style={{
+                        color: theme.greyTextAlone,
+                        lineHeight: pixelScaler(23),
+                      }}
+                    >
+                      '{keyword}'와 일치하는
+                    </RegText16>
+                    <RegText16
+                      style={{
+                        color: theme.greyTextAlone,
+                        lineHeight: pixelScaler(23),
+                        marginBottom: pixelScaler(60),
+                      }}
+                    >
+                      검색 결과가 없습니다.
+                    </RegText16>
+                  </BlankMessageContainer>
+                )}
                 <ModalKeep
                   modalVisible={modalKeepVisible}
                   setModalVisible={setModalKeepVisible}
                   splaceId={splaceId}
                 />
+                {splaceSearchType === "splace" ? (
+                  <FloatingMapButton onPress={() => setShowMap(true)}>
+                    <Icon
+                      name="map"
+                      style={{
+                        width: pixelScaler(20),
+                        height: pixelScaler(20),
+                      }}
+                    />
+                  </FloatingMapButton>
+                ) : null}
+                {searchedSplaces.length > 0 ? (
+                  <ModalMapView
+                    showMap={showMap}
+                    setShowMap={setShowMap}
+                    splaces={searchedSplaces.map((searchedSplace) => {
+                      const coords = searchedSplace.location.split(", ");
+                      const bigCategoryIds =
+                        searchedSplace.bigCategories?.split(", ");
+                      const bigCategoryNames =
+                        searchedSplace.stringBC?.split(", ");
+                      return {
+                        id: searchedSplace.id,
+                        lat: Number(coords[0]),
+                        lon: Number(coords[1]),
+                        name: searchedSplace.name,
+                        address: searchedSplace.address,
+                        thumbnail: searchedSplace.thumbnail,
+                        ...(bigCategoryIds && bigCategoryNames
+                          ? {
+                              bigCategories: bigCategoryIds.map(
+                                (bigCategoryId, index) => {
+                                  return {
+                                    id: Number(bigCategoryId),
+                                    name: bigCategoryNames[index],
+                                  };
+                                }
+                              ),
+                            }
+                          : {}),
+                      };
+                    })}
+                  />
+                ) : null}
               </>
-            ) : (
+            ) : searchedSplaces.length > 0 ? (
               <FlatList
                 data={searchedLogs}
                 numColumns={2}
+                onEndReachedThreshold={0.5}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={{
@@ -680,6 +803,25 @@ const Search = () => {
                 }}
                 keyExtractor={(item) => item.id + ""}
               />
+            ) : (
+              <BlankMessageContainer>
+                <RegText16
+                  style={{
+                    color: theme.greyTextAlone,
+                    lineHeight: pixelScaler(23),
+                  }}
+                >
+                  '{keyword}'와 일치하는
+                </RegText16>
+                <RegText16
+                  style={{
+                    color: theme.greyTextAlone,
+                    lineHeight: pixelScaler(23),
+                  }}
+                >
+                  검색 결과가 없습니다.
+                </RegText16>
+              </BlankMessageContainer>
             )}
           </>
         ) : (

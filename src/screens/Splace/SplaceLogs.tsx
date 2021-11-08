@@ -6,6 +6,7 @@ import { Alert, FlatList } from "react-native";
 import PhotoLog from "../../components/Contents/Photolog";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import ScreenContainer from "../../components/ScreenContainer";
+import { BldText16 } from "../../components/Text";
 import { GET_USER_LOGS } from "../../queries";
 import { PhotologType, StackGeneratorParamList, UserType } from "../../types";
 
@@ -23,7 +24,7 @@ const SplaceLogs = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "게시물",
+      headerTitle: () => <BldText16>게시물</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
   }, []);

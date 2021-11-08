@@ -28,7 +28,7 @@ const BlockedUsers = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "차단된 계정",
+      headerTitle: () => <BldText16>차단된 계정</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
   }, []);

@@ -10,10 +10,11 @@ import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import styled from "styled-components/native";
 import { pixelScaler } from "../../utils";
-import { RegText16 } from "../../components/Text";
+import { BldText16, RegText16 } from "../../components/Text";
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "../../components/Themed";
 import { logUserOut } from "../../apollo";
+import { Icon } from "../../components/Icon";
 
 const ButtonContainer = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(30)}px;
@@ -32,7 +33,7 @@ const Setting = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "환경설정",
+      headerTitle: () => <BldText16>환경설정</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
   }, []);
@@ -42,11 +43,23 @@ const Setting = () => {
       <View style={{ height: pixelScaler(10) }} />
       <ButtonContainer onPress={() => navigation.push("EditInfo")}>
         <RegText16>개인 정보</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
       <ButtonContainer onPress={() => navigation.push("ChangePassword")}>
         <RegText16>비밀번호 변경</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
       <ButtonContainer
         onPress={() =>
@@ -54,15 +67,33 @@ const Setting = () => {
         }
       >
         <RegText16>문제 신고</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
       <ButtonContainer onPress={() => navigation.push("BlockedUsers")}>
         <RegText16>차단된 계정</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
       <ButtonContainer onPress={() => navigation.push("ServicePolicy")}>
         <RegText16>서비스 방침</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
       <ButtonContainer
         onPress={async () => {
@@ -79,7 +110,13 @@ const Setting = () => {
         }}
       >
         <RegText16>로그아웃</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
     </ScreenContainer>
   );

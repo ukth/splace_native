@@ -20,6 +20,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { CREATE_LOG } from "../../queries";
 import RatingModal from "./RatingModal";
+import { Icon } from "../../components/Icon";
 
 const LabelsContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
@@ -192,7 +193,14 @@ const UploadLog = () => {
                   style={{ position: "absolute", bottom: 0 }}
                   onPress={() => setShowPicker(true)}
                 >
-                  <Ionicons name="camera" size={30} />
+                  <Icon
+                    name="gallery_black"
+                    style={{
+                      zIndex: 1,
+                      width: pixelScaler(25),
+                      height: pixelScaler(20),
+                    }}
+                  />
                 </SelectImageButton>
               </ImageItemContainer>
             }
@@ -265,7 +273,13 @@ const UploadLog = () => {
                 ? content?.splace?.name
                 : "장소 / 이벤트 선택"}
             </BldText16>
-            <Ionicons name="chevron-forward" size={pixelScaler(22)} />
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
+            />
           </LabelContainer>
           <LabelContainer
             onPress={() => {
@@ -298,7 +312,13 @@ const UploadLog = () => {
                 }}
               />
             ) : null}
-            <Ionicons name="chevron-forward" size={pixelScaler(22)} />
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
+            />
           </LabelContainer>
           <LabelContainer
             onPress={() => {
@@ -336,7 +356,13 @@ const UploadLog = () => {
                 }}
               />
             ) : null}
-            <Ionicons name="chevron-forward" size={pixelScaler(22)} />
+            <Icon
+              name="arrow_right"
+              style={{
+                width: pixelScaler(6),
+                height: pixelScaler(12),
+              }}
+            />
           </LabelContainer>
           <TextInputContainer>
             <RegTextInput13

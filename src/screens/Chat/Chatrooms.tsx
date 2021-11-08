@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import client, { tokenVar, userIdVar } from "../../apollo";
+import { Icon } from "../../components/Icon";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText13, RegText13, RegText9 } from "../../components/Text";
@@ -29,7 +30,7 @@ import {
   ThemeType,
   UserType,
 } from "../../types";
-import { pixelScaler } from "../../utils";
+import { BLANK_IMAGE, pixelScaler } from "../../utils";
 
 const RoomContainer = styled.TouchableOpacity`
   height: ${pixelScaler(75)}px;
@@ -84,8 +85,10 @@ const RoomItem = ({ room }: { room: RoomType }) => {
     if (diff < 60 * 60 * 1000) {
       const min = Math.floor(diff / 60000);
       timeText = min !== 0 ? min + "분 전" : "방금 전";
-    } else {
+    } else if (Math.floor(diff / (60 * 60000)) < 24) {
       timeText = Math.floor(diff / (60 * 60000)) + "시간 전";
+    } else {
+      timeText = Math.floor(diff / (60 * 60000 * 24)) + "일 전";
     }
   }
 
@@ -142,7 +145,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 uri:
                   room.members.filter(
                     (member: UserType) => member.id !== me?.id
-                  )[0].profileImageUrl ?? "",
+                  )[0].profileImageUrl ?? BLANK_IMAGE,
               }}
               style={{
                 width: pixelScaler(32),
@@ -158,7 +161,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 uri:
                   room.members.filter(
                     (member: UserType) => member.id !== me?.id
-                  )[0].profileImageUrl ?? "",
+                  )[0].profileImageUrl ?? BLANK_IMAGE,
               }}
               style={{
                 position: "absolute",
@@ -174,7 +177,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 uri:
                   room.members.filter(
                     (member: UserType) => member.id !== me?.id
-                  )[1].profileImageUrl ?? "",
+                  )[1].profileImageUrl ?? BLANK_IMAGE,
               }}
               style={{
                 position: "absolute",
@@ -232,6 +235,7 @@ const Chatrooms = () => {
   navigation.addListener("focus", () => {
     refetch();
     // console.log(data2, data4, "$$$$$$$$");
+    console.log(data);
   });
 
   useEffect(() => {
@@ -247,7 +251,6 @@ const Chatrooms = () => {
     const {
       createChatroom: { ok, error },
     } = data;
-    console.log(data);
     if (ok) {
       // navigation.push();
     } else {
@@ -262,23 +265,18 @@ const Chatrooms = () => {
     }
   );
 
-  console.log(me);
-  useEffect(() => console.log(me), [me]);
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() =>
-            createMutation({
-              variables: {
-                title: "",
-                memberIds: [me.id],
-                isPersonal: false,
-              },
-            })
-          }
-        >
-          <Ionicons name="md-person-add-outline" size={30} />
+        <TouchableOpacity onPress={() => navigation.push("CreateChatroom")}>
+          <Icon
+            name="messagebox_add"
+            style={{
+              width: pixelScaler(22),
+              height: pixelScaler(21.4),
+              marginRight: pixelScaler(27),
+            }}
+          />
         </TouchableOpacity>
       ),
     });

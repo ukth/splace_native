@@ -24,6 +24,7 @@ import { useNavigation } from "@react-navigation/core";
 import { Icons } from "../../icons";
 import { UploadContentContext } from "../../contexts/UploadContent";
 import { Icon } from "../Icon";
+import { FilterContext } from "../../contexts/Filter";
 
 const ModalDragBar = styled.View`
   position: absolute;
@@ -83,7 +84,7 @@ const TagsRowContainer = styled.View`
 `;
 
 const Tag = styled.View`
-  padding: ${pixelScaler(10)}px 0;
+  padding: 0 ${pixelScaler(10)}px;
   justify-content: center;
   border-width: ${pixelScaler(0.67)}px;
   border-radius: ${pixelScaler(20)}px;
@@ -91,22 +92,25 @@ const Tag = styled.View`
   margin-right: ${pixelScaler(7)}px;
 `;
 
-const ModalMapSplaceView = ({
+const ModalMapSplaceConfirm = ({
   showMap,
   setShowMap,
-  splace,
-  rootScreen,
+  coordinate,
+  address,
+  name,
 }: {
   showMap: boolean;
   setShowMap: (_: boolean) => void;
-  splace?: SplaceType;
-  rootScreen: string;
+  coordinate: { lat: number; lon: number };
+  address: string;
+  name: string;
 }) => {
   const { width } = useWindowDimensions();
   const height = pixelScaler(760);
   const theme = useContext<ThemeType>(ThemeContext);
+  const [showModal, setShowModal] = useState(showMap);
 
-  const { content, setContent } = useContext(UploadContentContext);
+  const { filter, setFilter } = useContext(FilterContext);
 
   const screenHeight = Dimensions.get("screen").height;
   const panY = useRef(new Animated.Value(screenHeight)).current;
@@ -145,18 +149,21 @@ const ModalMapSplaceView = ({
   ).current;
 
   useEffect(() => {
-    console.log(splace);
-  }, []);
-
-  useEffect(() => {
     if (showMap) {
-      resetBottomSheet.start();
+      openModal();
+    } else {
+      closeModal();
     }
   }, [showMap]);
 
+  const openModal = () => {
+    setShowModal(true);
+    resetBottomSheet.start();
+  };
+
   const closeModal = () => {
     closeBottomSheet.start(() => {
-      setShowMap(false);
+      setShowModal(false);
     });
   };
 
@@ -167,7 +174,7 @@ const ModalMapSplaceView = ({
 
   return (
     <Modal
-      visible={showMap}
+      visible={showModal}
       animationType={"fade"}
       transparent
       statusBarTranslucent
@@ -215,93 +222,54 @@ const ModalMapSplaceView = ({
               borderRadius: pixelScaler(15),
             }}
             initialRegion={{
-              latitude: splace?.lat ?? 37.4996187,
-              longitude: splace?.lon ?? 127.0296435,
+              latitude: coordinate.lat ?? 37.4996187,
+              longitude: coordinate.lon ?? 127.0296435,
               latitudeDelta: 0.03,
               longitudeDelta: 0.008,
             }}
           >
-            {splace && (
-              <Marker
-                coordinate={{
-                  latitude: splace?.lat,
-                  longitude: splace?.lon,
+            <Marker
+              coordinate={{
+                latitude: coordinate?.lat,
+                longitude: coordinate?.lon,
+              }}
+              anchor={{
+                x: 0.5,
+                y: 1,
+              }}
+            >
+              <Icon
+                name="positionpin"
+                style={{
+                  width: pixelScaler(23),
+                  height: pixelScaler(33),
                 }}
-                anchor={{
-                  x: 0.5,
-                  y: 1,
-                }}
-              >
-                <Icon
-                  name="positionpin"
-                  style={{
-                    width: pixelScaler(23),
-                    height: pixelScaler(33),
-                  }}
-                />
-              </Marker>
-            )}
+              />
+            </Marker>
           </MapView>
           <SplaceContainer
             style={{
-              height: pixelScaler(splace?.thumbnail?.length ? 205 : 145),
+              height: pixelScaler(145),
             }}
           >
             <SplaceInfoContainer>
-              {splace?.thumbnail?.length && (
-                <Image
-                  style={{
-                    width: pixelScaler(110),
-                    height: pixelScaler(110),
-                    borderRadius: pixelScaler(10),
-                    marginRight: pixelScaler(10),
-                  }}
-                  source={{
-                    uri: splace?.thumbnail,
-                  }}
-                />
-              )}
               <InfosContainer>
                 <BldText16 style={{ marginBottom: pixelScaler(10) }}>
-                  {splace?.name}
+                  {name}
                 </BldText16>
-                <RegText13>{splace?.address}</RegText13>
-                {splace?.thumbnail?.length && (
-                  <TagsContainer>
-                    {splace?.ratingtags?.length !== 0 && (
-                      <TagsRowContainer>
-                        {splace?.ratingtags?.map((tag) => (
-                          <Tag
-                            key={tag.id}
-                            style={{ borderColor: theme.borderHighlight }}
-                          >
-                            <RegText13 style={{ color: theme.borderHighlight }}>
-                              {tag.name}
-                            </RegText13>
-                          </Tag>
-                        ))}
-                      </TagsRowContainer>
-                    )}
-                    {splace?.bigCategories?.length !== 0 && (
-                      <TagsRowContainer>
-                        {splace?.bigCategories?.map((tag) => (
-                          <Tag key={tag.id}>
-                            <RegText13>{tag.name}</RegText13>
-                          </Tag>
-                        ))}
-                      </TagsRowContainer>
-                    )}
-                  </TagsContainer>
-                )}
+                <RegText13>{address}</RegText13>
               </InfosContainer>
             </SplaceInfoContainer>
             <ConfirmButton
               onPress={() => {
-                setContent({ ...content, splace });
                 setShowMap(false);
-                //@ts-ignore
-                navigation.navigate(rootScreen);
-                // onConfirm();
+                setFilter({
+                  ...filter,
+                  lat: coordinate?.lat,
+                  lon: coordinate?.lon,
+                  locationText: address,
+                });
+                navigation.pop();
               }}
             >
               <RegText16 style={{ color: theme.textHighlight }}>완료</RegText16>
@@ -313,4 +281,4 @@ const ModalMapSplaceView = ({
   );
 };
 
-export default ModalMapSplaceView;
+export default ModalMapSplaceConfirm;

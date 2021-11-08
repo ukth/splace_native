@@ -2,7 +2,7 @@
   "expo": {
     "name": "splace",
     "slug": "splace",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "splace",
@@ -19,37 +19,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "LSApplicationQueriesSchemes": [
-          "kftc-bankpay",
-          "ispmobile",
-          "itms-apps",
-          "hdcardappcardansimclick",
-          "smhyundaiansimclick",
-          "shinhan-sr-ansimclick",
-          "smshinhanansimclick",
-          "kb-acp",
-          "vguardstart",
-          "cloudpay",
-          "nhappcardansimclick",
-          "nonghyupcardansimclick",
-          "kakaotalk",
-          "payco",
-          "chaipayment",
-          "kb-auth",
-          "hyundaicardappcardid",
-          "com.wooricard.wcard",
-          "lmslpay",
-          "lguthepay-xpay",
-          "liivbank",
-          "supertoss"
-        ],
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true,
-          "NSAllowsArbitraryLoadsInWebContent": true
-        }
-      }
+      "supportsTablet": false,
+      "bundleIdentifier": "com.lunencorp.splace"
     },
     "android": {
       "adaptiveIcon": {

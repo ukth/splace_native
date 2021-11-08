@@ -62,6 +62,7 @@ const Tag = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   padding: 0 ${pixelScaler(10)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const MainfeedHeader = () => {
@@ -118,11 +119,12 @@ const MainfeedHeader = () => {
     <Container>
       <HeaderLeftContainer>
         <Icon
-          name="super_necklace"
+          name="super"
           style={{
-            width: pixelScaler(35),
+            width: pixelScaler(59),
             height: pixelScaler(35),
             marginLeft: pixelScaler(23),
+            marginTop: pixelScaler(5),
           }}
         />
       </HeaderLeftContainer>
@@ -203,11 +205,10 @@ const MainfeedHeader = () => {
         >
           <Tag
             onPress={() => {
-              // closeButtons();
-              navigation.push("UploadMoment");
+              navigation.push("UploadSeries");
             }}
           >
-            <BldText16>모먼트</BldText16>
+            <BldText16>시리즈</BldText16>
           </Tag>
         </Animated.View>
         <Animated.View
@@ -217,11 +218,10 @@ const MainfeedHeader = () => {
         >
           <Tag
             onPress={() => {
-              // closeButtons();
-              navigation.push("UploadSeries");
+              navigation.push("UploadMoment");
             }}
           >
-            <BldText16>시리즈</BldText16>
+            <BldText16>모먼트</BldText16>
           </Tag>
         </Animated.View>
       </Animated.View>

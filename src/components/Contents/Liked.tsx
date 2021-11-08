@@ -6,6 +6,7 @@ import styled from "styled-components/native";
 import { LIKE_PHOTOLOG, UNLIKE_PHOTOLOG } from "../../queries";
 import { PhotologType } from "../../types";
 import { convertNumber, pixelScaler } from "../../utils";
+import { Icon } from "../Icon";
 import { RegText13 } from "../Text";
 
 const Liked = ({ item }: { item: PhotologType }) => {
@@ -86,11 +87,9 @@ const Liked = ({ item }: { item: PhotologType }) => {
           }
         }}
       >
-        <Ionicons
-          style={{ marginLeft: pixelScaler(10) }}
-          name={liked ? "heart" : "heart-outline"}
-          color={liked ? "red" : "black"}
-          size={pixelScaler(26)}
+        <Icon
+          name={liked ? "heart_colorfill" : "empty_heart"}
+          style={{ width: pixelScaler(26), height: pixelScaler(24) }}
         />
       </TouchableOpacity>
     </LikeContainer>

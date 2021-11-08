@@ -28,17 +28,21 @@ export const Minus = styled.View`
 export const EditButtonsContainer = styled.View`
   flex: 1;
   height: ${pixelScaler(40)}px;
-  width: ${pixelScaler(375 - 17.5)}px;
+  width: ${pixelScaler(375 - 35)}px;
   flex-direction: row;
-  padding: 0 ${pixelScaler(30)}px;
+  padding: 0 ${pixelScaler(12.5)}px;
   margin-bottom: ${pixelScaler(5)}px;
+  align-items: center;
 `;
 
 export const SortButton = styled.TouchableOpacity`
   position: absolute;
-  right: ${pixelScaler(30)}px;
-  bottom: ${pixelScaler(4)}px;
+  right: ${pixelScaler(17.5)}px;
+  height: ${pixelScaler(40)}px;
   flex-direction: row;
+  align-items: center;
+  padding-top: ${pixelScaler(20)}px;
+  /* background-color: #9df; */
 `;
 
 export const NewFolderButton = styled.TouchableOpacity`
@@ -47,6 +51,7 @@ export const NewFolderButton = styled.TouchableOpacity`
   bottom: 0;
   justify-content: center;
   padding: 0 ${pixelScaler(10)}px;
+  padding-top: ${pixelScaler(1.3)}px;
   height: ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(30)}px;
   border-width: ${pixelScaler(0.7)}px;

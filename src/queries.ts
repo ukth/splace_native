@@ -1,5 +1,84 @@
 import { gql } from "@apollo/client";
 
+export const REQUEST_CERTIFICATE = gql`
+  mutation createCertificate($phone: String!, $isRegister: Boolean!) {
+    createCertificate(phone: $phone, isRegister: $isRegister) {
+      ok
+      error
+    }
+  }
+`;
+
+export const VERIFY_CERTIFICATE = gql`
+  mutation checkCertificate($certificate: String!, $phone: String!) {
+    checkCertificate(certificate: $certificate, phone: $phone) {
+      ok
+      error
+      token
+    }
+  }
+`;
+
+export const VALIDATE_USERNAME = gql`
+  query checkUsername($username: String!) {
+    checkUsername(username: $username) {
+      ok
+      error
+    }
+  }
+`;
+
+export const CREATE_ACCOUNT = gql`
+  mutation createAccount(
+    $username: String!
+    $password: String!
+    $phone: String!
+    $token: String!
+    $marketingAgree: Boolean!
+  ) {
+    createAccount(
+      username: $username
+      password: $password
+      phone: $phone
+      token: $token
+      marketingAgree: $marketingAgree
+    ) {
+      ok
+      error
+      token
+      userId
+    }
+  }
+`;
+
+export const FIND_USERNAME = gql`
+  query getUsername($token: String!) {
+    getUsername(token: $token) {
+      ok
+      error
+      username
+    }
+  }
+`;
+
+export const EDIT_PASSWORD = gql`
+  mutation editPassword($token: String!, $password: String!) {
+    editPassword(token: $token, password: $password) {
+      ok
+      error
+    }
+  }
+`;
+
+export const UPLOAD_PREFERENCE = gql`
+  mutation createPreference($preference: [Int]!) {
+    createPreference(preference: $preference) {
+      ok
+      error
+    }
+  }
+`;
+
 export const USER_FRAGMENT = gql`
   fragment UserFragment on User {
     id

@@ -7,13 +7,12 @@ import { SplaceType, StackGeneratorParamList } from "../../types";
 import styled from "styled-components/native";
 import { pixelScaler } from "../../utils";
 import { BldText16 } from "../../components/Text";
-import { bigCategories } from "../../constants";
-import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { FlatList, Image, TouchableOpacity, View } from "react-native";
 import FixedContent from "../../components/Splace/FixedContent";
 import { Icons } from "../../icons";
-import { HeaderRightAdd } from "../../components/HeaderRightAdd";
+
 import { GET_SPLACE_INFO } from "../../queries";
+import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 
 const FixedContents = () => {
   const navigation =
@@ -39,7 +38,12 @@ const FixedContents = () => {
     navigation.setOptions({
       headerTitle: () => <BldText16>{splace.name}</BldText16>,
       headerRight: () => (
-        <HeaderRightAdd
+        <HeaderRightIcon
+          iconName="uplog"
+          iconStyle={{
+            width: pixelScaler(25),
+            height: pixelScaler(25),
+          }}
           onPress={() => {
             navigation.push("AddFixedContents", { splace });
           }}

@@ -43,6 +43,8 @@ import { ApolloCache, gql, useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { BldTextInput16 } from "../../components/TextInput";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
+import { Icon } from "../../components/Icon";
+import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 
 const Entry = styled.View`
   width: 100%;
@@ -233,7 +235,7 @@ const Chatroom = () => {
   );
 
   useEffect(() => {
-    navigation.dangerouslyGetParent()?.setOptions({
+    navigation.getParent()?.setOptions({
       tabBarVisible: false,
     });
     navigation.setOptions({
@@ -243,6 +245,7 @@ const Chatroom = () => {
             style={{
               height: 50,
               alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <BldTextInput16
@@ -252,6 +255,7 @@ const Chatroom = () => {
               // placeholder={chatroom.title ? chatroom.title : ""}
               // placeholderTextColor={theme.text}
               onChangeText={(text) => setTitle(text.trim())}
+              numberOfLines={1}
               maxLength={20}
               textAlign="center"
             />
@@ -286,7 +290,12 @@ const Chatroom = () => {
             }}
           />
         ) : (
-          <TouchableOpacity
+          <HeaderRightIcon
+            iconName="menu"
+            iconStyle={{
+              width: pixelScaler(25),
+              height: pixelScaler(20.6),
+            }}
             onPress={() =>
               navigation.push("Members", {
                 title: roomInfo.title,
@@ -299,9 +308,7 @@ const Chatroom = () => {
                 leaveMutation,
               })
             }
-          >
-            <Ionicons name="menu" size={25} style={{ marginRight: 10 }} />
-          </TouchableOpacity>
+          />
         ),
     });
 
@@ -462,6 +469,13 @@ const Chatroom = () => {
   );
 
   const _handlePressSendButton = () => {
+    if (
+      chatroom.members.length === 2 &&
+      chatroom.members.map((member) => member.id).includes(1)
+    ) {
+      Alert.alert("super와의 채팅에선 메세지를 보낼 수 없습니다.");
+      return;
+    }
     if (!loadingSendMessage && sendable) {
       if (myMessage.trim() !== "") {
         setSendable(false);
@@ -500,13 +514,10 @@ const Chatroom = () => {
           renderItem={({ item, index }) => {
             // DateSectioningLine
             var date = new Date(Number(item.createdAt));
-            // console.log(item.createdAt);
 
             const hrs = date.getHours();
 
             const min = date.getMinutes();
-            // console.log(hrs, min);
-            // console.log(date.getFullYear(), date.getMonth(), date.getDate());
 
             const showDate =
               index === messages.length - 1 ||
@@ -527,13 +538,16 @@ const Chatroom = () => {
               (index === messages.length - 1 && !item.isMe) ||
               messages[index + 1].author.id !== item.author.id;
 
+            const y = date.getFullYear();
+            const m = date.getMonth() + 1;
+            const d = date.getDate();
+
             return (
               <View>
-                {showDate ? (
+                {showDate && !isNaN(y) && !isNaN(m) && !isNaN(d) ? (
                   <DateSectioningLine>
                     <RegText13 style={{ color: theme.chatTimeText }}>
-                      {date.getFullYear()}년 {date.getMonth() + 1}월{" "}
-                      {date.getDate()}일
+                      {y}년 {m}월 {d}일
                     </RegText13>
                   </DateSectioningLine>
                 ) : null}
@@ -601,7 +615,7 @@ const Chatroom = () => {
               // onPress={_handlePressSendButton}
               hitSlop={{ top: 10, bottom: 10, left: 15, right: 15 }}
             >
-              <BldText16 style={{ color: theme.chatSendText }}>??</BldText16>
+              <BldText16 style={{ color: theme.greyTextLight }}>전송</BldText16>
             </SendButton>
           )}
         </EntryTextInputContainer>

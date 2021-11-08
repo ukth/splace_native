@@ -10,12 +10,13 @@ import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import styled from "styled-components/native";
 import { pixelScaler } from "../../utils";
-import { RegText16 } from "../../components/Text";
+import { BldText16, RegText16 } from "../../components/Text";
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "../../components/Themed";
 import { logUserOut } from "../../apollo";
 import { DELETE_ACCOUNT } from "../../queries";
 import * as Linking from "expo-linking";
+import { Icon } from "../../components/Icon";
 
 const ButtonContainer = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(30)}px;
@@ -31,7 +32,7 @@ const ServicePolicy = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: "서비스 방침",
+      headerTitle: () => <BldText16>서비스 방침</BldText16>,
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
   }, []);
@@ -59,7 +60,14 @@ const ServicePolicy = () => {
         }
       >
         <RegText16>이용 약관</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
       <ButtonContainer
         onPress={() =>
@@ -67,7 +75,13 @@ const ServicePolicy = () => {
         }
       >
         <RegText16>3자 개인정보 제공 동의</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
       <ButtonContainer
         onPress={() => {
@@ -92,7 +106,13 @@ const ServicePolicy = () => {
         }}
       >
         <RegText16>회원 탈퇴</RegText16>
-        <Ionicons size={25} name="chevron-forward" />
+        <Icon
+          name="arrow_right"
+          style={{
+            width: pixelScaler(6),
+            height: pixelScaler(12),
+          }}
+        />
       </ButtonContainer>
     </ScreenContainer>
   );

@@ -21,8 +21,8 @@ export const RegTextInput20 = styled.TextInput`
   color: ${theme.light.text};
 `;
 
-export const RegTextInput33 = styled.TextInput`
-  font-size: ${pixelScaler(33)}px;
+export const RegTextInput28 = styled.TextInput`
+  font-size: ${pixelScaler(28)}px;
   font-family: "NanumSquareRound-R";
   color: ${theme.light.text};
 `;
@@ -45,8 +45,8 @@ export const BldTextInput20 = styled.TextInput`
   color: ${theme.light.text};
 `;
 
-export const BldTextInput33 = styled.TextInput`
-  font-size: ${pixelScaler(33)}px;
+export const BldTextInput28 = styled.TextInput`
+  font-size: ${pixelScaler(28)}px;
   font-family: "NanumSquareRound-B";
   color: ${theme.light.text};
 `;

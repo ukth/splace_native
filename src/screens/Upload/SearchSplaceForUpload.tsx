@@ -20,12 +20,11 @@ import { API_URL } from "../../apollo";
 import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import * as Location from "expo-location";
-import BottomSheetModal from "../../components/BottomSheetModal";
-import ModalMapSingleView from "../../components/ModalMapSingleView";
 import { GET_SPLACE_BY_KAKAOID, REPORT, UPLOAD_MOMENT } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
 import { UploadContentContext } from "../../contexts/UploadContent";
-import ModalMapSplaceView from "../../components/Upload/ModalMapSplaceView";
+import ModalMapSplaceConfirm from "../../components/Upload/ModalMapSplaceConfirm";
+import { Icon } from "../../components/Icon";
 
 const EntryBackground = styled.View`
   width: ${pixelScaler(295)}px;
@@ -106,11 +105,13 @@ const SearchSplaceForUpload = () => {
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerTitle: () => (
         <EntryBackground>
-          <Ionicons
-            name="search"
-            size={30}
-            style={{ marginLeft: pixelScaler(10) }}
-            color={theme.entryPlaceholder}
+          <Icon
+            name="search_grey"
+            style={{
+              width: pixelScaler(26),
+              height: pixelScaler(26),
+              marginLeft: pixelScaler(10),
+            }}
           />
           <BldTextInput16
             onChangeText={(text) => {
@@ -126,6 +127,9 @@ const SearchSplaceForUpload = () => {
           />
         </EntryBackground>
       ),
+      headerStyle: {
+        shadowColor: "transparent",
+      },
     });
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -248,11 +252,16 @@ const SearchSplaceForUpload = () => {
         )}
         ListFooterComponent={<View style={{ height: pixelScaler(200) }} />}
       />
-      <ModalMapSplaceView
+      <ModalMapSplaceConfirm
         splace={splace}
         showMap={showMap}
         setShowMap={setShowMap}
-        rootScreen={rootScreen}
+        onConfirm={(splace: SplaceType) => {
+          setContent({ ...content, splace });
+          setShowMap(false);
+          //@ts-ignore
+          navigation.navigate(rootScreen);
+        }}
       />
     </ScreenContainer>
   );

@@ -28,6 +28,7 @@ import {
 } from "../../components/Folder";
 import {
   BldText13,
+  BldText16,
   BldText20,
   RegText13,
   RegText16,
@@ -48,6 +49,7 @@ import {
 } from "../../queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
+import { Icon } from "../../components/Icon";
 
 export const Item = styled.View`
   width: ${pixelScaler(145)}px;
@@ -214,7 +216,7 @@ const AddSaveFolder = ({
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   useEffect(() => {
     navigation.setOptions({
-      title: folder.title,
+      headerTitle: () => <BldText16>{folder.title}</BldText16>,
       headerLeft: () => (
         <HeaderBackButton
           onPress={() => {
@@ -265,7 +267,14 @@ const AddSaveFolder = ({
                 <RegText13>
                   {sortMode === "generated" ? "최근 생성 순" : "가나다 순"}
                 </RegText13>
-                <Ionicons name="chevron-down" />
+                <Icon
+                  name="arrow_right"
+                  style={{
+                    width: pixelScaler(10.7),
+                    height: pixelScaler(4),
+                    transform: [{ rotate: "90deg" }],
+                  }}
+                />
               </SortButton>
             </EditButtonsContainer>
           )}

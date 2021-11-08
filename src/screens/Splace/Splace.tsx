@@ -27,7 +27,12 @@ import {
   RegText13,
   RegText20,
 } from "../../components/Text";
-import { GET_LOGS_BY_SPLACE, GET_SPLACE_INFO, REPORT } from "../../queries";
+import {
+  GET_LOGS_BY_SPLACE,
+  GET_PERSONAL_CHATROOM,
+  GET_SPLACE_INFO,
+  REPORT,
+} from "../../queries";
 import {
   PhotologType,
   StackGeneratorParamList,
@@ -36,6 +41,7 @@ import {
   UserType,
 } from "../../types";
 import {
+  BLANK_IMAGE,
   convertNumber,
   coords2address,
   dayNameKor,
@@ -385,6 +391,24 @@ const Splace = ({
     onCompleted,
   });
 
+  console.log(splace);
+
+  const onGetPersonalRoomCompleted = (data: any) => {
+    if (data?.getPersonalChatroom?.ok) {
+      navigation.push("Chatroom", { room: data.getPersonalChatroom.chatroom });
+    } else {
+      Alert.alert(
+        "채팅방을 불러올 수 없습니다.",
+        data.getPersonalChatroom.error
+      );
+    }
+  };
+
+  const [getPersonalRoomMutation, { loading: getPersonalRoomLoading }] =
+    useMutation(GET_PERSONAL_CHATROOM, {
+      onCompleted: onGetPersonalRoomCompleted,
+    });
+
   return (
     <ScreenContainer>
       <FlatList
@@ -412,7 +436,7 @@ const Splace = ({
               <TouchableWithoutFeedback
                 onPress={() =>
                   navigation.push("ImagesViewer", {
-                    urls: [splace.thumbnail ?? ""],
+                    urls: [splace.thumbnail ?? BLANK_IMAGE],
                   })
                 }
               >
@@ -445,7 +469,7 @@ const Splace = ({
                 <Button
                   onPress={() => {
                     // console.log(splace);
-                    if (splace.phone || splace.url || splace.owner) {
+                    if (splace.phone !== "" || splace.url || splace.owner) {
                       setModalContent("contact");
                       setModalVisible(true);
                     } else {
@@ -456,14 +480,14 @@ const Splace = ({
                 >
                   <RegText13>연락정보</RegText13>
                 </Button>
-                <Button
+                {/* <Button
                   onPress={() => {
                     onShare(splace.id);
                   }}
                   width={pixelScaler(150)}
                 >
                   <RegText13>공유</RegText13>
-                </Button>
+                </Button> */}
               </ButtonsContainer>
               <TextContainer>
                 <RegText13 style={{ lineHeight: pixelScaler(17) }}>
@@ -568,9 +592,13 @@ const Splace = ({
                   }}
                   onPress={() => setFold(!fold)}
                 >
-                  <Ionicons
-                    name={fold ? "chevron-down" : "chevron-up"}
-                    size={pixelScaler(20)}
+                  <Icon
+                    name="arrow_right"
+                    style={{
+                      width: pixelScaler(6),
+                      height: pixelScaler(12),
+                      transform: [{ rotate: fold ? "90deg" : "270deg" }],
+                    }}
                   />
                 </UnfoldButtonContainer>
               </TextContainer>
@@ -618,12 +646,17 @@ const Splace = ({
                     }
                   }}
                 >
-                  <RegText13>
+                  <RegText13 style={{ marginRight: pixelScaler(8) }}>
                     {sortMode === "generated" ? "최신 순" : "인기 순"}
                   </RegText13>
-                  <Ionicons
-                    name={fold ? "chevron-down" : "chevron-up"}
-                    size={pixelScaler(15)}
+
+                  <Icon
+                    name="arrow_right"
+                    style={{
+                      width: pixelScaler(6),
+                      height: pixelScaler(12),
+                      transform: [{ rotate: fold ? "90deg" : "270deg" }],
+                    }}
                   />
                 </SortButtonContainer>
               </ContentHeaderContainer>
@@ -676,7 +709,7 @@ const Splace = ({
       >
         {modalContent === "contact" ? (
           <>
-            {splace.phone && (
+            {splace.phone && splace.phone !== "" ? (
               <ModalButtonBox
                 onPress={() => {
                   Linking.openURL("tel:" + splace.phone);
@@ -685,7 +718,7 @@ const Splace = ({
               >
                 <RegText20>{formatPhoneString(splace.phone)}</RegText20>
               </ModalButtonBox>
-            )}
+            ) : null}
             {splace.url && (
               <ModalButtonBox
                 onPress={() => {
@@ -702,15 +735,26 @@ const Splace = ({
                 </RegText20>
               </ModalButtonBox>
             )}
-            {splace.owner && (
+            {splace.owner ? (
               <ModalButtonBox
                 onPress={() => {
                   setModalVisible(false);
+                  if (!getPersonalRoomLoading && splace.owner) {
+                    if (me.id === splace.owner.id) {
+                      navigation.push("Chatrooms");
+                    } else {
+                      getPersonalRoomMutation({
+                        variables: {
+                          targetId: splace.owner.id,
+                        },
+                      });
+                    }
+                  }
                 }}
               >
                 <RegText20>DM 보내기</RegText20>
               </ModalButtonBox>
-            )}
+            ) : null}
           </>
         ) : modalContent === "operatingTime" ? (
           operatingTime && (

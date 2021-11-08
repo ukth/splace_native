@@ -234,19 +234,13 @@ const ModalImagePicker = () => {
         pixR = image.height / (frameHeight * image.zoom);
       }
 
-      console.log(image.width, image.height, {
-        width: frameWidth * pixR,
-        height: frameHeight * pixR,
-        originX: -image.offset_x * pixR,
-        originY: -image.offset_y * pixR,
-      });
       const manipResult = await manipulateAsync(image.uri, [
         {
           crop: {
-            width: frameWidth * pixR,
-            height: frameHeight * pixR,
-            originX: -image.offset_x * pixR,
-            originY: -image.offset_y * pixR,
+            width: frameWidth * pixR - 2,
+            height: frameHeight * pixR - 2,
+            originX: -image.offset_x * pixR + 1,
+            originY: -image.offset_y * pixR + 1,
           },
         },
       ]);
@@ -257,9 +251,7 @@ const ModalImagePicker = () => {
         orgUrl: image.uri,
       });
     }
-    console.log("stop!");
     spinner.stop();
-    console.log("stop1!");
     setShowPicker(false);
     navigation.pop();
 
@@ -600,7 +592,7 @@ const ModalImagePicker = () => {
                     tmp.splice(ind, 1);
                     setSelectedImages(tmp);
                   }
-                } else {
+                } else if (ind !== -1) {
                   setFocusedImageIndex(imageIds.indexOf(item.id));
                 }
               }

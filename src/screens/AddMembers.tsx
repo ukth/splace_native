@@ -7,6 +7,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled, { ThemeContext } from "styled-components/native";
+import { Icon } from "../components/Icon";
 import Image from "../components/Image";
 import ScreenContainer from "../components/ScreenContainer";
 import { BldText16, RegText13 } from "../components/Text";
@@ -19,7 +20,7 @@ import {
   ThemeType,
   UserType,
 } from "../types";
-import { pixelScaler } from "../utils";
+import { BLANK_IMAGE, pixelScaler } from "../utils";
 
 const MemberContainer = styled.TouchableOpacity`
   height: ${pixelScaler(60)}px;
@@ -109,7 +110,7 @@ const ChatMemberComponent = ({
         <MemberThumbnail>
           <Image
             source={{
-              uri: user.profileImageUrl ?? "",
+              uri: user.profileImageUrl ?? BLANK_IMAGE,
             }}
             style={{
               width: pixelScaler(32),
@@ -224,11 +225,14 @@ const AddMembers = ({
   return (
     <ScreenContainer>
       <FollowerSearchEntry>
-        <Ionicons
-          name="search"
-          size={26}
-          color={theme.entryPlaceholder}
-          style={{ marginLeft: 5, marginRight: 5 }}
+        <Icon
+          name="search_grey"
+          style={{
+            width: pixelScaler(26),
+            height: pixelScaler(26),
+            marginLeft: pixelScaler(5),
+            marginRight: pixelScaler(5),
+          }}
         />
         <BldTextInput16
           onChangeText={(text) => {
