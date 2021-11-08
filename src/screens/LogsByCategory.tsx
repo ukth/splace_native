@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../components/ScreenContainer";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { PhotologType, StackGeneratorParamList } from "../types";
 import styled from "styled-components/native";
 import { pixelScaler } from "../utils";
-import { FlatList } from "react-native";
-import { GET_LOGS_BY_CATEGORY } from "../queries";
+import { Alert, FlatList } from "react-native";
+import { GET_LOGS_BY_CATEGORY, LOG_GETLOGSBYCATEGORIES } from "../queries";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Image from "../components/Image";
 import { RegText16 } from "../components/Text";
@@ -31,6 +31,7 @@ const Tag = styled.View`
   border-width: ${pixelScaler(1)}px;
   align-items: center;
   justify-content: center;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const LogsByCategory = () => {
@@ -40,9 +41,13 @@ const LogsByCategory = () => {
   const { category } =
     useRoute<RouteProp<StackGeneratorParamList, "LogsByCategory">>().params;
 
-  const { data, loading, fetchMore } = useQuery(GET_LOGS_BY_CATEGORY, {
+  const { data, loading, fetchMore, refetch } = useQuery(GET_LOGS_BY_CATEGORY, {
     variables: { tagId: category.id },
   });
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [log_getLogs, _1] = useMutation(LOG_GETLOGSBYCATEGORIES);
 
   useEffect(() => {
     navigation.setOptions({
@@ -52,12 +57,30 @@ const LogsByCategory = () => {
         </Tag>
       ),
     });
+    try {
+      log_getLogs({ variables: { tagId: category.id } });
+    } catch {}
   }, []);
+
+  navigation.addListener("focus", () => refetch());
+
+  const refresh = async () => {
+    setRefreshing(true);
+    const timer = setTimeout(() => {
+      Alert.alert("요청시간 초과");
+      setRefreshing(false);
+    }, 10000);
+    await refetch();
+    clearTimeout(timer);
+    setRefreshing(false);
+  };
 
   return (
     <ScreenContainer>
       <FlatList
         data={data?.getLogsByCategory?.logs}
+        refreshing={refreshing}
+        onRefresh={refresh}
         numColumns={2}
         onEndReached={() =>
           fetchMore({

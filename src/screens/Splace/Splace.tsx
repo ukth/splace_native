@@ -22,6 +22,7 @@ import ModalButtonBox from "../../components/ModalButtonBox";
 import ScreenContainer from "../../components/ScreenContainer";
 import {
   BldText16,
+  BldText18,
   BldText20,
   BldText28,
   RegText13,
@@ -29,8 +30,11 @@ import {
 } from "../../components/Text";
 import {
   GET_LOGS_BY_SPLACE,
+  GET_OWNER_CHATROOM,
   GET_PERSONAL_CHATROOM,
   GET_SPLACE_INFO,
+  LOG_GETLOGSBYSPLACE,
+  LOG_GETSPLACEINFO,
   REPORT,
 } from "../../queries";
 import {
@@ -41,10 +45,8 @@ import {
   UserType,
 } from "../../types";
 import {
-  BLANK_IMAGE,
   convertNumber,
   coords2address,
-  dayNameKor,
   formatOperatingTime,
   formatPhoneString,
   pixelScaler,
@@ -59,6 +61,7 @@ import { theme } from "../../../theme";
 import { ProgressContext } from "../../contexts/Progress";
 import { ModalKeep } from "../../components/ModalKeep";
 import { Icon } from "../../components/Icon";
+import { BLANK_IMAGE, dayNameKor } from "../../constants";
 
 const ListHeaderContainer = styled.View``;
 const UpperContainer = styled.View`
@@ -71,24 +74,25 @@ const TitleContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${pixelScaler(30)}px;
+  margin-bottom: ${pixelScaler(20)}px;
+  /* background-color: #de0; */
 `;
 
 const ButtonsContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: ${pixelScaler(30)}px;
+  margin-bottom: ${pixelScaler(25)}px;
 `;
 
 const UnfoldButtonContainer = styled.TouchableOpacity`
   position: absolute;
-  /* bottom: 0px; */
-  bottom: ${pixelScaler(15)}px;
+  bottom: 3px;
   right: 0px;
 `;
 
 const Button = styled.TouchableOpacity`
-  width: ${({ width }: { width: number }) => width}px;
+  /* width: ${({ width }: { width: number }) => width}px; */
+  flex: 1;
   border-width: ${pixelScaler(1.1)}px;
   border-radius: ${pixelScaler(10)}px;
   height: ${pixelScaler(35)}px;
@@ -98,10 +102,11 @@ const Button = styled.TouchableOpacity`
 
 const TextContainer = styled.View``;
 
+const FoldedInfoContainer = styled.View``;
+
 const TagsContainer = styled.View`
   flex-direction: row;
-  margin-top: ${pixelScaler(10)}px;
-  margin-bottom: ${pixelScaler(30)}px;
+  margin-top: ${pixelScaler(17)}px;
   flex-wrap: wrap;
 `;
 
@@ -114,19 +119,21 @@ const Tag = styled.View`
   border-width: ${pixelScaler(0.67)}px;
   border-color: ${({ theme, color }: { theme: ThemeType; color?: string }) =>
     color ?? theme.text};
-  margin-right: ${pixelScaler(10)}px;
-  margin-bottom: ${pixelScaler(10)}px;
+  margin-right: ${pixelScaler(8)}px;
+  margin-bottom: ${pixelScaler(8)}px;
 `;
 
 const ContentHeaderContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${pixelScaler(30)}px;
+  margin-bottom: ${pixelScaler(20)}px;
+  margin-top: ${pixelScaler(25)}px;
 `;
 
 const SortButtonContainer = styled.TouchableOpacity`
   flex-direction: row;
+  align-items: center;
 `;
 
 const operatingTimeToString = (timeSet: TimeSetType) => {
@@ -208,8 +215,8 @@ const Splace = ({
   // const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [showMap, setShowMap] = useState(false);
   const [operatingTime, setOperatingTime] = useState<TimeSetType[]>();
-  const [sortMode, setSortMode] = useState<"generated" | "popular">(
-    "generated"
+  const [sortMode, setSortMode] = useState<"createdAt" | "popular">(
+    "createdAt"
   );
   const [showOperatingTime, setShowOperatingTime] = useState(false);
   const me: UserType = useMe();
@@ -229,6 +236,16 @@ const Splace = ({
 
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
+  const [log_getLogs, _1] = useMutation(LOG_GETLOGSBYSPLACE);
+  const [log_getSplace, _2] = useMutation(LOG_GETSPLACEINFO);
+
+  useEffect(() => {
+    try {
+      log_getLogs({ variables: { splaceId } });
+      log_getSplace({ variables: { splaceId } });
+    } catch {}
+  }, []);
 
   const onShare = async (id: number) => {
     try {
@@ -349,7 +366,7 @@ const Splace = ({
   useEffect(() => {
     refetchLogs({
       splaceId: splace.id,
-      orderBy: sortMode === "generated" ? "time" : "like",
+      orderBy: sortMode === "createdAt" ? "time" : "like",
     });
   }, [sortMode]);
 
@@ -383,6 +400,8 @@ const Splace = ({
     spinner.stop();
     if (data.reportResources?.ok) {
       Alert.alert("폐업, 휴점 정보 제안이 완료되었습니다.");
+    } else if (data.reportResources?.error === "ERROR3P11") {
+      Alert.alert("해당 Splace에 이미 접수된 폐업, 휴점 신고가 존재합니다.");
     } else {
       Alert.alert("폐업, 휴점 정보 제안에 실패했습니다.");
     }
@@ -391,23 +410,20 @@ const Splace = ({
     onCompleted,
   });
 
-  console.log(splace);
-
-  const onGetPersonalRoomCompleted = (data: any) => {
-    if (data?.getPersonalChatroom?.ok) {
-      navigation.push("Chatroom", { room: data.getPersonalChatroom.chatroom });
+  const onGetOwnerRoomCompleted = (data: any) => {
+    if (data?.getOwnerChatroom?.ok) {
+      navigation.push("Chatroom", { room: data.getOwnerChatroom.chatroom });
     } else {
-      Alert.alert(
-        "채팅방을 불러올 수 없습니다.",
-        data.getPersonalChatroom.error
-      );
+      Alert.alert("채팅방을 불러올 수 없습니다.", data.getOwnerChatroom.error);
     }
   };
 
-  const [getPersonalRoomMutation, { loading: getPersonalRoomLoading }] =
-    useMutation(GET_PERSONAL_CHATROOM, {
-      onCompleted: onGetPersonalRoomCompleted,
-    });
+  const [getOwnerRoomMutation, { loading: getOwnerRoomLoading }] = useMutation(
+    GET_OWNER_CHATROOM,
+    {
+      onCompleted: onGetOwnerRoomCompleted,
+    }
+  );
 
   return (
     <ScreenContainer>
@@ -422,7 +438,7 @@ const Splace = ({
           fetchMore({
             variables: {
               splaceId: splace.id,
-              orderBy: sortMode === "generated" ? "time" : "like",
+              orderBy: sortMode === "createdAt" ? "time" : "like",
               lastId:
                 logsData?.getLogsBySplace?.logs[
                   logsData?.getLogsBySplace?.logs.length - 1
@@ -457,10 +473,11 @@ const Splace = ({
                   }}
                 >
                   <Icon
-                    name={splace.isSaved ? "bookmark_fill" : "bookmark_black"}
+                    name={splace.isSaved ? "bookmark_fill" : "bookmark_middle"}
                     style={{
                       width: pixelScaler(16),
                       height: pixelScaler(24),
+                      marginBottom: pixelScaler(2),
                     }}
                   />
                 </TouchableOpacity>
@@ -491,7 +508,7 @@ const Splace = ({
               </ButtonsContainer>
               <TextContainer>
                 <RegText13 style={{ lineHeight: pixelScaler(17) }}>
-                  위치{" "}
+                  위치{"  "}
                   <RegText13
                     onPress={() => setShowMap(true)}
                     style={{ color: theme.textHighlight }}
@@ -499,12 +516,11 @@ const Splace = ({
                     {splace.address !== ""
                       ? splace.address + (" " + (splace.detailAddress ?? ""))
                       : "주소 정보 없음"}
-                    {"\n"}
                   </RegText13>
                 </RegText13>
                 {showOperatingTime && operatingTime ? (
                   <RegText13 style={{ lineHeight: pixelScaler(17) }}>
-                    운영시간{" "}
+                    {"\n"}운영시간{"  "}
                     <RegText13
                       onPress={() => {
                         setModalContent("operatingTime");
@@ -528,16 +544,15 @@ const Splace = ({
                               ) +
                               " )"
                             : "") +
-                          "\n"
-                        : "휴무일\n"}
+                          ""
+                        : "휴무일"}
                     </RegText13>
                   </RegText13>
                 ) : null}
                 {splace.itemName &&
                 splace.itemPrice &&
                 splace.itemName !== "" ? (
-                  <TouchableOpacity
-                    hitSlop={{ top: pixelScaler(10) }}
+                  <RegText13
                     onPress={() => {
                       if (splace.menuUrls) {
                         navigation.push("ImagesViewer", {
@@ -545,21 +560,20 @@ const Splace = ({
                         });
                       }
                     }}
+                    style={{ lineHeight: pixelScaler(17) }}
                   >
-                    <RegText13 style={{ lineHeight: pixelScaler(17) }}>
-                      메뉴{" "}
-                      <RegText13 style={{ color: theme.textHighlight }}>
-                        {splace.itemName +
-                          " ₩ " +
-                          priceToText(splace.itemPrice) +
-                          "\n"}
-                      </RegText13>
+                    {"\n"}메뉴{"  "}
+                    <RegText13 style={{ color: theme.textHighlight }}>
+                      {splace.itemName +
+                        " ₩ " +
+                        priceToText(splace.itemPrice) +
+                        ""}
                     </RegText13>
-                  </TouchableOpacity>
+                  </RegText13>
                 ) : null}
                 {splace?.fixedContents && splace.fixedContents.length > 0 ? (
                   <RegText13 style={{ lineHeight: pixelScaler(17) }}>
-                    안내 게시물{" "}
+                    {"\n"}안내 게시물{"  "}
                     <RegText13
                       onPress={() =>
                         navigation.push("FixedContents", { splace })
@@ -571,16 +585,17 @@ const Splace = ({
                       numberOfLines={1}
                     >
                       {splace.fixedContents[0].title}
-                      {"\n"}
+                      {""}
                     </RegText13>
                   </RegText13>
                 ) : null}
                 {splace.pets || splace.noKids || splace.parking ? (
                   <RegText13 style={{ lineHeight: pixelScaler(17) }}>
+                    {"\n"}
                     {(splace.pets ? "반려동물 출입 가능🐶 " : "") +
                       (splace.noKids ? "No kids zone👶 " : "") +
                       (splace.parking ? "주차가능🚘 " : "") +
-                      "\n"}
+                      ""}
                   </RegText13>
                 ) : null}
                 <UnfoldButtonContainer
@@ -603,34 +618,42 @@ const Splace = ({
                 </UnfoldButtonContainer>
               </TextContainer>
               {!fold ? (
-                <RegText13 style={{ lineHeight: pixelScaler(17) }}>
-                  {splace.intro + "\n"}
-                </RegText13>
-              ) : null}
-              <TagsContainer>
-                {(splace.ratingtags ?? []).map((ratingtag) => (
-                  <Tag
-                    style={{ borderColor: theme.borderHighlight }}
-                    key={ratingtag.id + ""}
+                <FoldedInfoContainer>
+                  <RegText13
+                    style={{
+                      lineHeight: pixelScaler(17),
+                      marginTop: pixelScaler(18),
+                    }}
                   >
-                    <RegText13 style={{ color: theme.textHighlight }}>
-                      {ratingtag.name}
-                    </RegText13>
-                  </Tag>
-                ))}
-                {[
-                  ...(splace.bigCategories ?? []),
-                  ...(splace.categories ?? []),
-                ].map((category) => (
-                  <Tag key={category.id + ""}>
-                    <RegText13>{category.name}</RegText13>
-                  </Tag>
-                ))}
-              </TagsContainer>
+                    {splace.intro}
+                  </RegText13>
+                  <TagsContainer>
+                    {(splace.ratingtags ?? []).map((ratingtag) => (
+                      <Tag
+                        style={{ borderColor: theme.borderHighlight }}
+                        key={ratingtag.id + ""}
+                      >
+                        <RegText13 style={{ color: theme.textHighlight }}>
+                          {ratingtag.name}
+                        </RegText13>
+                      </Tag>
+                    ))}
+                    {[
+                      ...(splace.bigCategories ?? []),
+                      ...(splace.categories ?? []),
+                    ].map((category) => (
+                      <Tag key={category.id + ""}>
+                        <RegText13>{category.name}</RegText13>
+                      </Tag>
+                    ))}
+                  </TagsContainer>
+                </FoldedInfoContainer>
+              ) : null}
+
               <ContentHeaderContainer>
-                <BldText20>
-                  관련 게시물 {convertNumber(splace.totalPhotologs)}
-                </BldText20>
+                <BldText18>
+                  로그 {convertNumber(splace.totalPhotologs)}
+                </BldText18>
                 <SortButtonContainer
                   hitSlop={{
                     top: pixelScaler(15),
@@ -639,15 +662,15 @@ const Splace = ({
                     bottom: pixelScaler(15),
                   }}
                   onPress={() => {
-                    if (sortMode === "generated") {
+                    if (sortMode === "createdAt") {
                       setSortMode("popular");
                     } else {
-                      setSortMode("generated");
+                      setSortMode("createdAt");
                     }
                   }}
                 >
                   <RegText13 style={{ marginRight: pixelScaler(8) }}>
-                    {sortMode === "generated" ? "최신 순" : "인기 순"}
+                    {sortMode === "createdAt" ? "최신 순" : "인기 순"}
                   </RegText13>
 
                   <Icon
@@ -655,7 +678,8 @@ const Splace = ({
                     style={{
                       width: pixelScaler(6),
                       height: pixelScaler(12),
-                      transform: [{ rotate: fold ? "90deg" : "270deg" }],
+                      marginTop: pixelScaler(1),
+                      transform: [{ rotate: "90deg" }],
                     }}
                   />
                 </SortButtonContainer>
@@ -739,20 +763,20 @@ const Splace = ({
               <ModalButtonBox
                 onPress={() => {
                   setModalVisible(false);
-                  if (!getPersonalRoomLoading && splace.owner) {
+                  if (!getOwnerRoomLoading && splace.owner) {
                     if (me.id === splace.owner.id) {
                       navigation.push("Chatrooms");
                     } else {
-                      getPersonalRoomMutation({
+                      getOwnerRoomMutation({
                         variables: {
-                          targetId: splace.owner.id,
+                          splaceId: splace.id,
                         },
                       });
                     }
                   }
                 }}
               >
-                <RegText20>DM 보내기</RegText20>
+                <RegText20>메세지 보내기</RegText20>
               </ModalButtonBox>
             ) : null}
           </>
@@ -801,7 +825,7 @@ const Splace = ({
                   navigation.push("SuggestInfo", { splace });
                 }}
               >
-                <RegText20>정보 수정</RegText20>
+                <RegText20>정보 수정 제안</RegText20>
               </ModalButtonBox>
             ) : null}
             <ModalButtonBox
@@ -881,6 +905,10 @@ const Splace = ({
             </ModalButtonBox>
             <ModalButtonBox
               onPress={() => {
+                navigation.push("Report", {
+                  type: "splace",
+                  id: splace.id,
+                });
                 setModalVisible(false);
               }}
             >

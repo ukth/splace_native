@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components/native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   Alert,
   Animated,
@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import BottomSheetModal from "../BottomSheetModal";
-import { BLANK_IMAGE, coords2address, pixelScaler } from "../../utils";
+import { coords2address, pixelScaler } from "../../utils";
 import { BldText16, RegText13, RegText16 } from "../Text";
 import { Ionicons } from "@expo/vector-icons";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
@@ -31,7 +31,7 @@ const ModalDragBar = styled.View`
   width: ${pixelScaler(100)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
-  background-color: #d1d1d6;
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.modalDragBar};
   top: ${pixelScaler(12)}px;
   z-index: 1;
   /* margin-bottom: ${pixelScaler(30)}px; */
@@ -44,7 +44,7 @@ const SplaceContainer = styled.View`
   width: ${pixelScaler(345)}px;
   padding: ${pixelScaler(20)}px ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(15)}px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
 `;
 
@@ -215,7 +215,7 @@ const ModalMapSplaceConfirm = ({
             ref={mapViewRef}
             showsUserLocation={true}
             showsMyLocationButton={false}
-            provider="google"
+            provider={PROVIDER_GOOGLE}
             style={{
               width,
               height,

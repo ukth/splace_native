@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
-import { BldTextInput20 } from "../../components/TextInput";
+import { BldTextInput20, BldTextInput28 } from "../../components/TextInput";
 import { BldText13, BldText16 } from "../../components/Text";
 import { StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
@@ -23,6 +23,8 @@ const Container = styled.View`
 const ChangePassword = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
+  const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
@@ -33,9 +35,9 @@ const ChangePassword = () => {
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$?!@#$%^&*/])[A-Za-z\d$?!@#$%^&*/]{8,}$/;
 
   const onCompleted = ({
-    editProfile: { ok, error },
+    editPasswordWithLogin: { ok, error },
   }: {
-    editProfile: {
+    editPasswordWithLogin: {
       ok: boolean;
       error: string;
     };
@@ -43,6 +45,8 @@ const ChangePassword = () => {
     if (ok) {
       Alert.alert("비밀번호가 변경되었습니다.");
       navigation.pop();
+    } else if (error === "ERROR1###") {
+      Alert.alert("비밀번호가 올바르지 않습니다.");
     } else {
       Alert.alert("비밀번호를 변경할 수 없습니다.\n" + error);
     }
@@ -60,20 +64,40 @@ const ChangePassword = () => {
           onPress={() => {
             if (password === passwordConfirm && reg.test(password)) {
               spinner.start();
-              console.log(password);
-              mutation({ variables: { password } });
+              mutation({
+                variables: {
+                  password: oldPassword,
+                  newPassword: password,
+                },
+              });
             }
           }}
         />
       ),
     });
-  }, [password, passwordConfirm]);
+  }, [oldPassword, password, passwordConfirm]);
 
   return (
     <ScreenContainer>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <Container>
-          <BldTextInput20
+          <BldTextInput28
+            selectionColor={theme.chatSelection}
+            secureTextEntry={true}
+            maxLength={20}
+            autoCapitalize="none"
+            autoCorrect={false}
+            onChangeText={(text) => setOldPassword(text)}
+            placeholder="기존 비밀번호"
+            textAlign="center"
+            placeholderTextColor={theme.passwordChangeGreyText}
+            style={{
+              width: "100%",
+              marginTop: pixelScaler(75),
+              marginBottom: pixelScaler(75),
+            }}
+          />
+          <BldTextInput28
             selectionColor={theme.chatSelection}
             secureTextEntry={true}
             maxLength={20}
@@ -86,7 +110,6 @@ const ChangePassword = () => {
             placeholderTextColor={theme.passwordChangeGreyText}
             style={{
               width: "100%",
-              marginTop: pixelScaler(90),
               marginBottom: pixelScaler(20),
             }}
           />
@@ -101,7 +124,7 @@ const ChangePassword = () => {
           >
             {"영문, 숫자, 특수문자(?!@#$%^&*/) 혼합 8~15자"}
           </BldText13>
-          <BldTextInput20
+          <BldTextInput28
             selectionColor={theme.chatSelection}
             secureTextEntry={true}
             maxLength={20}

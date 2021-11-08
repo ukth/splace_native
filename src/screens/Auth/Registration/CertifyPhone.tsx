@@ -30,6 +30,7 @@ const ConfirmButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   margin-bottom: ${pixelScaler(75)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const TemporaryTextContainer = styled.View`
@@ -65,7 +66,6 @@ const CertifyPhone = () => {
     } else {
       setCertificateFailed(true);
       setCertificate("");
-      console.log("failed!");
     }
   };
 
@@ -78,6 +78,7 @@ const CertifyPhone = () => {
 
   const onRequestCompleted = (data: any) => {
     spinner.stop();
+    console.log(data);
     if (data?.createCertificate?.ok) {
       setSent(true);
       setCertificateFailed(false);
@@ -85,16 +86,15 @@ const CertifyPhone = () => {
       if (timerId) {
         clearInterval(timerId);
       }
-      console.log("HEllo");
-      console.log(timerId);
       setTimerId(
         setInterval(() => {
           setLastTime((prev) => (prev > 0 ? prev - 1 : prev));
         }, 1000)
       );
-      console.log(timerId);
 
       Alert.alert("인증번호가 전송되었습니다.");
+    } else if (data?.createCertificate?.error === "ERROR3103") {
+      Alert.alert("이미 가입된 번호입니다.");
     } else {
       Alert.alert("인증번호 요청에 실패했습니다.");
     }
@@ -116,7 +116,7 @@ const CertifyPhone = () => {
         requestMutation({
           variables: {
             phone,
-            isRegister: false,
+            isRegister: true,
           },
         });
       }

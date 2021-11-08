@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { StackGeneratorParamList, ThemeType } from "../types";
-import { AlbumTitleKor, BLANK_IMAGE, pixelScaler } from "../utils";
+import { AlbumTitleKor, pixelScaler } from "../utils";
 import { HeaderBackButton } from "../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
 import { BldText13, BldText16, RegText13, RegText16 } from "../components/Text";
@@ -24,6 +24,7 @@ import * as MediaLibrary from "expo-media-library";
 import { manipulateAsync } from "expo-image-manipulator";
 import { ProgressContext } from "../contexts/Progress";
 import { Icon } from "../components/Icon";
+import { BLANK_IMAGE } from "../constants";
 
 const PickerContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
@@ -57,6 +58,7 @@ const Button = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(10)}px;
   justify-content: center;
   border-radius: ${pixelScaler(25)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const AlbumContainer = styled.TouchableOpacity`
@@ -148,7 +150,10 @@ const ModalImagePicker = () => {
   const [showAlbums, setShowAlbums] = useState(false);
   const screenHeight = useWindowDimensions().height;
 
-  const [focusedSize, setFocusedSize] = useState<0 | 1 | 2>(1);
+  const { images, setImages, setImageSize, imageSize } =
+    useContext(ImagePickerContext);
+
+  const [focusedSize, setFocusedSize] = useState<0 | 1 | 2>(imageSize);
   const flatListRef = useRef<any>();
 
   const [loadedImage, setLoadedImage] = useState<MediaLibrary.Asset[]>([]);
@@ -204,7 +209,6 @@ const ModalImagePicker = () => {
     });
   };
 
-  const { images, setImages, setImageSize } = useContext(ImagePickerContext);
   const { spinner } = useContext(ProgressContext);
 
   const updateSelectedImage = async () => {
@@ -260,6 +264,12 @@ const ModalImagePicker = () => {
 
   useEffect(() => {
     (async () => {
+      const { accessPrivileges } = await MediaLibrary.requestPermissionsAsync();
+      if (accessPrivileges === "none") {
+        alert("편집을 위해선 앨범 권한이 필요합니다.");
+        navigation.pop();
+      }
+
       const albumsList = await MediaLibrary.getAlbumsAsync({
         includeSmartAlbums: true,
       });
@@ -461,7 +471,6 @@ const ModalImagePicker = () => {
             zoom: 1,
           }
     );
-    console.log(tmp);
     setSelectedImages(tmp);
     setFocusedSize(n);
   };
@@ -618,7 +627,7 @@ const ModalImagePicker = () => {
 
       <Animated.View
         style={{
-          height: screenHeight - pixelScaler(105),
+          height: screenHeight,
           backgroundColor: theme.background,
           width: "100%",
           position: "absolute",
@@ -648,6 +657,7 @@ const ModalImagePicker = () => {
               </RegText13>
             </AlbumContainer>
           )}
+          ListFooterComponent={<View style={{ height: pixelScaler(100) }} />}
           ItemSeparatorComponent={Seperator}
           showsVerticalScrollIndicator={false}
         />

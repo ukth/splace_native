@@ -9,6 +9,7 @@ import Series from "../../components/Contents/Series";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText16, RegText16 } from "../../components/Text";
+import { BLANK_IMAGE } from "../../constants";
 import { GET_SCRAPPED_LOGS, GET_SCRAPPED_SERIES } from "../../queries";
 import {
   PhotologType,
@@ -16,7 +17,7 @@ import {
   StackGeneratorParamList,
   ThemeType,
 } from "../../types";
-import { BLANK_IMAGE, pixelScaler } from "../../utils";
+import { pixelScaler } from "../../utils";
 
 const LabelContainer = styled.View`
   flex-direction: row;
@@ -53,9 +54,7 @@ const ScrappedContents = () => {
       headerTitle: () => <BldText16>스크랩한 게시물</BldText16>,
     });
   }, []);
-  useEffect(() => {
-    console.log(logData);
-  }, [logData]);
+
   return (
     <ScreenContainer>
       <LabelContainer>
@@ -96,6 +95,7 @@ const ScrappedContents = () => {
         <FlatList
           data={logData?.getMyScrapedLog?.logs}
           keyExtractor={(item) => item.id + ""}
+          numColumns={2}
           renderItem={({
             item,
             index,
@@ -121,6 +121,7 @@ const ScrappedContents = () => {
         <FlatList
           data={seriesData?.getMyScrapedSeries?.series}
           keyExtractor={(item) => item.id + ""}
+          numColumns={2}
           renderItem={({
             item,
             index,

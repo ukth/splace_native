@@ -1,16 +1,21 @@
 import { useMutation } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Alert, TouchableOpacity } from "react-native";
-import styled from "styled-components/native";
+import styled, { ThemeContext } from "styled-components/native";
+import { theme } from "../../../theme";
 import { LIKE_PHOTOLOG, UNLIKE_PHOTOLOG } from "../../queries";
-import { PhotologType } from "../../types";
+import { PhotologType, ThemeType } from "../../types";
 import { convertNumber, pixelScaler } from "../../utils";
 import { Icon } from "../Icon";
 import { RegText13 } from "../Text";
 
 const Liked = ({ item }: { item: PhotologType }) => {
   const [liked, setLiked] = useState<boolean>(item.isILiked);
+
+  useEffect(() => {
+    setLiked(item.isILiked);
+  }, [item.isILiked]);
 
   const onLikeCompleted = async (data: any) => {
     const {
@@ -58,16 +63,29 @@ const Liked = ({ item }: { item: PhotologType }) => {
     align-items: center;
   `;
 
+  const theme = useContext<ThemeType>(ThemeContext);
+
+  // console.log("Like rendered!");
+
   return (
     <LikeContainer>
-      <RegText13>
+      <RegText13
+        style={{ marginRight: pixelScaler(3), marginLeft: pixelScaler(5) }}
+      >
         {convertNumber(
           item.totalLiked +
             (item.isILiked && !liked ? -1 : !item.isILiked && liked ? 1 : 0)
         )}
       </RegText13>
       <TouchableOpacity
+        hitSlop={{
+          top: pixelScaler(6),
+          bottom: pixelScaler(6),
+          left: pixelScaler(6),
+          right: pixelScaler(6),
+        }}
         onPress={() => {
+          // console.log("pressed!");
           if (liked && !loading_unlike) {
             ex_unlike({
               variables: {
@@ -87,9 +105,14 @@ const Liked = ({ item }: { item: PhotologType }) => {
           }
         }}
       >
-        <Icon
+        {/* <Icon
           name={liked ? "heart_colorfill" : "empty_heart"}
-          style={{ width: pixelScaler(26), height: pixelScaler(24) }}
+          style={{ width: pixelScaler(20.6), height: pixelScaler(18.6) }}
+        /> */}
+        <Ionicons
+          name={liked ? "heart" : "heart-outline"}
+          size={pixelScaler(23)}
+          color={liked ? theme.themeBackground : "black"}
         />
       </TouchableOpacity>
     </LikeContainer>

@@ -124,7 +124,6 @@ const ZoomableImage = ({
     onMoveShouldSetPanResponder: (evt, gestureState) => true,
     onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
     onPanResponderMove: (evt, gestureState) => {
-      console.log(evt);
       let touches = evt.nativeEvent.touches;
       if (touches.length == 2) {
         processPinch(

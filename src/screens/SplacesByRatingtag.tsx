@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../components/ScreenContainer";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
   PhotologType,
@@ -10,19 +10,26 @@ import {
   ThemeType,
 } from "../types";
 import styled, { ThemeContext } from "styled-components/native";
-import { BLANK_IMAGE, pixelScaler, shortenAddress } from "../utils";
+import { pixelScaler, shortenAddress } from "../utils";
 import { FlatList } from "react-native";
-import { GET_LOGS_BY_CATEGORY, GET_SPLACES_BY_RATINGTAG } from "../queries";
+import {
+  GET_LOGS_BY_CATEGORY,
+  GET_SPLACES_BY_RATINGTAG,
+  LOG_GETLOGSBYCATEGORIES,
+} from "../queries";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Image from "../components/Image";
 import { BldText13, RegText13, RegText16 } from "../components/Text";
 import { ModalKeep } from "../components/ModalKeep";
 import { Icon } from "../components/Icon";
+import { BLANK_IMAGE } from "../constants";
 
 const Tag = styled.View`
   height: ${pixelScaler(25)}px;
   padding: 0 ${pixelScaler(10)}px;
   border-width: ${pixelScaler(0.67)}px;
+  margin-right: ${pixelScaler(9)}px;
+  padding-top: ${pixelScaler(1.3)}px;
   align-items: center;
   justify-content: center;
 `;
@@ -52,11 +59,18 @@ const SplacesByRatingtag = () => {
   const { ratingtag } =
     useRoute<RouteProp<StackGeneratorParamList, "SplacesByRatingtag">>().params;
 
-  const { data, loading, fetchMore } = useQuery(GET_SPLACES_BY_RATINGTAG, {
-    variables: { tagId: ratingtag.id },
-  });
+  const { data, loading, fetchMore, refetch } = useQuery(
+    GET_SPLACES_BY_RATINGTAG,
+    {
+      variables: { tagId: ratingtag.id },
+    }
+  );
+
+  navigation.addListener("focus", () => refetch());
 
   const theme = useContext<ThemeType>(ThemeContext);
+
+  const [log_getSplaces, _1] = useMutation(LOG_GETLOGSBYCATEGORIES);
 
   useEffect(() => {
     navigation.setOptions({
@@ -73,6 +87,9 @@ const SplacesByRatingtag = () => {
         </Tag>
       ),
     });
+    try {
+      log_getSplaces({ variables: { tagId: ratingtag.id } });
+    } catch {}
   }, []);
 
   return (
@@ -140,6 +157,7 @@ const SplacesByRatingtag = () => {
               {splace.bigCategories?.length ? (
                 <Tag
                   style={{
+                    borderRadius: pixelScaler(20),
                     height: pixelScaler(20),
                   }}
                 >

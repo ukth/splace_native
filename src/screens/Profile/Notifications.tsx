@@ -17,9 +17,10 @@ import ScreenContainer from "../../components/ScreenContainer";
 import { BldText13, BldText16, RegText13 } from "../../components/Text";
 import { FOLLOW, GET_NOTIFICATIONS } from "../../queries";
 import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
-import { BLANK_IMAGE, pixelScaler } from "../../utils";
+import { pixelScaler } from "../../utils";
 import { gql, useMutation } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BLANK_PROFILE_IMAGE } from "../../constants";
 
 const ItemContainer = styled.View`
   height: ${pixelScaler(75)}px;
@@ -49,7 +50,6 @@ export const Button = styled.TouchableOpacity`
 `;
 
 const FollowButton = ({ user }: { user: UserType }) => {
-  console.log(user);
   const [isFollowing, setIsfollowing] = useState(user.isFollowing ?? false);
 
   const onCompleted = ({
@@ -157,7 +157,8 @@ const Notification = () => {
             >
               <Image
                 source={{
-                  uri: item?.requestUser?.profileImageUrl ?? BLANK_IMAGE,
+                  uri:
+                    item?.requestUser?.profileImageUrl ?? BLANK_PROFILE_IMAGE,
                 }}
                 style={{
                   width: pixelScaler(32),

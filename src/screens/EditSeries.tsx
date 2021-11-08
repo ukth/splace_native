@@ -22,7 +22,7 @@ const LabelsContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
 `;
 
-const LabelContainer = styled.TouchableOpacity`
+const LabelContainer = styled.View`
   flex-direction: row;
   height: ${pixelScaler(60)}px;
   align-items: center;
@@ -90,7 +90,7 @@ const EditSeries = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    if (data?.createSeries?.ok) {
+    if (data?.editSeries?.ok) {
       showFlashMessage({ message: "시리즈가 수정되었습니다." });
       navigation.pop();
     } else {
@@ -110,13 +110,14 @@ const EditSeries = () => {
                 spinner.start();
                 mutation({
                   variables: {
-                    title,
+                    seriesId: series.id,
+                    title: title.trim(),
                     photologIds,
                   },
                 });
               }
             }}
-            text="업로드"
+            text="완료"
           />
         ) : null,
     });
@@ -128,14 +129,17 @@ const EditSeries = () => {
         <LabelContainer>
           <BldTextInput16
             value={title}
-            placeholder="게시물 제목"
+            placeholder="시리즈 제목"
             selectionColor={theme.entrySelection}
             placeholderTextColor={theme.greyTextAlone}
             maxLength={30}
             multiline={true}
             numberOfLines={2}
             autoCorrect={false}
-            onChangeText={(text) => setTitle(text.trim())}
+            onChangeText={(text) => setTitle(text)}
+            style={{
+              width: pixelScaler(340),
+            }}
           />
         </LabelContainer>
       </LabelsContainer>
@@ -182,6 +186,7 @@ const EditSeries = () => {
                 zIndex: 2,
                 left: pixelScaler(15),
                 top: pixelScaler(15),
+                width: pixelScaler(140),
                 color: theme.white,
               }}
             >
@@ -189,7 +194,7 @@ const EditSeries = () => {
             </BldText13>
             {item.isPrivate ? (
               <Icon
-                name="locked"
+                name="lock_white"
                 style={{
                   position: "absolute",
                   right: pixelScaler(15),

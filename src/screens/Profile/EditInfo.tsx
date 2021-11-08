@@ -154,7 +154,6 @@ const EditInfo = () => {
           mode="date"
           onConfirm={(date) => {
             setBirthDay(date);
-            console.log(date);
             setShowDatePicker(false);
           }}
           date={birthDay}

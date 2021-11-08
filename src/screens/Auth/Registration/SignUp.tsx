@@ -39,6 +39,7 @@ const ConfirmButton = styled.TouchableOpacity`
   border-width: ${pixelScaler(1)}px;
   align-items: center;
   justify-content: center;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const TemporaryTextContainer = styled.View`
@@ -141,7 +142,6 @@ const SignUp = () => {
   }, []);
 
   const onCompleted = (data: any) => {
-    console.log(data);
     if (data?.checkUsername?.ok) {
       setIsUsernameValid(true);
     } else {
@@ -158,12 +158,13 @@ const SignUp = () => {
 
   const onCreateAccountCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
     if (data?.createAccount?.ok && data?.createAccount?.token) {
       AsyncStorage.setItem("token", data?.createAccount?.token);
       tokenVar(data?.createAccount?.token);
       userIdVar(data?.createAccount?.userId);
       navigation.push("SignUpConfirm", { username });
+    } else if (data?.createAccount?.error === "ERROR3101") {
+      Alert.alert("이미 존재하는 계정입니다.");
     } else {
       Alert.alert("회원가입에 실패했습니다.", data?.createAccount?.error);
     }
@@ -175,7 +176,6 @@ const SignUp = () => {
     });
 
   useEffect(() => {
-    console.log(username);
     if (username.length >= 4) {
       if (!validateLoading) {
         validateUsername({ variables: { username } });
@@ -373,9 +373,7 @@ const SignUp = () => {
                 </CheckItemContainer>
                 <RegText13
                   onPress={() =>
-                    Linking.openURL(
-                      "https://static.splace.co.kr/terms-of-use.html"
-                    )
+                    Linking.openURL("https://static.splace.co.kr/tos.html")
                   }
                   style={{ color: theme.greyTextAlone }}
                 >
@@ -401,7 +399,7 @@ const SignUp = () => {
                 <RegText13
                   onPress={() =>
                     Linking.openURL(
-                      "https://static.splace.co.kr/location-terms-of-use.html"
+                      "https://static.splace.co.kr/location-policy.html"
                     )
                   }
                   style={{ color: theme.greyTextAlone }}
@@ -456,13 +454,6 @@ const SignUp = () => {
                   if (!createAccountLoading) {
                     // navigation.push("SignUpConfirm", { username });
                     setModalVisible(false);
-                    console.log({
-                      username,
-                      password,
-                      phone,
-                      token,
-                      marketingAgree: marketingInfo,
-                    });
                     spinner.start();
                     createAccountMutation({
                       variables: {

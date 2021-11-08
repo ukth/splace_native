@@ -8,20 +8,15 @@ import {
   useWindowDimensions,
   Animated,
   Pressable,
+  ScrollView,
 } from "react-native";
 import { pixelScaler } from "../../utils";
 import styled from "styled-components/native";
 import { RegText13, RegText20 } from "../../components/Text";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import { AVPlaybackStatus, Video } from "expo-av";
-import { ScreenBackButton } from "../../components/ScreenBackButton";
-import { Ionicons } from "@expo/vector-icons";
-import ThreeDots from "../../components/ThreeDots";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { MomentType, StackGeneratorParamList } from "../../types";
 import { StackNavigationProp } from "@react-navigation/stack";
-import * as VideoThumbnails from "expo-video-thumbnails";
-import BottomSheetModal from "../../components/BottomSheetModal";
 import { Icon } from "../../components/Icon";
 
 const Container = styled.View`
@@ -32,8 +27,9 @@ const Container = styled.View`
 `;
 
 const UpperContainer = styled.View`
-  flex: 1;
+  /* flex: 1; */
   width: 100%;
+  justify-content: center;
   /* background-color: #09890a; */
 `;
 
@@ -50,6 +46,7 @@ const TitleContainer = styled.View`
   bottom: ${pixelScaler(40)}px;
   width: 100%;
   align-items: center;
+  padding: 0 ${pixelScaler(30)}px;
 `;
 
 const ProgressContainer = styled.View`
@@ -84,7 +81,7 @@ const MomentView = () => {
   const { width, height } = useWindowDimensions();
   const [length, setLength] = useState(0);
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  var isLoaded = false;
 
   useEffect(() => {
     navigation.setOptions({
@@ -128,16 +125,13 @@ const MomentView = () => {
   }
 
   useEffect(() => {
-    if (length === 0 && isLoaded) {
-      (async () => {
-        // await video.current.setPositionAsync(0);
-        await video.current.playAsync();
-      })();
+    if (length === 0 && !isLoaded) {
+      video.current.playAsync();
     }
   }, [isLoaded, length]);
 
   useEffect(() => {
-    setIsLoaded(false);
+    isLoaded = false;
     setLength(0);
   }, [momentIndex]);
 
@@ -157,29 +151,46 @@ const MomentView = () => {
     }
   };
 
-  console.log(moments);
-
   return (
     <Container>
-      <UpperContainer>
-        <UpperTouchableContainer>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.pop();
+      <UpperContainer
+        style={{
+          height: (height - (width * 4) / 3) / 2,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.pop();
+          }}
+          hitSlop={{
+            top: pixelScaler(10),
+            bottom: pixelScaler(10),
+            left: pixelScaler(10),
+            right: pixelScaler(10),
+          }}
+          style={{
+            position: "absolute",
+            left: pixelScaler(27),
+            top: pixelScaler(60),
+          }}
+        >
+          <Icon
+            name="close_white"
+            style={{
+              width: pixelScaler(11),
+              height: pixelScaler(11),
             }}
-          >
-            <Icon
-              name="close"
-              style={{
-                width: pixelScaler(12.7),
-                height: pixelScaler(27),
-              }}
-            />
-          </TouchableOpacity>
-          <ThreeDots color={"#ffffff"} onPress={() => {}} />
+          />
+        </TouchableOpacity>
+        <UpperTouchableContainer>
+          {/* <ThreeDots color={"#2a2a2a"} onPress={() => {}} /> */}
         </UpperTouchableContainer>
         <TitleContainer>
-          <RegText20 style={{ color: "#ffffff" }}>
+          <RegText20
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ color: "#ffffff" }}
+          >
             {moments[momentIndex].splace?.name ?? moments[momentIndex].title}
           </RegText20>
         </TitleContainer>
@@ -197,20 +208,8 @@ const MomentView = () => {
       <Pressable
         onPressIn={(e) => {
           (async () => await video.current.pauseAsync())();
-          // if (Date.now() - timer > 700) {
-          //   timer = Date.now();
-          //   (async () => await video.current.pauseAsync())();
-          // }
         }}
         onPressOut={async (e) => {
-          // console.log(Date.now() - timer);
-          // if (Date.now() - timer < 700) {
-          //   if (e.nativeEvent?.locationX > pixelScaler(187)) {
-          //     next();
-          //   } else {
-          //     back();
-          //   }
-          // }
           await video.current.playAsync();
         }}
       >
@@ -225,24 +224,33 @@ const MomentView = () => {
           }}
           resizeMode="cover"
           onPlaybackStatusUpdate={(e: AVPlaybackStatus) => {
-            // console.log(e);
             if (e.isLoaded && e.didJustFinish) {
+              isLoaded = false;
               next();
             }
-            if (e.isLoaded) {
-              if (!isLoaded) {
+            if (!isLoaded && e.isLoaded && e.shouldPlay && e.durationMillis) {
+              if (!isLoaded && length === 0) {
                 video.current.setPositionAsync(0);
-                setIsLoaded(true);
-              }
-              if (e.durationMillis && length === 0) {
+                isLoaded = true;
+                video.current.playAsync();
+                setLength(e.durationMillis);
                 setIndicatorPosition(
                   position.interpolate({
                     inputRange: [0, e.durationMillis],
                     outputRange: [0, pixelScaler(375)],
                   })
                 );
-                setLength(e.durationMillis);
               }
+              // if (e.durationMillis && length === 0) {
+              //   console.log(e);
+              //   setIndicatorPosition(
+              //     position.interpolate({
+              //       inputRange: [0, e.durationMillis],
+              //       outputRange: [0, pixelScaler(375)],
+              //     })
+              //   );
+              //   setLength(e.durationMillis);
+              // }
               if (e.positionMillis) {
                 position.setValue(e.positionMillis);
               }
@@ -251,16 +259,33 @@ const MomentView = () => {
           progressUpdateIntervalMillis={30}
         />
       </Pressable>
+
       <FooterContainer>
-        <RegText13
-          numberOfLines={3}
-          style={{ color: "#ffffff", lineHeight: pixelScaler(23) }}
+        <View
+          style={{
+            maxHeight: pixelScaler(80),
+            marginBottom: pixelScaler(20),
+          }}
         >
-          {moments[momentIndex].text}
-        </RegText13>
-        <RegText13 style={{ color: "rgba(174,174,178,0.6)" }}>
-          {moments[momentIndex].author.username}
-        </RegText13>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                height: pixelScaler(80),
+              }}
+            >
+              <RegText13
+                style={{ color: "#ffffff", lineHeight: pixelScaler(23) }}
+              >
+                {moments[momentIndex].text}
+              </RegText13>
+              <RegText13 style={{ color: "rgba(174,174,178,0.6)" }}>
+                {moments[momentIndex].author.username}
+              </RegText13>
+            </View>
+          </ScrollView>
+        </View>
       </FooterContainer>
     </Container>
   );

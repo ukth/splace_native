@@ -29,7 +29,7 @@ import {
   RegText16,
   RegText20,
 } from "../../components/Text";
-import { pixelScaler, strCmpFunc } from "../../utils";
+import { pixelScaler, shortenAddress, strCmpFunc } from "../../utils";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
@@ -47,6 +47,7 @@ import ModalMapView from "../../components/ModalMapView";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
+import { BLANK_IMAGE_D1 } from "../../constants";
 
 const SaveItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -70,7 +71,8 @@ const AddressBadge = styled.TouchableOpacity`
   width: ${pixelScaler(74)}px;
   align-items: center;
   justify-content: center;
-  margin-right: ${pixelScaler(10)}px;
+  margin-right: ${pixelScaler(9)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const Category = styled.TouchableOpacity`
@@ -79,6 +81,7 @@ const Category = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(20)}px;
   justify-content: center;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const SaveItem = ({
@@ -88,7 +91,7 @@ const SaveItem = ({
   editing,
   refetch,
 }: {
-  save: any;
+  save: SaveType;
   folderId: number;
   index: number;
   editing: boolean;
@@ -159,7 +162,7 @@ const SaveItem = ({
       >
         <Image
           source={{
-            uri: save.splace.thumbnail,
+            uri: save.splace.thumbnail ?? BLANK_IMAGE_D1,
           }}
           style={{
             width: pixelScaler(145),
@@ -172,10 +175,15 @@ const SaveItem = ({
         <BldText13>{save.splace.name}</BldText13>
         <BadgesContainer>
           <AddressBadge>
-            <RegText13>{save.splace.address}</RegText13>
+            <RegText13>{shortenAddress(save.splace.address)}</RegText13>
           </AddressBadge>
+          {/* {save.splace.bigCategories?.length ? (
+            <Category>
+              <RegText13>{save.splace.bigCategories[0]?.name}</RegText13>
+            </Category>
+          ) : null} */}
           <Category>
-            <RegText13>{"카테고리"}</RegText13>
+            <RegText13>아아라아</RegText13>
           </Category>
         </BadgesContainer>
       </InfoContainer>
@@ -189,16 +197,17 @@ const Folder = ({
   route: RouteProp<StackGeneratorParamList, "Folder">;
 }) => {
   const [editing, setEditing] = useState<boolean>(false);
-  const [sortMode, setSortMode] = useState<"generated" | "name">("generated");
+  const [sortMode, setSortMode] = useState<"createdAt" | "name">("createdAt");
   const theme = useContext<ThemeType>(ThemeContext);
   const [folder, setFolder] = useState<FolderType>(route.params.folder);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [showMap, setShowMap] = useState(false);
+  const [showSortmodeModal, setShowSortmodeModal] = useState(false);
 
   const [saves, setSaves] = useState<SaveType[]>();
 
   useEffect(() => {
-    if (sortMode === "generated") {
+    if (sortMode === "createdAt") {
       setSaves(
         [...folder.saves].sort(
           (a: SaveType, b: SaveType) =>
@@ -387,31 +396,27 @@ const Folder = ({
         style={{ left: pixelScaler(17.5), width: pixelScaler(340) }}
         refreshing={refreshing}
         onRefresh={refresh}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <EditButtonsContainer>
-            {editing ? (
-              <NewFolderButton
-                onPress={() => {
-                  navigation.push("AddSaveFolders", {
-                    targetFolderId: folder.id,
-                    splaceIds: [],
-                  });
-                }}
-              >
-                <RegText13>+ 추가하기</RegText13>
-              </NewFolderButton>
-            ) : !saves || saves.length > 0 ? (
+            <NewFolderButton
+              onPress={() => {
+                navigation.push("AddSaveFolders", {
+                  targetFolderId: folder.id,
+                  splaceIds: [],
+                });
+              }}
+            >
+              <RegText13>+ 추가하기</RegText13>
+            </NewFolderButton>
+            {!saves || saves.length > 0 ? (
               <SortButton
                 onPress={() => {
-                  if (sortMode === "generated") {
-                    setSortMode("name");
-                  } else {
-                    setSortMode("generated");
-                  }
+                  setShowSortmodeModal(true);
                 }}
               >
                 <RegText13>
-                  {sortMode === "generated" ? "최근 생성 순" : "가나다 순"}
+                  {sortMode === "createdAt" ? "최근 생성 순" : "가나다 순"}
                 </RegText13>
                 <Icon
                   name="arrow_right"
@@ -495,6 +500,32 @@ const Folder = ({
           }}
         >
           <RegText20>편집</RegText20>
+        </ModalButtonBox>
+      </BottomSheetModal>
+      <BottomSheetModal
+        modalVisible={showSortmodeModal}
+        setModalVisible={setShowSortmodeModal}
+        style={{
+          borderTopLeftRadius: pixelScaler(20),
+          borderTopRightRadius: pixelScaler(20),
+          paddingBottom: pixelScaler(44),
+        }}
+      >
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("createdAt");
+            setShowSortmodeModal(false);
+          }}
+        >
+          <RegText20>최근 생성 순</RegText20>
+        </ModalButtonBox>
+        <ModalButtonBox
+          onPress={() => {
+            setSortMode("name");
+            setShowSortmodeModal(false);
+          }}
+        >
+          <RegText20>가나다 순</RegText20>
         </ModalButtonBox>
       </BottomSheetModal>
       {folder.saves.length > 0 ? (

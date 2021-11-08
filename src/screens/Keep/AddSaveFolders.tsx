@@ -49,6 +49,7 @@ import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
 import { Icon } from "../../components/Icon";
+import { BLANK_IMAGE_D1 } from "../../constants";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -82,7 +83,7 @@ const Folder = ({
         {folder.saves.length > 0 ? (
           <Image
             source={{
-              uri: folder.saves[0]?.splace.thumbnail ?? "",
+              uri: folder.saves[0]?.splace.thumbnail ?? BLANK_IMAGE_D1,
             }}
             style={{
               width: pixelScaler(145),
@@ -152,6 +153,7 @@ const AddSaveFolders = ({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerRight: () => (
         <HeaderRightConfirm
+          text={"완료(" + splaceIds.length + ")"}
           onPress={() => {
             if (route.params.targetFolderId + 1) {
               spinner.start();
@@ -204,6 +206,7 @@ const AddSaveFolders = ({
       {loading ? null : (
         <FlatList
           style={{ left: pixelScaler(17.5) }}
+          showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
             <EditButtonsContainer>
               <SortButton onPress={() => setModalVisible(true)}>

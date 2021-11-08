@@ -34,6 +34,7 @@ import { GET_BIGCATEGORIES } from "../../queries";
 import { ratingtags } from "../../constants";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { BldTextInput16 } from "../../components/TextInput";
+import { HeaderBackButton } from "../../components/HeaderBackButton";
 
 const LabelContainer = styled.View`
   flex-direction: row;
@@ -133,6 +134,22 @@ const Filter = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <HeaderBackButton
+          onPress={() => {
+            setFilter({
+              ...filter,
+              distance: slidervalue,
+            });
+            navigation.pop();
+          }}
+        />
+      ),
+    });
+  }, [filter, slidervalue]);
+
   return (
     <ScrollView style={{ backgroundColor: theme.background }}>
       <ScreenContainer
@@ -165,12 +182,15 @@ const Filter = () => {
                       lat: location.lat,
                       lon: location.lon,
                     });
+                    setFilter({
+                      ...filter,
+                      lat: location.lat,
+                      lon: location.lon,
+                      locationText: address,
+                    });
                   })();
-                  setFilter({
-                    ...filter,
-                    lat: location.lat,
-                    lon: location.lon,
-                  });
+                } else {
+                  Alert.alert("현재 위치를 불러올 수 없습니다.");
                 }
               }}
             >
@@ -215,7 +235,7 @@ const Filter = () => {
               height: pixelScaler(40),
               marginBottom: pixelScaler(35),
             }}
-            // value={slidervalue}
+            value={filter.distance}
             minimumValue={0}
             maximumValue={1.4}
             minimumTrackTintColor={theme.themeBackground}

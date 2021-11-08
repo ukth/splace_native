@@ -37,12 +37,7 @@ import {
   RegText16,
   RegText20,
 } from "../../components/Text";
-import {
-  BLANK_IMAGE,
-  pixelScaler,
-  shortenAddress,
-  strCmpFunc,
-} from "../../utils";
+import { pixelScaler, shortenAddress, strCmpFunc } from "../../utils";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
@@ -65,6 +60,7 @@ import { Icons } from "../../icons";
 import { HeaderRightEdit } from "../../components/HeaderRightEdit";
 import { Icon } from "../../components/Icon";
 import { HeaderRightIcon } from "../../components/HeaderRightIcon";
+import { BLANK_IMAGE } from "../../constants";
 
 const SplaceItemContainer = styled.View`
   width: ${pixelScaler(170)}px;

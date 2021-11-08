@@ -22,7 +22,7 @@ import Tag from "./Tag";
 const TagBox = styled.View`
   width: 100%;
   padding-left: ${pixelScaler(30)}px;
-  margin-top: ${pixelScaler(25)}px;
+  margin-top: ${pixelScaler(20)}px;
   margin-bottom: ${pixelScaler(15)}px;
   flex-direction: row;
   overflow: hidden;

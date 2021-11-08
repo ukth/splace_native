@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Dimensions } from "react-native";
+import { Dimensions, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { API_URL, tokenVar } from "./apollo";
 import { Splace } from "./screens";
@@ -129,6 +129,9 @@ export const coords2address = async ({
   lat: number;
   lon: number;
 }) => {
+  if (!lat || !lon) {
+    return "";
+  }
   const res: any = await axios.get(
     "http://" + API_URL + "/reversegeocode?lat=" + lat + "&lon=" + lon
   );
@@ -223,11 +226,6 @@ export const formatOperatingTime = (n: number) => {
   const m = Math.floor((n % 3600000) / 60000);
   return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
 };
-
-export const dayNameKor = ["일", "월", "화", "수", "목", "금", "토"];
-
-export const BLANK_IMAGE =
-  "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/super_blank.png";
 
 export const calcDistanceByCoords = (
   coord1: { lat: number; lon: number },
@@ -394,21 +392,33 @@ export const uploadVideo = async (url: string) => {
 export const showFlashMessage = ({ message }: { message: string }) => {
   showMessage({
     message,
-    description: "",
     backgroundColor: "#ffffff",
-    titleStyle: { color: "#000000" },
     type: "success",
-    style: {
-      shadowOffset: { width: 0, height: pixelScaler(2) },
-      shadowOpacity: 0.25,
-      shadowRadius: pixelScaler(4),
-    },
     floating: true,
-    hideOnPress: true,
   });
 };
 
 export const shortenAddress = (address: string) => {
   const words = address.split(" ");
   return words[0].substr(0, 2) + ", " + words[1].substr(0, 2);
+};
+
+export const convertTimeDifference2String = (diff: number) => {
+  if (diff < 60 * 60 * 1000) {
+    const min = Math.floor(diff / 60000);
+    return min !== 0 ? min + "분 전" : "방금 전";
+  }
+  if (Math.floor(diff / (60 * 60000)) < 24) {
+    return Math.floor(diff / (60 * 60000)) + "시간 전";
+  }
+  if (Math.floor(diff / (60 * 60000 * 24)) < 7) {
+    return Math.floor(diff / (60 * 60000 * 24)) + "일 전";
+  }
+  if (diff / (60 * 60000 * 24) < 30) {
+    return Math.floor(diff / (60 * 60000 * 24 * 7)) + "주 전";
+  }
+  if (diff / (60 * 60000 * 24) < 365) {
+    return Math.floor(diff / (60 * 60000 * 24 * 30)) + "달 전";
+  }
+  return Math.floor(diff / (60 * 60000 * 24 * 365)) + "년 전";
 };

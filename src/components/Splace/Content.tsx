@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled, { ThemeContext } from "styled-components/native";
 import { FixedContentType, PhotologType } from "../../types";
-import { pixelScaler } from "../../utils";
+import { convertTimeDifference2String, pixelScaler } from "../../utils";
 import { RegText13 } from "../Text";
 
 const Content = ({ item }: { item: FixedContentType }) => {
@@ -30,36 +30,62 @@ const Content = ({ item }: { item: FixedContentType }) => {
 
   const shortText = text === ellipsizedText;
 
+  const diff = new Date().getTime() - Number(item.createdAt);
+
+  const timeText = convertTimeDifference2String(diff);
+
   return (
     <ContentContainer>
-      <RegText13
-        style={{
-          lineHeight: pixelScaler(17),
-          marginBottom: shortText || showFullText ? pixelScaler(17) : 0,
-        }}
-      >
-        {showFullText ? text : ellipsizedText}
-        {!shortText && !showFullText ? (
-          <RegText13 style={{ lineHeight: pixelScaler(17) }}>...</RegText13>
-        ) : null}
-        {!shortText && !showFullText ? (
-          <RegText13
-            style={{
-              color: theme.greyText,
-              lineHeight: pixelScaler(17),
-              textDecorationLine: "underline",
-              textDecorationColor: theme.greyText,
-              marginBottom: pixelScaler(17),
-            }}
-            onPress={() => setShowFullText(true)}
-          >
-            더보기
-          </RegText13>
-        ) : null}
-      </RegText13>
-      {/* {shortText || showFullText ? (
-        <Tags address={item.splace.address} tags={item.hashtags} />
-      ) : null} */}
+      {text !== "" ? (
+        <RegText13
+          style={{
+            lineHeight: pixelScaler(17),
+            marginBottom: shortText || showFullText ? pixelScaler(13) : 0,
+          }}
+          onPress={() => {
+            if (showFullText) {
+              setShowFullText(false);
+            }
+          }}
+        >
+          {showFullText ? text : ellipsizedText}
+          {!shortText && !showFullText ? (
+            <RegText13
+              style={{ color: theme.greyText, lineHeight: pixelScaler(17) }}
+            >
+              {" "}
+              ...{" "}
+            </RegText13>
+          ) : null}
+          {!shortText && !showFullText ? (
+            <RegText13
+              style={{
+                color: theme.greyText,
+                lineHeight: pixelScaler(17),
+                marginBottom: pixelScaler(17),
+              }}
+              onPress={() => setShowFullText(true)}
+            >
+              더보기
+            </RegText13>
+          ) : (
+            <RegText13
+              style={{
+                color: theme.greyTextAlone,
+                marginBottom: pixelScaler(10),
+              }}
+            >
+              {"  " + timeText}
+            </RegText13>
+          )}
+        </RegText13>
+      ) : (
+        <RegText13
+          style={{ color: theme.greyTextAlone, marginBottom: pixelScaler(10) }}
+        >
+          {timeText}
+        </RegText13>
+      )}
     </ContentContainer>
   );
 };

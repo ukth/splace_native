@@ -17,6 +17,7 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { Alert } from "react-native";
 import { ProgressContext } from "./contexts/Progress";
 import { useContext } from "react";
+import { PhotologType, RoomType, SeriesType, UserType } from "./types";
 
 export const isLoggedInVar = makeVar<boolean>(false);
 export const tokenVar = makeVar<string | null>("");
@@ -104,12 +105,16 @@ export const cache = new InMemoryCache({
         getFeed: {
           keyArgs: false,
           merge(existing, incoming) {
-            // console.log(existing);
-
             if (!existing) {
               return incoming;
             }
-            if (!incoming || !incoming.ok) {
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.logs
+                ?.map((log: any) => log.__ref)
+                ?.includes(incoming.logs[0]?.__ref)
+            ) {
               return existing;
             }
             return {
@@ -129,7 +134,13 @@ export const cache = new InMemoryCache({
             if (!existing) {
               return incoming;
             }
-            if (!incoming || !incoming.ok) {
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.myRooms
+                ?.map((room: any) => room.__ref)
+                ?.includes(incoming.myRooms[0]?.__ref)
+            ) {
               return existing;
             }
 
@@ -142,14 +153,16 @@ export const cache = new InMemoryCache({
         seeFollowers: {
           keyArgs: ["keyword", "userId"],
           merge(existing, incoming) {
-            // console.log(existing);
-            // console.log("existing", existing);
-            // console.log("incoming", incoming);
-
             if (!existing) {
               return incoming;
             }
-            if (!incoming || !incoming.ok) {
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.followers
+                ?.map((follower: any) => follower.__ref)
+                ?.includes(incoming.followers[0]?.__ref)
+            ) {
               return existing;
             }
 
@@ -183,7 +196,7 @@ export const cache = new InMemoryCache({
               }
             }
             // console.log("not included");
-            console.log("existing,\n", existing, "\n\nincoming\n", incoming);
+            // console.log("existing,\n", existing, "\n\nincoming\n", incoming);
 
             return {
               ...incoming,
@@ -191,13 +204,42 @@ export const cache = new InMemoryCache({
             };
           },
         },
+        getUserSeries: {
+          keyArgs: ["userId"],
+          merge(existing, incoming) {
+            if (!existing) {
+              return incoming;
+            }
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.series
+                ?.map((seriesElement: any) => seriesElement.__ref)
+                ?.includes(incoming.series[0]?.__ref)
+            ) {
+              return existing;
+            }
+
+            return {
+              ...existing,
+              series: [...existing.series, ...incoming.series],
+            };
+          },
+        },
+
         getLogsBySplace: {
           keyArgs: ["splaceId", "orderBy"],
           merge(existing, incoming) {
             if (!existing) {
               return incoming;
             }
-            if (!incoming || !incoming.ok) {
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.logs
+                ?.map((log: any) => log.__ref)
+                ?.includes(incoming.logs[0]?.__ref)
+            ) {
               return existing;
             }
             return {
@@ -213,8 +255,8 @@ export const cache = new InMemoryCache({
         getBigCategories: {
           keyArgs: ["tagId"],
           merge(existing, incoming) {
-            console.log("existing\n", existing);
-            console.log("incoming\n", incoming);
+            // console.log("existing\n", existing);
+            // console.log("incoming\n", incoming);
             return existing;
           },
         },

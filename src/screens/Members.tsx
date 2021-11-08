@@ -44,7 +44,6 @@ const Members = ({
 
   const updateMembers = async () => {
     const { data } = await refetchMembers();
-    console.log(data);
     if (data?.getRoomInfo?.ok) {
       setMembers(data.getRoomInfo.room.members);
     } else if (data?.seeFolder?.ok) {

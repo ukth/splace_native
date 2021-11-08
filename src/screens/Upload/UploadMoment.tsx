@@ -9,11 +9,11 @@ import { HeaderBackButton } from "../../components/HeaderBackButton";
 import * as VideoThumbnails from "expo-video-thumbnails";
 
 import { Camera } from "expo-camera";
-import { Ionicons } from "@expo/vector-icons";
 import {
   Alert,
   Animated,
   Image,
+  TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -26,18 +26,18 @@ import {
   uploadPhotos,
   uploadVideo,
 } from "../../utils";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { Icons } from "../../icons";
 import { RegTextInput13, RegTextInput20 } from "../../components/TextInput";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { ProgressContext } from "../../contexts/Progress";
-import { BldText16, RegText20 } from "../../components/Text";
+import { BldText16, RegText13, RegText20 } from "../../components/Text";
 import { UploadContentContext } from "../../contexts/UploadContent";
 import { UPLOAD_MOMENT } from "../../queries";
-import RatingModal from "./RatingModal";
+import RatingModal from "../../components/Upload/RatingModal";
+import { Icon } from "../../components/Icon";
 
 const SelectSplaceButton = styled.TouchableOpacity`
-  padding-top: ${pixelScaler(40)}px;
+  margin-top: ${pixelScaler(40)}px;
 `;
 
 const FooterContainer = styled.View`
@@ -82,14 +82,6 @@ const UploadMoment = () => {
 
   const theme = useContext<ThemeType>(ThemeContext);
   useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <HeaderBackButton
-          onPress={() => navigation.pop()}
-          color={theme.white}
-        />
-      ),
-    });
     setContent({});
   }, []);
 
@@ -109,6 +101,8 @@ const UploadMoment = () => {
 
   const [showRating, setShowRating] = useState(false);
 
+  const [isMuted, setIsMuted] = useState(false);
+
   const { spinner } = useContext(ProgressContext);
 
   const onCompleted = (data: any) => {
@@ -122,7 +116,6 @@ const UploadMoment = () => {
       }
     } else {
       Alert.alert("업로드 실패", data?.uploadMoment?.error);
-      console.log(data?.uploadMoment?.error);
     }
   };
 
@@ -170,6 +163,9 @@ const UploadMoment = () => {
   //   record.start();
   // }, []);
 
+  navigation.addListener("blur", () => video?.current?.pauseAsync());
+  navigation.addListener("focus", () => video?.current?.playAsync());
+
   return (
     <ScreenContainer
       style={{ backgroundColor: theme.black, justifyContent: "center" }}
@@ -185,37 +181,39 @@ const UploadMoment = () => {
         {(content.locationText?.length || content.splace) &&
           recordedUri !== "" && (
             <UploadButton
+              style={height / width < 1.8 ? { top: 20 } : {}}
               onPress={async () => {
-                spinner.start(true, 60);
+                if (!loading) {
+                  spinner.start(true, 60);
 
-                const { uri } = await VideoThumbnails.getThumbnailAsync(
-                  recordedUri,
-                  {
-                    time: 0,
-                  }
-                );
+                  const { uri } = await VideoThumbnails.getThumbnailAsync(
+                    recordedUri,
+                    {
+                      time: 0,
+                    }
+                  );
 
-                const thumbnailUrl = await uploadPhotos([uri]);
+                  const thumbnailUrl = await uploadPhotos([uri]);
 
-                const awsUrl = await uploadVideo(recordedUri);
-                // console.log(awsUrl);
-                console.log(thumbnailUrl);
+                  const awsUrl = await uploadVideo(recordedUri);
+                  // console.log(awsUrl);
 
-                mutation({
-                  variables: {
-                    thumbnail: thumbnailUrl[0],
-                    videoUrl: awsUrl,
-                    text: momentText,
-                    ...(content?.splace
-                      ? {
-                          splaceId: content.splace.id,
-                          title: content.splace.name,
-                        }
-                      : {
-                          title: content.locationText,
-                        }),
-                  },
-                });
+                  mutation({
+                    variables: {
+                      thumbnail: thumbnailUrl[0],
+                      videoUrl: awsUrl,
+                      text: momentText,
+                      ...(content?.splace
+                        ? {
+                            splaceId: content.splace.id,
+                            title: content.splace.name,
+                          }
+                        : {
+                            title: content.locationText,
+                          }),
+                    },
+                  });
+                }
               }}
             >
               <BldText16 style={{ color: theme.white }}>업로드</BldText16>
@@ -223,7 +221,9 @@ const UploadMoment = () => {
           )}
         {recordedUri === "" ? (
           <CloseButton
-            style={{ height: pixelScaler((59 * height) / 844) }}
+            style={{
+              height: pixelScaler((35 * height) / 844),
+            }}
             hitSlop={{
               top: pixelScaler(10),
               bottom: pixelScaler(10),
@@ -234,12 +234,18 @@ const UploadMoment = () => {
               navigation.pop();
             }}
           >
-            <Ionicons name="chevron-back" color="white" size={30} />
+            <Icon
+              name="header_back_white"
+              style={{
+                width: pixelScaler(8),
+                height: pixelScaler(17),
+              }}
+            />
           </CloseButton>
         ) : (
           <>
             <CloseButton
-              style={{ height: pixelScaler((59 * height) / 844) }}
+              style={{ height: pixelScaler((35 * height) / 844) }}
               hitSlop={{
                 top: pixelScaler(10),
                 bottom: pixelScaler(10),
@@ -247,14 +253,29 @@ const UploadMoment = () => {
                 right: pixelScaler(10),
               }}
               onPress={() => {
-                setRecordedUri("");
+                Alert.alert(
+                  "모먼트를 삭제하시겠습니까?",
+                  "지금 돌아가면 모든 변경사항이 삭제됩니다.",
+                  [
+                    {
+                      text: "예",
+                      onPress: () => {
+                        setRecordedUri("");
+                      },
+                    },
+                    {
+                      text: "취소",
+                      style: "cancel",
+                    },
+                  ]
+                );
               }}
             >
               <Image
                 source={Icons.close_white}
                 style={{
-                  width: pixelScaler(12),
-                  height: pixelScaler(12),
+                  width: pixelScaler(11),
+                  height: pixelScaler(11),
                 }}
               />
             </CloseButton>
@@ -273,6 +294,7 @@ const UploadMoment = () => {
                     const locationText = await coords2address(location);
                     setContent({
                       ...content,
+                      splace: undefined,
                       locationText,
                     });
                     navigation.pop();
@@ -282,14 +304,27 @@ const UploadMoment = () => {
               }
             >
               <RegText20
-                style={{
-                  color:
-                    content.splace || content.locationText
-                      ? theme.white
-                      : theme.greyTextAlone,
-                  width: pixelScaler(220),
-                  textAlign: "center",
-                }}
+                style={
+                  height / width < 1.8
+                    ? {
+                        color:
+                          content.splace || content.locationText
+                            ? theme.white
+                            : theme.greyTextAlone,
+                        width: pixelScaler(240),
+                        textAlign: "center",
+                        marginTop: pixelScaler(23),
+                      }
+                    : {
+                        color:
+                          content.splace || content.locationText
+                            ? theme.white
+                            : theme.greyTextAlone,
+                        width: pixelScaler(320),
+                        textAlign: "center",
+                        marginTop: pixelScaler(23),
+                      }
+                }
                 numberOfLines={1}
               >
                 {content.splace
@@ -326,11 +361,19 @@ const UploadMoment = () => {
             zoom={zoom}
           />
           <FooterContainer>
+            <RegText13
+              style={{
+                color: theme.greyTextLight,
+                position: "absolute",
+                top: pixelScaler(19),
+              }}
+              numberOfLines={1}
+            >
+              영상으로 지금 이 순간을 기록해보세요
+            </RegText13>
             <TouchableWithoutFeedback
               onPress={async () => {
-                console.log(record);
                 if (!isRecording) {
-                  console.log(record);
                   setIsRecording(true);
                   progress.setValue(0);
                   record.start(() => {
@@ -364,26 +407,33 @@ const UploadMoment = () => {
           extraHeight={300}
           showsVerticalScrollIndicator={false}
         >
-          <Video
-            ref={video}
-            isLooping
-            style={{
-              width,
-              height: (width * 4) / 3,
+          <TouchableWithoutFeedback
+            onPress={() => {
+              video?.current?.setIsMutedAsync(!isMuted);
+              setIsMuted(!isMuted);
             }}
-            source={{
-              uri: recordedUri ?? "",
-            }}
-            resizeMode="cover"
-            progressUpdateIntervalMillis={30}
-            onPlaybackStatusUpdate={(e: AVPlaybackStatus) => {
-              // console.log(e);
-              if (!isLoaded && e.isLoaded) {
-                spinner.stop();
-                setIsLoaded(true);
-              }
-            }}
-          />
+          >
+            <Video
+              ref={video}
+              isLooping
+              style={{
+                width,
+                height: (width * 4) / 3,
+              }}
+              source={{
+                uri: recordedUri ?? "",
+              }}
+              resizeMode="cover"
+              progressUpdateIntervalMillis={30}
+              onPlaybackStatusUpdate={(e: AVPlaybackStatus) => {
+                // console.log(e);
+                if (!isLoaded && e.isLoaded) {
+                  spinner.stop();
+                  setIsLoaded(true);
+                }
+              }}
+            />
+          </TouchableWithoutFeedback>
 
           <BottomContainer
             style={{
@@ -391,7 +441,7 @@ const UploadMoment = () => {
             }}
           >
             <RegTextInput13
-              style={{ color: theme.white }}
+              style={{ color: theme.white, marginBottom: pixelScaler(25) }}
               onChangeText={(text) => {
                 setMomentText(text);
               }}

@@ -24,6 +24,7 @@ import {
   HIDE_SERIES,
   REMOVE_SERIES,
   SCRAP_SERIES,
+  UNBLOCK,
   UNSCRAP_SERIES,
 } from "../../queries";
 
@@ -33,7 +34,7 @@ const Container = styled.View`
 
 const TitleContianer = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(30)}px;
-  margin-bottom: ${pixelScaler(20)}px;
+  margin-bottom: ${pixelScaler(17)}px;
 `;
 
 const Series = ({ item }: { item: SeriesType }) => {
@@ -129,6 +130,7 @@ const Series = ({ item }: { item: SeriesType }) => {
   const onBlockCompleted = (data: any) => {
     if (data?.blockUser?.ok) {
       showFlashMessage({ message: "사용자가 차단되었습니다." });
+      refetch();
     } else {
       Alert.alert("사용자를 차단할 수 없습니다.");
     }
@@ -137,6 +139,20 @@ const Series = ({ item }: { item: SeriesType }) => {
   const [blockMutation, { loading: blockMutationLoading }] = useMutation(
     BLOCK,
     { onCompleted: onBlockCompleted }
+  );
+
+  const onUnblockCompleted = (data: any) => {
+    if (data?.unblockUser?.ok) {
+      showFlashMessage({ message: "차단이 해제되었습니다." });
+      refetch();
+    } else {
+      Alert.alert("차단 해제에 실패했습니다.");
+    }
+  };
+
+  const [unblockMutation, { loading: unblockMutationLoading }] = useMutation(
+    UNBLOCK,
+    { onCompleted: onUnblockCompleted }
   );
 
   return (
@@ -149,8 +165,13 @@ const Series = ({ item }: { item: SeriesType }) => {
       />
 
       <TitleContianer
+        hitSlop={{
+          top: pixelScaler(10),
+          bottom: pixelScaler(10),
+          left: pixelScaler(10),
+          right: pixelScaler(10),
+        }}
         onPress={() => {
-          console.log("hello");
           navigation.push("Series", {
             id: item.id,
           });
@@ -210,12 +231,23 @@ const Series = ({ item }: { item: SeriesType }) => {
             <ModalButtonBox
               onPress={() => {
                 if (!deleteMutationLoading) {
-                  setModalVisible(false);
-                  deleteMutation({
-                    variables: {
-                      sereisId: item.id,
+                  Alert.alert("시리즈 삭제", "시리즈를 삭제하시겠습니까?", [
+                    {
+                      text: "예",
+                      onPress: () => {
+                        setModalVisible(false);
+                        deleteMutation({
+                          variables: {
+                            seriesId: item.id,
+                          },
+                        });
+                      },
                     },
-                  });
+                    {
+                      text: "취소",
+                      style: "cancel",
+                    },
+                  ]);
                 }
               }}
             >
@@ -232,7 +264,7 @@ const Series = ({ item }: { item: SeriesType }) => {
             {item.isScraped ? (
               <ModalButtonBox
                 onPress={() => {
-                  if (!scrapMutationLoading) {
+                  if (!unscrapMutationLoading) {
                     setModalVisible(false);
                     unscrapMutation({ variables: { scrapedLogId: item.id } });
                   }
@@ -264,15 +296,48 @@ const Series = ({ item }: { item: SeriesType }) => {
             >
               <RegText20>{"숨기기"}</RegText20>
             </ModalButtonBox>
-            <ModalButtonBox
-              onPress={() => {
-                if (!blockMutationLoading) {
-                  blockMutation({ variables: { targetId: item.author.id } });
-                }
-              }}
-            >
-              <RegText20 style={{ color: "#FF0000" }}>{"차단"}</RegText20>
-            </ModalButtonBox>
+            {item.author.isBlocked ? (
+              <ModalButtonBox
+                onPress={() => {
+                  if (!unblockMutationLoading) {
+                    setModalVisible(false);
+                    unblockMutation({
+                      variables: { targetId: item.author.id },
+                    });
+                  }
+                }}
+              >
+                <RegText20 style={{ color: "#FF0000" }}>차단 해제</RegText20>
+              </ModalButtonBox>
+            ) : (
+              <ModalButtonBox
+                onPress={() => {
+                  if (!blockMutationLoading) {
+                    Alert.alert(
+                      "사용자 차단",
+                      "이 사용자를 차단하시겠습니까?",
+                      [
+                        {
+                          text: "확인",
+                          onPress: () => {
+                            setModalVisible(false);
+                            blockMutation({
+                              variables: { targetId: item.author.id },
+                            });
+                          },
+                        },
+                        {
+                          text: "취소",
+                          style: "cancel",
+                        },
+                      ]
+                    );
+                  }
+                }}
+              >
+                <RegText20 style={{ color: "#FF0000" }}>{"차단"}</RegText20>
+              </ModalButtonBox>
+            )}
           </>
         )}
       </BottomSheetModal>

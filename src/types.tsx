@@ -86,6 +86,7 @@ export type UserType = {
   totalFollowers?: number;
   isMe?: boolean;
   isFollowing?: boolean;
+  isBlocked?: boolean;
   totalLogsNumber?: number;
   url?: string;
   authority: string;
@@ -269,7 +270,7 @@ export type StackGeneratorParamList = {
     me: UserType;
   };
   Report: {
-    type: "log" | "user" | "problem";
+    type: "log" | "user" | "problem" | "splace";
     id: number | undefined;
   };
   Setting: undefined;
@@ -400,12 +401,14 @@ export type SeriesType = {
   createdAt: string;
   updatedAt: string;
   author: UserType;
-  seriesElements: {
-    id: number;
-    photolog: PhotologType;
-  }[];
+  seriesElements: SeriesElementType[];
   isPrivate: boolean;
   isScraped: boolean;
+};
+
+export type SeriesElementType = {
+  id: number;
+  photolog: PhotologType;
 };
 
 export type BottomTabParamList = {
@@ -438,6 +441,7 @@ export type ThemeType = {
 
   editSplacePlaceholder: string;
   editSplaceOperationTimeDayIndicator: string;
+  modalDragBarLight: string;
 
   editSplaceBreakDayRedBackground: string;
 
@@ -526,6 +530,7 @@ export type ThemeType = {
   modalHighlight: string;
   modalInputSubmitButton: string;
   modalEntry: string;
+  modalDragBar: string;
 
   modalButtonRedText: string;
 
@@ -540,7 +545,9 @@ export type IconName =
   | "bigcoins"
   | "arrow_right"
   | "header_back"
+  | "header_back_white"
   | "bookmark_thin"
+  | "bookmark_middle"
   | "bookmark_black"
   | "bookmark_color"
   | "bookmark_fill"
@@ -560,6 +567,7 @@ export type IconName =
   | "edit"
   | "empty_heart"
   | "filter"
+  | "filter_activated"
   | "gallery_black"
   | "gallery_white"
   | "heart_colorfill"

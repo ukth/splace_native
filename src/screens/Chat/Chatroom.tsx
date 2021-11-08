@@ -45,6 +45,7 @@ import { BldTextInput16 } from "../../components/TextInput";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { Icon } from "../../components/Icon";
 import { HeaderRightIcon } from "../../components/HeaderRightIcon";
+import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 
 const Entry = styled.View`
   width: 100%;
@@ -77,16 +78,10 @@ const StyledTextInput = styled.TextInput`
   width: ${pixelScaler(270)}px;
   font-size: ${pixelScaler(13.5)}px;
   /* background-color: #f0d0a0; */
-  margin-top: ${pixelScaler(6)}px;
-  margin-bottom: ${pixelScaler(8)}px;
+  margin-top: ${pixelScaler(4.6)}px;
+  margin-bottom: ${pixelScaler(9.3)}px;
   line-height: ${pixelScaler(17)}px;
   max-height: ${pixelScaler(120)}px;
-`;
-
-const EntryRightContainer = styled.View`
-  width: ${pixelScaler(60)}px;
-  align-items: center;
-  justify-content: flex-end;
 `;
 
 const SendButton = styled.TouchableOpacity`
@@ -239,43 +234,39 @@ const Chatroom = () => {
       tabBarVisible: false,
     });
     navigation.setOptions({
-      headerTitle: () => {
-        return titleEditing ? (
-          <View
-            style={{
-              height: 50,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <BldTextInput16
-              ref={titleRef}
-              // value={title}
-              selectionColor={theme.chatSelection}
-              // placeholder={chatroom.title ? chatroom.title : ""}
-              // placeholderTextColor={theme.text}
-              onChangeText={(text) => setTitle(text.trim())}
-              numberOfLines={1}
-              maxLength={20}
-              textAlign="center"
-            />
-            <View style={{ width: pixelScaler(225) }} />
-          </View>
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              setTitleEditing(true);
-              // console.log(titleRef);
-            }}
-          >
-            <BldText16 numberOfLines={1}>
-              {chatroom.title
-                ? chatroom.title
-                : chatroom.members.map((member) => member.username).join(", ")}
-            </BldText16>
-          </TouchableOpacity>
-        );
-      },
+      headerTitle: () => (
+        <TouchableOpacity
+          onPress={() => {
+            Alert.prompt(
+              "채팅방 이름 변경",
+              "새로운 채팅방의 이름을 입력하세요",
+              (text) => {
+                if (text.trim() !== "") {
+                  editMutation({
+                    variables: {
+                      chatroomId: chatroom.id,
+                      title: text.trim(),
+                    },
+                  });
+                } else {
+                  Alert.alert(
+                    "폴더 이름에는 한 글자 이상의 문자가 들어가야 합니다."
+                  );
+                }
+              },
+              "plain-text"
+            );
+          }}
+        >
+          <BldText16 numberOfLines={1}>
+            {chatroom.title && chatroom.title !== ""
+              ? chatroom.title
+              : chatroom.members.length === 2
+              ? chatroom.members.filter((member) => !member.isMe)[0].username
+              : chatroom.members.map((member) => member.username).join(", ")}
+          </BldText16>
+        </TouchableOpacity>
+      ),
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
       headerRight: () =>
         titleEditing ? (
@@ -290,12 +281,7 @@ const Chatroom = () => {
             }}
           />
         ) : (
-          <HeaderRightIcon
-            iconName="menu"
-            iconStyle={{
-              width: pixelScaler(25),
-              height: pixelScaler(20.6),
-            }}
+          <HeaderRightMenu
             onPress={() =>
               navigation.push("Members", {
                 title: roomInfo.title,
@@ -346,11 +332,13 @@ const Chatroom = () => {
 
     if (!ok) {
       Alert.alert("메세지 전송에 실패했습니다.");
-      console.log(error);
     }
   };
 
   const updateCache = (message: MessageType) => {
+    if (message.createdAt.includes("-")) {
+      message.createdAt = String(new Date(message.createdAt).valueOf());
+    }
     const newMessage = client.cache.writeFragment({
       fragment: gql`
         fragment NewMessage on Message {
@@ -371,6 +359,8 @@ const Chatroom = () => {
         ...message,
       },
     });
+
+    // console.log(newMessage);
 
     client.cache.modify({
       id: `getRoomMessagesResult:${chatroom.id}`,
@@ -590,36 +580,43 @@ const Chatroom = () => {
           }}
         />
       )}
-      <Entry>
-        <EntryTextInputContainer>
-          <StyledTextInput
-            ref={textInputRef}
-            placeholder="텍스트 입력..."
-            placeholderTextColor={theme.chatEntryPlaceholder}
-            selectionColor={theme.chatSelection}
-            multiline={true}
-            onChangeText={(text) => setMyMessage(text)}
-            maxLength={1000}
-            autoCapitalize="none"
-          />
+      {chatroom.members.length === 2 &&
+      chatroom.members.map((member) => member.id).includes(1) ? null : (
+        <Entry>
+          <EntryTextInputContainer>
+            <StyledTextInput
+              ref={textInputRef}
+              placeholder="텍스트 입력..."
+              placeholderTextColor={theme.chatEntryPlaceholder}
+              selectionColor={theme.chatSelection}
+              multiline={true}
+              onChangeText={(text) => setMyMessage(text)}
+              maxLength={1000}
+              autoCapitalize="none"
+            />
 
-          {sendable ? (
-            <SendButton
-              onPress={_handlePressSendButton}
-              hitSlop={{ top: 10, bottom: 10, left: 15, right: 15 }}
-            >
-              <BldText16 style={{ color: theme.chatSendText }}>전송</BldText16>
-            </SendButton>
-          ) : (
-            <SendButton
-              // onPress={_handlePressSendButton}
-              hitSlop={{ top: 10, bottom: 10, left: 15, right: 15 }}
-            >
-              <BldText16 style={{ color: theme.greyTextLight }}>전송</BldText16>
-            </SendButton>
-          )}
-        </EntryTextInputContainer>
-      </Entry>
+            {sendable ? (
+              <SendButton
+                onPress={_handlePressSendButton}
+                hitSlop={{ top: 10, bottom: 10, left: 15, right: 15 }}
+              >
+                <BldText16 style={{ color: theme.chatSendText }}>
+                  전송
+                </BldText16>
+              </SendButton>
+            ) : (
+              <SendButton
+                // onPress={_handlePressSendButton}
+                hitSlop={{ top: 10, bottom: 10, left: 15, right: 15 }}
+              >
+                <BldText16 style={{ color: theme.greyTextLight }}>
+                  전송
+                </BldText16>
+              </SendButton>
+            )}
+          </EntryTextInputContainer>
+        </Entry>
+      )}
     </KeyboardAvoidingView>
   );
 };

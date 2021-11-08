@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { isLoggedInVar, logUserIn, logUserOut } from "../apollo";
-import { UserType } from "../types";
 import { GET_BIGCATEGORIES } from "../queries";
 
 const useBigCategories = () => {

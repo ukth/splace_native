@@ -82,8 +82,8 @@ const EditSplaceLocationSearch = () => {
           <Icon
             name="search_grey"
             style={{
-              width: pixelScaler(26),
-              height: pixelScaler(26),
+              width: pixelScaler(20),
+              height: pixelScaler(20),
               marginLeft: pixelScaler(10),
             }}
           />
@@ -141,12 +141,44 @@ const EditSplaceLocationSearch = () => {
     if (data?.reportResources?.ok) {
       Alert.alert(
         "",
-        "신청이 접수되었습니다.\n검토까지 24-72시간이 소요되며,\n이후 확인 절차가 dm으로 안내됩니다."
+        "신청이 접수되었습니다.\n검토까지 24-72시간이 소요되며,\n이후 확인 절차가 메세지로 안내됩니다.",
+        [
+          {
+            text: "확인",
+            onPress: () => {
+              setShowMap(false);
+              navigation.pop();
+            },
+          },
+        ]
       );
-      navigation.pop();
+    } else if (data.reportResources?.error === "ERROR3P11") {
+      Alert.alert(
+        "해당 Splace에 이미 접수된 위치 변경 요청이 존재합니다.",
+        "",
+        [
+          {
+            text: "확인",
+            onPress: () => {
+              setShowMap(false);
+              navigation.pop();
+            },
+          },
+        ]
+      );
     } else {
       Alert.alert(
-        "위치 업데이트 요청에 실패했습니다.\ncontact@lunen.co.kr로 문의해주세요."
+        "",
+        "위치 업데이트 요청에 실패했습니다.\ncontact@lunen.co.kr로 문의해주세요.",
+        [
+          {
+            text: "확인",
+            onPress: () => {
+              setShowMap(false);
+              navigation.pop();
+            },
+          },
+        ]
       );
     }
   };
@@ -175,7 +207,12 @@ const EditSplaceLocationSearch = () => {
               </RegText16>
               {item.distance !== 0 ? (
                 <RegText13
-                  style={{ position: "absolute", right: 0, bottom: 0 }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0,
+                    color: theme.greyTextAlone,
+                  }}
                 >
                   {formatDistance(item.distance)}
                 </RegText13>
@@ -194,7 +231,7 @@ const EditSplaceLocationSearch = () => {
             spinner.start();
             mutation({
               variables: {
-                sourceType: "Splace location edit",
+                sourceType: "splace location edit",
                 sourceId: splace.id,
                 reason:
                   "lat:" +

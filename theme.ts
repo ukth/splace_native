@@ -10,7 +10,7 @@ const colors = {
   grey_b: "#b0b0b0",
   grey_c: "#c0c0c0",
   grey_d: "#d0d0d0",
-  grey_d1: "#d1d1d1",
+  grey_d1: "#d1d1d6",
   grey_e: "#e0e0e0",
   grey_f: "#f0f0f0",
   grey_f8: "#f8f8f8",
@@ -38,6 +38,9 @@ export const theme = {
     searchBarBackground: colors.grey_f2,
     searchBarPlaceholder: colors.grey_c7,
     dots: colors.black,
+
+    modalDragBar: colors.grey_ae,
+    modalDragBarLight: colors.grey_d1,
 
     greyTextLight: colors.grey_ae,
     greyTextLighter: colors.grey_d1,

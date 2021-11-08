@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components/native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   Alert,
   Animated,
@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import BottomSheetModal from "../BottomSheetModal";
-import { BLANK_IMAGE, coords2address, pixelScaler } from "../../utils";
+import { coords2address, pixelScaler } from "../../utils";
 import { BldText16, RegText13, RegText16 } from "../Text";
 import { Ionicons } from "@expo/vector-icons";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
@@ -30,7 +30,7 @@ const ModalDragBar = styled.View`
   width: ${pixelScaler(100)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
-  background-color: #d1d1d6;
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.modalDragBar};
   top: ${pixelScaler(12)}px;
   z-index: 1;
   /* margin-bottom: ${pixelScaler(30)}px; */
@@ -43,7 +43,7 @@ const SplaceContainer = styled.View`
   width: ${pixelScaler(345)}px;
   padding: ${pixelScaler(20)}px ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(15)}px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
 `;
 
@@ -73,11 +73,11 @@ const ConfirmButton = styled.TouchableOpacity`
 const TagsContainer = styled.View`
   position: absolute;
   bottom: 0;
-  /* background-color: #9020d0; */
+  flex-direction: row;
+  flex-wrap: wrap;
 `;
 
 const TagsRowContainer = styled.View`
-  flex-direction: row;
   margin-top: ${pixelScaler(10)}px;
   /* background-color: #9030f0; */
 `;
@@ -89,6 +89,7 @@ const Tag = styled.View`
   border-radius: ${pixelScaler(20)}px;
   height: ${pixelScaler(20)}px;
   margin-right: ${pixelScaler(7)}px;
+  margin-bottom: ${pixelScaler(7)}px;
 `;
 
 const ModalMapSplaceConfirm = ({
@@ -143,10 +144,6 @@ const ModalMapSplaceConfirm = ({
       },
     })
   ).current;
-
-  useEffect(() => {
-    console.log(splace);
-  }, []);
 
   useEffect(() => {
     if (showMap) {
@@ -208,7 +205,7 @@ const ModalMapSplaceConfirm = ({
             ref={mapViewRef}
             showsUserLocation={true}
             showsMyLocationButton={false}
-            provider="google"
+            provider={PROVIDER_GOOGLE}
             style={{
               width,
               height,
@@ -268,29 +265,22 @@ const ModalMapSplaceConfirm = ({
                 <RegText13>{splace?.address}</RegText13>
                 {splace?.thumbnail?.length && (
                   <TagsContainer>
-                    {splace?.ratingtags?.length !== 0 && (
-                      <TagsRowContainer>
-                        {splace?.ratingtags?.map((tag) => (
-                          <Tag
-                            key={tag.id}
-                            style={{ borderColor: theme.borderHighlight }}
-                          >
-                            <RegText13 style={{ color: theme.borderHighlight }}>
-                              {tag.name}
-                            </RegText13>
-                          </Tag>
-                        ))}
-                      </TagsRowContainer>
-                    )}
-                    {splace?.bigCategories?.length !== 0 && (
-                      <TagsRowContainer>
-                        {splace?.bigCategories?.map((tag) => (
-                          <Tag key={tag.id}>
-                            <RegText13>{tag.name}</RegText13>
-                          </Tag>
-                        ))}
-                      </TagsRowContainer>
-                    )}
+                    {splace?.ratingtags?.map((tag) => (
+                      <Tag
+                        key={tag.id}
+                        style={{ borderColor: theme.borderHighlight }}
+                      >
+                        <RegText13 style={{ color: theme.borderHighlight }}>
+                          {tag.name}
+                        </RegText13>
+                      </Tag>
+                    ))}
+
+                    {splace?.bigCategories?.map((tag) => (
+                      <Tag key={tag.id}>
+                        <RegText13>{tag.name}</RegText13>
+                      </Tag>
+                    ))}
                   </TagsContainer>
                 )}
               </InfosContainer>

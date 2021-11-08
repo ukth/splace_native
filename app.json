@@ -2,7 +2,7 @@
   "expo": {
     "name": "splace",
     "slug": "splace",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "splace",
@@ -19,8 +19,18 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "5",
       "supportsTablet": false,
-      "bundleIdentifier": "com.lunencorp.splace"
+      "bundleIdentifier": "com.lunencorp.splace",
+      "infoPlist":{
+        "NSCameraUsageDescription":"모먼트를 촬영하기 위해 카메라 권한이 필요합니다.",
+        "NSMicrophoneUsageDescription":"모먼트를 촬영하기 위해 마이크 권한이 필요합니다.",
+        "NSLocationWhenInUseUsageDescription":"현 위치 기반 장소 검색을 위해 위치 권한이 필요합니다.",
+        "NSPhotoLibraryUsageDescription":"게시물, 사진 업로드를 위해 사진 권한이 필요합니다."
+      },
+      "config" : {
+        "googleMapsApiKey":"AIzaSyCw_xyuAjhlvkkLO0tICmcR6VgTDr_RiKU"
+      }
     },
     "android": {
       "adaptiveIcon": {

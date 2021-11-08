@@ -19,13 +19,14 @@ import {
 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-import { dayNameKor, format2DecimalNumber, pixelScaler } from "../../utils";
+import { format2DecimalNumber, pixelScaler } from "../../utils";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Alert, Switch, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { EDIT_SPLACE, EDIT_SPLACE_TIMESETS } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
 import useMe from "../../hooks/useMe";
+import { dayNameKor } from "../../constants";
 
 const DaysContainer = styled.View`
   flex-direction: row;
@@ -233,7 +234,7 @@ const EditSplaceOperatingtime = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    if (data?.editSplaces?.ok) {
+    if (data?.editTimeSets?.ok) {
       if (splace.owner?.id === me.id) {
         Alert.alert("정보가 변경되었습니다.");
       } else if (me.authority === "editor") {
@@ -324,10 +325,6 @@ const EditSplaceOperatingtime = () => {
       })
     );
   }, []);
-
-  useEffect(() => {
-    console.log(operatingTime);
-  }, [operatingTime]);
 
   return (
     <ScreenContainer style={{ padding: pixelScaler(30) }}>

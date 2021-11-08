@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { PhotologType, StackGeneratorParamList } from "../types";
 import styled from "styled-components/native";
-import { GET_LOGS_BY_BIGCATEGORY } from "../queries";
-import { FlatList } from "react-native";
+import {
+  GET_LOGS_BY_BIGCATEGORY,
+  LOG_GETLOGSBYBIGCATEGORIES,
+} from "../queries";
+import { Alert, FlatList } from "react-native";
 import { pixelScaler } from "../utils";
 import Image from "../components/Image";
 import { RegText16 } from "../components/Text";
@@ -23,6 +26,7 @@ const Tag = styled.View`
   border-width: ${pixelScaler(1)}px;
   align-items: center;
   justify-content: center;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const LogsByBigCategory = () => {
@@ -32,9 +36,27 @@ const LogsByBigCategory = () => {
   const { bigCategory } =
     useRoute<RouteProp<StackGeneratorParamList, "LogsByBigCategory">>().params;
 
-  const { data, loading, fetchMore } = useQuery(GET_LOGS_BY_BIGCATEGORY, {
-    variables: { tagId: bigCategory.id },
-  });
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { data, loading, fetchMore, refetch } = useQuery(
+    GET_LOGS_BY_BIGCATEGORY,
+    {
+      variables: { tagId: bigCategory.id },
+    }
+  );
+
+  const refresh = async () => {
+    setRefreshing(true);
+    const timer = setTimeout(() => {
+      Alert.alert("요청시간 초과");
+      setRefreshing(false);
+    }, 10000);
+    await refetch();
+    clearTimeout(timer);
+    setRefreshing(false);
+  };
+
+  const [log_getLogs, _1] = useMutation(LOG_GETLOGSBYBIGCATEGORIES);
 
   useEffect(() => {
     navigation.setOptions({
@@ -44,16 +66,19 @@ const LogsByBigCategory = () => {
         </Tag>
       ),
     });
+    try {
+      log_getLogs({ variables: { tagId: bigCategory.id } });
+    } catch {}
   }, []);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
+  navigation.addListener("focus", () => refetch());
 
   return (
     <ScreenContainer>
       <FlatList
         data={data?.getLogsByBigCategory?.logs}
+        refreshing={refreshing}
+        onRefresh={refresh}
         onEndReached={() =>
           fetchMore({
             variables: {

@@ -26,8 +26,9 @@ const Tag = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(10)}px;
   align-items: center;
   justify-content: center;
-  margin-right: ${pixelScaler(10)}px;
-  margin-bottom: ${pixelScaler(10)}px;
+  margin-right: ${pixelScaler(8)}px;
+  margin-bottom: ${pixelScaler(8)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const Tags = ({

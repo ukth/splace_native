@@ -16,7 +16,7 @@ import { BldText16 } from "../components/Text";
 
 const Container = styled.View`
   flex: 1;
-  padding: ${pixelScaler(15)}px ${pixelScaler(30)}px;
+  padding: 0 ${pixelScaler(30)}px;
 `;
 
 const LabelContainer = styled.TouchableOpacity`
@@ -24,8 +24,8 @@ const LabelContainer = styled.TouchableOpacity`
   height: ${pixelScaler(60)}px;
   align-items: center;
   justify-content: space-between;
-  border-top-width: ${pixelScaler(0.67)}px;
-  border-top-color: ${({ theme }: { theme: ThemeType }) =>
+  border-bottom-width: ${pixelScaler(0.67)}px;
+  border-bottom-color: ${({ theme }: { theme: ThemeType }) =>
     theme.lightSeperator};
 `;
 
@@ -40,7 +40,6 @@ const EditPhotolog = () => {
   const [isPrivate, setIsPrivate] = useState(photolog.isPrivate);
 
   const onCompleted = (data: any) => {
-    console.log(data);
     if (data?.editPhotolog?.ok) {
       Alert.alert("게시물이 수정되었습니다.");
       navigation.pop();
@@ -83,7 +82,7 @@ const EditPhotolog = () => {
     <ScreenContainer>
       <Container>
         <LabelContainer>
-          <BldText16>비공개</BldText16>
+          <BldText16 style={{ marginTop: pixelScaler(4) }}>비공개</BldText16>
           <Switch
             trackColor={{
               false: theme.switchTrackFalse,
@@ -95,12 +94,14 @@ const EditPhotolog = () => {
           />
         </LabelContainer>
         <RegTextInput13
+          style={{ marginTop: pixelScaler(15), lineHeight: pixelScaler(17) }}
           value={logText}
           onChangeText={(text) => setLogText(text)}
           placeholder="텍스트 작성"
           selectionColor={theme.chatSelection}
           placeholderTextColor={theme.greyText}
           autoCorrect={false}
+          multiline={true}
         />
       </Container>
     </ScreenContainer>

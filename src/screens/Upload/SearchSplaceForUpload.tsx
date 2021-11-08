@@ -28,7 +28,7 @@ import { Icon } from "../../components/Icon";
 
 const EntryBackground = styled.View`
   width: ${pixelScaler(295)}px;
-  height: ${pixelScaler(40)}px;
+  height: ${pixelScaler(35)}px;
   margin-left: ${pixelScaler(25)}px;
   flex-direction: row;
   align-items: center;
@@ -87,18 +87,14 @@ const SearchSplaceForUpload = () => {
   >([]);
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState<{ lat: number; lon: number }>();
-  const [text, setText] = useState("");
 
   const [showMap, setShowMap] = useState<boolean>(false);
   const [address, setAddress] = useState("");
 
-  const [coordinate, setCoordinate] = useState({
-    lon: 127.02959262855445,
-    lat: 37.49944853514956,
-  });
-
   const { spinner } = useContext(ProgressContext);
   const [splaceSelected, setSplaceSelected] = useState(false);
+
+  const [lastKeyword, setLastKeyword] = useState("");
 
   useEffect(() => {
     navigation.setOptions({
@@ -108,8 +104,8 @@ const SearchSplaceForUpload = () => {
           <Icon
             name="search_grey"
             style={{
-              width: pixelScaler(26),
-              height: pixelScaler(26),
+              width: pixelScaler(20),
+              height: pixelScaler(20),
               marginLeft: pixelScaler(10),
             }}
           />
@@ -129,6 +125,8 @@ const SearchSplaceForUpload = () => {
       ),
       headerStyle: {
         shadowColor: "transparent",
+        shadowOpacity: 0,
+        height: 100,
       },
     });
     (async () => {
@@ -159,6 +157,7 @@ const SearchSplaceForUpload = () => {
           : await keyword2Place(keyword);
         if (data.length > 0) {
           setSearchedAddress(data);
+          setLastKeyword(keyword);
         }
       })();
     } else {
@@ -168,13 +167,15 @@ const SearchSplaceForUpload = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
     // console.log(data);
     if (data?.getSplaceByKakao?.ok) {
       // console.log(data.getSplaceByKakao.splace);
       setSplace(data.getSplaceByKakao.splace);
     } else {
-      Alert.alert("위치정보를 불러오지 못했습니다.");
+      Alert.alert(
+        "위치정보를 불러오지 못했습니다.",
+        data?.getSplaceByKakao?.error
+      );
     }
   };
 
@@ -198,7 +199,9 @@ const SearchSplaceForUpload = () => {
           <TouchableOpacity
             onPress={() => onListHeaderRightPress({ location })}
           >
-            <RegText13 style={{ color: theme.textHighlight }}>
+            <RegText13
+              style={{ color: theme.textHighlight, marginTop: pixelScaler(5) }}
+            >
               {listHeaderRightText}
             </RegText13>
           </TouchableOpacity>
@@ -208,6 +211,7 @@ const SearchSplaceForUpload = () => {
         data={searchedAddress}
         keyExtractor={(_, index) => "" + index}
         ItemSeparatorComponent={Seperator}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <AddressItemContainer
             onPress={() => {
@@ -216,11 +220,16 @@ const SearchSplaceForUpload = () => {
                   setSplace(undefined);
                   setSplaceSelected(true);
                   spinner.start();
-                  console.log("mutation!!");
                   mutation({
                     variables: {
                       kakaoId: Number(item.id),
-                      keyword: item.name,
+                      keyword: lastKeyword,
+                      ...(location
+                        ? {
+                            x: location.lon,
+                            y: location.lat,
+                          }
+                        : {}),
                     },
                   });
                 }
@@ -229,20 +238,33 @@ const SearchSplaceForUpload = () => {
           >
             <InfoContainer>
               <BldText16
-                style={{ width: pixelScaler(250), lineHeight: pixelScaler(24) }}
+                style={{
+                  marginTop: pixelScaler(2),
+                  width: pixelScaler(250),
+                  lineHeight: pixelScaler(20),
+                }}
                 numberOfLines={1}
               >
                 {item.name}
               </BldText16>
               <RegText13
-                style={{ width: pixelScaler(250), color: theme.greyTextAlone }}
+                style={{
+                  width: pixelScaler(250),
+                  lineHeight: pixelScaler(20),
+                  color: theme.greyTextAlone,
+                }}
                 numberOfLines={1}
               >
                 {item.road_address !== "" ? item.road_address : item.address}
               </RegText13>
               {item.distance !== 0 ? (
                 <RegText13
-                  style={{ position: "absolute", right: 0, bottom: 0 }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0,
+                    color: theme.greyTextAlone,
+                  }}
                 >
                   {formatDistance(item.distance)}
                 </RegText13>

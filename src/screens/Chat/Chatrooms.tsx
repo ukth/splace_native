@@ -22,6 +22,7 @@ import { Icon } from "../../components/Icon";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText13, RegText13, RegText9 } from "../../components/Text";
+import { BLANK_PROFILE_IMAGE } from "../../constants";
 import useMe from "../../hooks/useMe";
 import { CREATE_ROOM, GET_ROOMS, ROOM_UPDATE } from "../../queries";
 import {
@@ -30,7 +31,7 @@ import {
   ThemeType,
   UserType,
 } from "../../types";
-import { BLANK_IMAGE, pixelScaler } from "../../utils";
+import { pixelScaler } from "../../utils";
 
 const RoomContainer = styled.TouchableOpacity`
   height: ${pixelScaler(75)}px;
@@ -145,7 +146,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 uri:
                   room.members.filter(
                     (member: UserType) => member.id !== me?.id
-                  )[0].profileImageUrl ?? BLANK_IMAGE,
+                  )[0].profileImageUrl ?? BLANK_PROFILE_IMAGE,
               }}
               style={{
                 width: pixelScaler(32),
@@ -161,7 +162,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 uri:
                   room.members.filter(
                     (member: UserType) => member.id !== me?.id
-                  )[0].profileImageUrl ?? BLANK_IMAGE,
+                  )[0].profileImageUrl ?? BLANK_PROFILE_IMAGE,
               }}
               style={{
                 position: "absolute",
@@ -177,7 +178,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 uri:
                   room.members.filter(
                     (member: UserType) => member.id !== me?.id
-                  )[1].profileImageUrl ?? BLANK_IMAGE,
+                  )[1].profileImageUrl ?? BLANK_PROFILE_IMAGE,
               }}
               style={{
                 position: "absolute",
@@ -192,8 +193,10 @@ const RoomItem = ({ room }: { room: RoomType }) => {
         )}
         <TitleContainer>
           <BldText13 style={{ width: pixelScaler(200) }} numberOfLines={1}>
-            {room.title !== ""
+            {room.title && room.title !== ""
               ? room.title
+              : room.members.length === 2
+              ? room.members.filter((member) => !member.isMe)[0].username
               : room.members.map((member) => member.username).join(", ")}
           </BldText13>
           <RegText13
@@ -235,7 +238,6 @@ const Chatrooms = () => {
   navigation.addListener("focus", () => {
     refetch();
     // console.log(data2, data4, "$$$$$$$$");
-    console.log(data);
   });
 
   useEffect(() => {

@@ -34,10 +34,8 @@ const ProgressProvider = ({ children }: { children: any }) => {
       setInProgress(true);
     },
     stop: () => {
-      console.log("hello!", timer);
       if (timer) {
         clearTimeout(timer);
-        console.log("clear!");
       }
       setInProgress(false);
     },

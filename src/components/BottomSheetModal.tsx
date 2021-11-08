@@ -10,6 +10,7 @@ import {
   PanResponder,
 } from "react-native";
 import styled from "styled-components/native";
+import { ThemeType } from "../types";
 import { pixelScaler } from "../utils";
 
 const ModalDragBar = styled.View`
@@ -17,7 +18,8 @@ const ModalDragBar = styled.View`
   width: ${pixelScaler(100)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
-  background-color: #d1d1d6;
+  background-color: ${({ theme }: { theme: ThemeType }) =>
+    theme.modalDragBarLight};
   top: ${pixelScaler(12)}px;
   z-index: 1;
   /* margin-bottom: ${pixelScaler(30)}px; */

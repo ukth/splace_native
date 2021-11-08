@@ -19,7 +19,7 @@ import { UploadContentContext } from "../../contexts/UploadContent";
 import { LinearGradient } from "expo-linear-gradient";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { CREATE_LOG } from "../../queries";
-import RatingModal from "./RatingModal";
+import RatingModal from "../../components/Upload/RatingModal";
 import { Icon } from "../../components/Icon";
 
 const LabelsContainer = styled.View`
@@ -38,12 +38,12 @@ const LabelContainer = styled.TouchableOpacity`
 
 const TagsContainer = styled.View`
   flex-direction: row;
-  width: ${pixelScaler(280)}px;
+  width: ${pixelScaler(310)}px;
   overflow: hidden;
 `;
 
 const TextInputContainer = styled.View`
-  padding-top: ${pixelScaler(16)}px;
+  padding-top: ${pixelScaler(13)}px;
   border-top-width: ${pixelScaler(0.67)}px;
   border-top-color: ${({ theme }: { theme: ThemeType }) =>
     theme.lightSeperator};
@@ -96,6 +96,7 @@ const Tag = styled.View`
   border-radius: ${pixelScaler(15)}px;
   border-width: ${pixelScaler(0.67)}px;
   margin-right: ${pixelScaler(10)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const UploadLog = () => {
@@ -124,17 +125,57 @@ const UploadLog = () => {
         navigation.pop();
       }
     } else {
-      console.log(data);
       Alert.alert("업로드에 실패했습니다.");
     }
   };
 
   const [mutation, { loading }] = useMutation(CREATE_LOG, { onCompleted });
+
+  const upload = async (useThumbnail: boolean) => {
+    spinner.start();
+    const awsUrls = await uploadPhotos(images.map((image) => image.url));
+    mutation({
+      variables: {
+        imageUrls: awsUrls,
+        photoSize: imageSize,
+        text: logText,
+        seriesIds: content.series?.map((series) => series.id) ?? [],
+        categories: content.category ?? [],
+        bigCategoryIds:
+          content.bigCategory?.map((bigCategory) => bigCategory.id) ?? [],
+        isPrivate,
+        ...(content.splace ? { splaceId: content.splace.id } : {}),
+        ...(useThumbnail ? { splaceThumbnail: awsUrls[0] } : {}),
+      },
+    });
+  };
+
   useEffect(() => {
     setImages([]);
     setContent({});
     navigation.setOptions({
-      headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
+      headerLeft: () => (
+        <HeaderBackButton
+          onPress={() => {
+            Alert.alert(
+              "이 페이지를 나가시겠습니까?",
+              "지금 나가면 모든 변경사항이 삭제됩니다.",
+              [
+                {
+                  text: "예",
+                  onPress: () => {
+                    navigation.pop();
+                  },
+                },
+                {
+                  text: "취소",
+                  style: "cancel",
+                },
+              ]
+            );
+          }}
+        />
+      ),
       headerTitle: () => <BldText16>새 로그 만들기</BldText16>,
     });
   }, []);
@@ -146,32 +187,36 @@ const UploadLog = () => {
           <HeaderRightConfirm
             onPress={async () => {
               if (!loading && images.length) {
-                spinner.start();
-                const awsUrls = await uploadPhotos(
-                  images.map((image) => image.url)
-                );
-                mutation({
-                  variables: {
-                    imageUrls: awsUrls,
-                    photoSize: imageSize,
-                    text: logText,
-                    seriesIds: content.series?.map((series) => series.id) ?? [],
-                    categories: content.category ?? [],
-                    bigCategoryIds:
-                      content.bigCategory?.map(
-                        (bigCategory) => bigCategory.id
-                      ) ?? [],
-                    isPrivate,
-                    ...(content.splace ? { splaceId: content.splace.id } : {}),
-                  },
-                });
+                if (
+                  content.splace &&
+                  content.splace.activate &&
+                  !content.splace?.thumbnail
+                ) {
+                  Alert.alert(
+                    "",
+                    "업로드한 게시물의 첫 사진을 해당 공간의 대표 사진으로 설정할까요? 이 사진은 다른 사람들에게도 노출되며 추후 변경될 수 있습니다.",
+                    [
+                      {
+                        text: "아니오",
+                        style: "cancel",
+                        onPress: () => upload(false),
+                      },
+                      {
+                        text: "예",
+                        onPress: () => upload(true),
+                      },
+                    ]
+                  );
+                } else {
+                  upload(false);
+                }
               }
             }}
           />
         ) : null,
     });
     // console.log(content.splace);
-  }, [isPrivate, content, logText, images]);
+  }, [isPrivate, content, logText, images, loading]);
 
   return (
     <ScreenContainer>
@@ -273,31 +318,38 @@ const UploadLog = () => {
                 ? content?.splace?.name
                 : "장소 / 이벤트 선택"}
             </BldText16>
-            <Icon
-              name="arrow_right"
-              style={{
-                width: pixelScaler(6),
-                height: pixelScaler(12),
-              }}
-            />
+            {content?.splace?.name.length ? null : (
+              <Icon
+                name="arrow_right"
+                style={{
+                  width: pixelScaler(6),
+                  height: pixelScaler(12),
+                }}
+              />
+            )}
           </LabelContainer>
           <LabelContainer
             onPress={() => {
               navigation.push("SelectSeries");
             }}
           >
-            {content?.series?.length ? (
+            {content?.series?.length ? ( //
               <TagsContainer>
                 {content?.series?.map((series) => (
-                  <Tag key={series.id}>
-                    <RegText13>{series.title}</RegText13>
+                  <Tag
+                    key={series.id}
+                    style={{ borderColor: theme.seriesHeaderGreyText }}
+                  >
+                    <RegText13 style={{ color: theme.seriesHeaderGreyText }}>
+                      {series.title}
+                    </RegText13>
                   </Tag>
                 ))}
               </TagsContainer>
             ) : (
               <BldText16>시리즈 선택</BldText16>
             )}
-            {content?.series?.length || content.series?.length ? (
+            {content?.series?.length ? (
               <LinearGradient
                 // Background Linear Gradient
                 start={[0, 1]}
@@ -307,18 +359,20 @@ const UploadLog = () => {
                   top: 0,
                   position: "absolute",
                   height: pixelScaler(40),
-                  width: pixelScaler(pixelScaler(280)),
+                  left: pixelScaler(230),
+                  width: pixelScaler(80),
                   zIndex: 3,
                 }}
               />
-            ) : null}
-            <Icon
-              name="arrow_right"
-              style={{
-                width: pixelScaler(6),
-                height: pixelScaler(12),
-              }}
-            />
+            ) : (
+              <Icon
+                name="arrow_right"
+                style={{
+                  width: pixelScaler(6),
+                  height: pixelScaler(12),
+                }}
+              />
+            )}
           </LabelContainer>
           <LabelContainer
             onPress={() => {
@@ -345,27 +399,30 @@ const UploadLog = () => {
               <LinearGradient
                 // Background Linear Gradient
                 start={[0, 1]}
-                end={[1, 0]}
+                end={[1, 1]}
                 colors={["rgba(255,255,255,0)", "white"]}
                 style={{
                   top: 0,
                   position: "absolute",
                   height: pixelScaler(40),
-                  width: pixelScaler(pixelScaler(280)),
+                  left: pixelScaler(230),
+                  width: pixelScaler(80),
                   zIndex: 3,
                 }}
               />
-            ) : null}
-            <Icon
-              name="arrow_right"
-              style={{
-                width: pixelScaler(6),
-                height: pixelScaler(12),
-              }}
-            />
+            ) : (
+              <Icon
+                name="arrow_right"
+                style={{
+                  width: pixelScaler(6),
+                  height: pixelScaler(12),
+                }}
+              />
+            )}
           </LabelContainer>
           <TextInputContainer>
             <RegTextInput13
+              style={{ lineHeight: pixelScaler(17) }}
               placeholder="텍스트 작성..."
               selectionColor={theme.entrySelection}
               placeholderTextColor={theme.greyTextAlone}

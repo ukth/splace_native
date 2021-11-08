@@ -77,12 +77,13 @@ const InitialScreen = () => {
   };
 
   return (
-    <ScreenContainer>
+    <ScreenContainer style={{ backgroundColor: "#f00" }}>
       {backgroundIndex < 0 ? (
         <Animated.View
           style={{
             position: "absolute",
-            width,
+
+            width: width,
             height,
             zIndex: 10,
             ...animatedStyle,
@@ -92,61 +93,121 @@ const InitialScreen = () => {
       {backgroundIndex <= 0 ? (
         <Image
           source={imageSources[0]}
-          style={{ position: "absolute", width, height, zIndex: 9 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 9,
+          }}
         />
       ) : null}
       {backgroundIndex <= 1 ? (
         <Image
           source={imageSources[1]}
-          style={{ position: "absolute", width, height, zIndex: 8 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 8,
+          }}
         />
       ) : null}
       {backgroundIndex <= 2 ? (
         <Image
           source={imageSources[2]}
-          style={{ position: "absolute", width, height, zIndex: 7 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 7,
+          }}
         />
       ) : null}
       {backgroundIndex <= 3 ? (
         <Image
           source={imageSources[3]}
-          style={{ position: "absolute", width, height, zIndex: 6 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 6,
+          }}
         />
       ) : null}
       {backgroundIndex <= 4 ? (
         <Image
           source={imageSources[4]}
-          style={{ position: "absolute", width, height, zIndex: 5 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 5,
+          }}
         />
       ) : null}
       {backgroundIndex <= 5 ? (
         <Image
           source={imageSources[5]}
-          style={{ position: "absolute", width, height, zIndex: 4 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 4,
+          }}
         />
       ) : null}
       {backgroundIndex <= 6 ? (
         <Image
           source={imageSources[6]}
-          style={{ position: "absolute", width, height, zIndex: 3 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 3,
+          }}
         />
       ) : null}
       {backgroundIndex <= 7 ? (
         <Image
           source={imageSources[7]}
-          style={{ position: "absolute", width, height, zIndex: 2 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 2,
+          }}
         />
       ) : null}
       {backgroundIndex <= 8 ? (
         <Image
           source={imageSources[8]}
-          style={{ position: "absolute", width, height, zIndex: 1 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 1,
+          }}
         />
       ) : null}
       {backgroundIndex <= 9 ? (
         <Image
           source={imageSources[9]}
-          style={{ position: "absolute", width, height, zIndex: 0 }}
+          style={{
+            position: "absolute",
+            left: -1,
+            width: width + 2,
+            height,
+            zIndex: 0,
+          }}
         />
       ) : null}
       <Animated.View

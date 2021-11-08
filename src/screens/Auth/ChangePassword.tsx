@@ -30,6 +30,8 @@ import {
 import * as Linking from "expo-linking";
 import { ProgressContext } from "../../contexts/Progress";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
+import { Icon } from "../../components/Icon";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ConfirmButton = styled.TouchableOpacity`
   width: ${pixelScaler(65)}px;
@@ -39,6 +41,7 @@ const ConfirmButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   margin-bottom: ${pixelScaler(75)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const TemporaryTextContainer = styled.View`
@@ -94,7 +97,14 @@ const ChangePassword = () => {
     setStatusBarStyle("dark");
     navigation.setOptions({
       headerTitle: () => <BldText16>비밀번호 재설정</BldText16>,
-      headerLeft: () => null,
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.pop()}>
+          <Icon
+            name="close"
+            style={{ width: pixelScaler(11), height: pixelScaler(11) }}
+          />
+        </TouchableOpacity>
+      ),
       headerRight: () =>
         validatePassword(password) &&
         passwordConfirm !== "" &&

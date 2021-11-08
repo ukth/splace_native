@@ -50,7 +50,7 @@ const AddButtonContainer = styled.View`
 const Bar = styled.View`
   position: absolute;
   width: ${pixelScaler(10)}px;
-  height: ${pixelScaler(1.68)}px;
+  height: ${pixelScaler(2)}px;
   border-radius: ${pixelScaler(2)}px;
   background-color: ${({ theme }: { theme: ThemeType }) => theme.text};
 `;
@@ -121,8 +121,8 @@ const MainfeedHeader = () => {
         <Icon
           name="super"
           style={{
-            width: pixelScaler(59),
-            height: pixelScaler(35),
+            width: pixelScaler(57),
+            height: pixelScaler(34),
             marginLeft: pixelScaler(23),
             marginTop: pixelScaler(5),
           }}

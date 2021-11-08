@@ -12,6 +12,7 @@ import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText16, RegText13 } from "../../components/Text";
 import { BldTextInput16 } from "../../components/TextInput";
+import { BLANK_PROFILE_IMAGE } from "../../constants";
 import { ProgressContext } from "../../contexts/Progress";
 import useMe from "../../hooks/useMe";
 import {
@@ -25,7 +26,7 @@ import {
   ThemeType,
   UserType,
 } from "../../types";
-import { BLANK_IMAGE, pixelScaler } from "../../utils";
+import { pixelScaler } from "../../utils";
 
 const MemberContainer = styled.TouchableOpacity`
   height: ${pixelScaler(60)}px;
@@ -111,7 +112,7 @@ const ChatMemberComponent = ({
         <MemberThumbnail>
           <Image
             source={{
-              uri: user.profileImageUrl ?? BLANK_IMAGE,
+              uri: user.profileImageUrl ?? BLANK_PROFILE_IMAGE,
             }}
             style={{
               width: pixelScaler(32),
@@ -192,7 +193,6 @@ const CreateChatroom = ({
     const {
       createChatroom: { ok, error, chatroom },
     } = data;
-    console.log(data);
     if (ok) {
       navigation.pop();
       navigation.push("Chatroom", { room: chatroom });

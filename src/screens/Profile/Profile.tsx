@@ -23,6 +23,7 @@ import {
   GET_PROFILE,
   GET_USER_LOGS,
   GET_USER_SERIES,
+  UNBLOCK,
   UNFOLLOW,
 } from "../../queries";
 import {
@@ -34,7 +35,7 @@ import {
   ThemeType,
   UserType,
 } from "../../types";
-import { BLANK_IMAGE, pixelScaler } from "../../utils";
+import { pixelScaler, showFlashMessage } from "../../utils";
 import * as Linking from "expo-linking";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -48,6 +49,7 @@ import { Icon } from "../../components/Icon";
 import { logUserOut } from "../../apollo";
 import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BLANK_IMAGE, BLANK_PROFILE_IMAGE } from "../../constants";
 
 const UpperContainer = styled.View`
   margin-bottom: ${pixelScaler(3)}px;
@@ -80,8 +82,8 @@ const CountsContainer = styled.View`
 `;
 
 const CountButtonContainer = styled.View`
-  margin-right: ${pixelScaler(36)}px;
-  margin-left: ${pixelScaler(36)}px;
+  margin-right: ${pixelScaler(40)}px;
+  margin-left: ${pixelScaler(40)}px;
   align-items: center;
 `;
 
@@ -106,16 +108,15 @@ const Button = styled.TouchableOpacity`
 
 const TabViewContainer = styled.View`
   flex-direction: row;
+
   height: ${pixelScaler(60)}px;
-  justify-content: center;
   border-bottom-width: ${pixelScaler(0.3)}px;
   border-bottom-color: ${({ theme }: { theme: ThemeType }) =>
     theme.profileTabBarBorderBottom};
-  margin-left: ${pixelScaler(30)}px;
-  margin-right: ${pixelScaler(30)}px;
 `;
 
-const Tab = styled.TouchableOpacity`
+const TabTextContainer = styled.View`
+  width: ${pixelScaler(65)}px;
   flex: 1;
   align-items: center;
   justify-content: center;
@@ -127,6 +128,12 @@ const Tab = styled.TouchableOpacity`
     isFocused: boolean;
     theme: ThemeType;
   }) => (isFocused ? theme.profileFocusedTabBorderBottom : theme.background)};
+`;
+
+const Tab = styled.TouchableOpacity`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ProfileMessageContainer = styled.View`
@@ -150,6 +157,7 @@ const MomentDateContainer = styled.View`
   position: absolute;
   bottom: ${pixelScaler(15)}px;
   background-color: rgba(255, 255, 255, 0.8);
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const ProfileInfo = ({
@@ -192,7 +200,6 @@ const ProfileInfo = ({
   }) => {
     if (ok) {
       refetchProfile();
-      console.log("refetch!");
     } else {
       Alert.alert("팔로우에 실패하였습니다.");
     }
@@ -237,7 +244,7 @@ const ProfileInfo = ({
       <ProfileImageContainer>
         <Image
           source={{
-            uri: user.profileImageUrl ?? BLANK_IMAGE,
+            uri: user.profileImageUrl ?? BLANK_PROFILE_IMAGE,
           }}
           style={{
             width: pixelScaler(105),
@@ -254,13 +261,15 @@ const ProfileInfo = ({
         >
           <CountButton count={user.totalFollowers ?? 0} text="팔로워" />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.push("ProfileUsers", { type: "followings", user });
-          }}
-        >
-          <CountButton count={user.totalFollowing ?? 0} text="팔로잉" />
-        </TouchableOpacity>
+        {user.isMe ? (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.push("ProfileUsers", { type: "followings", user });
+            }}
+          >
+            <CountButton count={user.totalFollowing ?? 0} text="팔로잉" />
+          </TouchableOpacity>
+        ) : null}
         <CountButton count={user.totalLogsNumber ?? 0} text="로그" />
       </CountsContainer>
       {user.profileMessage || user.url ? (
@@ -320,12 +329,11 @@ const ProfileInfo = ({
             <Button
               onPress={() => {
                 Alert.alert(
-                  "Unfollow",
+                  "",
                   "팔로우를 취소하시겠습니까?",
                   [
                     {
                       text: "취소",
-                      onPress: () => console.log("Cancel Pressed"),
                       style: "cancel",
                     },
                     {
@@ -366,50 +374,39 @@ const ProfileInfo = ({
           ))}
       </ButtonsContainer>
       <TabViewContainer>
-        <Tab
-          style={{ marginRight: pixelScaler(30) }}
-          onPress={() => setTabViewIndex(0)}
-          isFocused={tabViewIndex === 0}
-        >
-          <RegText16
-            style={{
-              color: tabViewIndex === 0 ? theme.text : theme.greyTextLight,
-            }}
-          >
-            로그
-          </RegText16>
-        </Tab>
-        <Tab
-          style={{
-            marginRight: pixelScaler(30),
-            marginLeft: pixelScaler(30),
-          }}
-          onPress={() => setTabViewIndex(1)}
-          isFocused={tabViewIndex === 1}
-        >
-          <RegText16
-            style={{
-              color: tabViewIndex === 1 ? theme.text : theme.greyTextLight,
-            }}
-          >
-            시리즈
-          </RegText16>
-        </Tab>
-        {user.isMe ? (
-          <Tab
-            style={{
-              marginLeft: pixelScaler(30),
-            }}
-            onPress={() => setTabViewIndex(2)}
-            isFocused={tabViewIndex === 2}
-          >
+        <Tab onPress={() => setTabViewIndex(0)}>
+          <TabTextContainer isFocused={tabViewIndex === 0}>
             <RegText16
               style={{
-                color: tabViewIndex === 2 ? theme.text : theme.greyTextLight,
+                color: tabViewIndex === 0 ? theme.text : theme.greyTextLight,
               }}
             >
-              모먼트
+              로그
             </RegText16>
+          </TabTextContainer>
+        </Tab>
+        <Tab onPress={() => setTabViewIndex(1)}>
+          <TabTextContainer isFocused={tabViewIndex === 1}>
+            <RegText16
+              style={{
+                color: tabViewIndex === 1 ? theme.text : theme.greyTextLight,
+              }}
+            >
+              시리즈
+            </RegText16>
+          </TabTextContainer>
+        </Tab>
+        {user.isMe ? (
+          <Tab onPress={() => setTabViewIndex(2)}>
+            <TabTextContainer isFocused={tabViewIndex === 2}>
+              <RegText16
+                style={{
+                  color: tabViewIndex === 2 ? theme.text : theme.greyTextLight,
+                }}
+              >
+                모먼트
+              </RegText16>
+            </TabTextContainer>
           </Tab>
         ) : null}
       </TabViewContainer>
@@ -446,6 +443,8 @@ const RenderMoments = ({
       style={{
         width: pixelScaler(123),
         height: pixelScaler(186),
+        marginRight: pixelScaler(3),
+        marginBottom: pixelScaler(3),
         alignItems: "center",
       }}
       onPress={() => {
@@ -462,8 +461,6 @@ const RenderMoments = ({
         style={{
           width: pixelScaler(123),
           height: pixelScaler(186),
-          marginRight: pixelScaler(3),
-          marginBottom: pixelScaler(3),
         }}
       />
       <MomentDateContainer>
@@ -486,17 +483,6 @@ const RenderSeries = ({ item, index }: { item: SeriesType; index: number }) => {
         });
       }}
     >
-      <BldText13
-        style={{
-          position: "absolute",
-          zIndex: 1,
-          left: pixelScaler(15),
-          top: pixelScaler(15),
-          color: theme.white,
-        }}
-      >
-        {item.title} ({item.seriesElements.length})
-      </BldText13>
       {item.isPrivate ? (
         <Icon
           name="lock_white"
@@ -517,9 +503,21 @@ const RenderSeries = ({ item, index }: { item: SeriesType; index: number }) => {
           position: "absolute",
           height: pixelScaler(40),
           width: pixelScaler(186),
-          zIndex: 3,
+          zIndex: 1,
         }}
       />
+      <BldText13
+        style={{
+          position: "absolute",
+          zIndex: 2,
+          left: pixelScaler(15),
+          top: pixelScaler(15),
+          color: theme.white,
+          width: pixelScaler(145),
+        }}
+      >
+        {item.title} ({item.seriesElements.length})
+      </BldText13>
       <Image
         source={{
           uri: item.seriesElements[0]?.photolog.imageUrls[0] ?? BLANK_IMAGE,
@@ -562,7 +560,6 @@ const Profile = () => {
         const checkNotifications = Number(
           (await AsyncStorage.getItem("check_notification")) ?? 0
         );
-        console.log(checkNotifications);
         if (
           (followLogs?.length &&
             followLogs[followLogs.length - 1].createdAt > checkNotifications) ||
@@ -573,10 +570,8 @@ const Profile = () => {
             likeLogs[likeLogs.length - 1].createdAt > checkNotifications)
         ) {
           setNewNotification(true);
-          console.log("set true");
         } else {
           setNewNotification(false);
-          console.log("set false");
         }
       })();
     }
@@ -689,18 +684,34 @@ const Profile = () => {
 
   const onBlockCompleted = (data: any) => {
     if (data?.blockUser?.ok) {
-      Alert.alert(
-        "사용자를 차단하였습니다.\n메인피드에서 해당 사용자의 게시물이 더 이상 보이지 않습니다."
-      );
+      setModalVisible(false);
+      showFlashMessage({
+        message:
+          "사용자를 차단하였습니다.\n메인피드에서 해당 사용자의 게시물이 더 이상 보이지 않습니다.",
+      });
+      refetchProfile();
     } else {
       Alert.alert("사용자를 차단할 수 없습니다.");
     }
-    setModalVisible(false);
   };
 
-  const [mutation, { loading: blockLoading }] = useMutation(BLOCK, {
+  const [blockMutation, { loading: blockLoading }] = useMutation(BLOCK, {
     onCompleted: onBlockCompleted,
   });
+
+  const onUnblockCompleted = (data: any) => {
+    if (data?.unblockUser?.ok) {
+      showFlashMessage({ message: "차단이 해제되었습니다." });
+      refetchProfile();
+    } else {
+      Alert.alert("차단 해제에 실패했습니다.");
+    }
+  };
+
+  const [unblockMutation, { loading: unblockMutationLoading }] = useMutation(
+    UNBLOCK,
+    { onCompleted: onUnblockCompleted }
+  );
 
   const updateData = async () => {
     await refetchProfile();
@@ -729,8 +740,7 @@ const Profile = () => {
     item: PhotologType;
     index: number;
   }) => (
-    <CardBox
-      url={item.imageUrls[0]}
+    <TouchableOpacity
       onPress={() => {
         navigation.push("UserLogs", {
           user,
@@ -740,7 +750,34 @@ const Profile = () => {
           fetchMore: fetchMoreLogs,
         });
       }}
-    />
+      style={{
+        width: pixelScaler(186),
+        height: pixelScaler(186),
+        marginRight: pixelScaler(3),
+        marginBottom: pixelScaler(3),
+      }}
+    >
+      <Image
+        source={{ uri: item.imageUrls[0] }}
+        style={{
+          width: pixelScaler(186),
+          height: pixelScaler(186),
+        }}
+      />
+
+      {item.isPrivate ? (
+        <Icon
+          name="lock_white"
+          style={{
+            position: "absolute",
+            right: pixelScaler(15),
+            top: pixelScaler(12),
+            width: pixelScaler(12),
+            height: pixelScaler(17),
+          }}
+        />
+      ) : null}
+    </TouchableOpacity>
   );
 
   const [listData, setListData] = useState<any>([[], [], []]);
@@ -769,6 +806,7 @@ const Profile = () => {
         numColumns={tabViewIndex === 2 ? 3 : 2}
         data={listData[tabViewIndex]}
         keyExtractor={(item, index) => "" + index}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) =>
           tabViewIndex === 0 ? (
             renderLogs({ item, index })
@@ -902,37 +940,52 @@ const Profile = () => {
           </ModalButtonBox> */}
           <ModalButtonBox
             onPress={() => {
-              Alert.alert("게시물 삭제", "게시물을 삭제하시겠습니까?", [
-                {
-                  text: "확인",
-                  onPress: () => {
-                    if (!blockLoading) {
-                      setModalVisible(false);
-                      mutation({ variables: { targetId: user.id } });
-                    }
-                  },
-                },
-                {
-                  text: "취소",
-                  style: "cancel",
-                },
-              ]);
-            }}
-          >
-            <RegText20 style={{ color: theme.modalButtonRedText }}>
-              차단
-            </RegText20>
-          </ModalButtonBox>
-          <ModalButtonBox
-            onPress={() => {
               setModalVisible(false);
               navigation.push("Report", { type: "user", id: user.id });
             }}
           >
-            <RegText20 style={{ color: theme.modalButtonRedText }}>
-              신고
-            </RegText20>
+            <RegText20>신고</RegText20>
           </ModalButtonBox>
+          {user.isBlocked ? (
+            <ModalButtonBox
+              onPress={() => {
+                if (!unblockMutationLoading) {
+                  setModalVisible(false);
+                  unblockMutation({
+                    variables: {
+                      targetId: user.id,
+                    },
+                  });
+                }
+              }}
+            >
+              <RegText20 style={{ color: "#FF0000" }}>차단 해제</RegText20>
+            </ModalButtonBox>
+          ) : (
+            <ModalButtonBox
+              onPress={() => {
+                Alert.alert("사용자 차단", "사용자를 차단하시겠습니까?", [
+                  {
+                    text: "확인",
+                    onPress: () => {
+                      if (!blockLoading) {
+                        setModalVisible(false);
+                        blockMutation({ variables: { targetId: user.id } });
+                      }
+                    },
+                  },
+                  {
+                    text: "취소",
+                    style: "cancel",
+                  },
+                ]);
+              }}
+            >
+              <RegText20 style={{ color: theme.modalButtonRedText }}>
+                차단
+              </RegText20>
+            </ModalButtonBox>
+          )}
         </BottomSheetModal>
       )}
     </ScreenContainer>

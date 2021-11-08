@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components/native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   Alert,
   Animated,
@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import BottomSheetModal from "./BottomSheetModal";
-import { BLANK_IMAGE, coords2address, pixelScaler } from "../utils";
+import { coords2address, pixelScaler } from "../utils";
 import { BldText16, RegText13, RegText16 } from "./Text";
 import { Ionicons } from "@expo/vector-icons";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../types";
@@ -23,6 +23,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
 import { Icon } from "./Icon";
 import * as Location from "expo-location";
+import { BLANK_IMAGE } from "../constants";
 
 const MarkerContainer = styled.TouchableOpacity`
   /* background-color: #d0a0f0; */
@@ -36,7 +37,7 @@ const SingleMarker = styled.View`
   width: ${pixelScaler(16)}px;
   height: ${pixelScaler(16)}px;
   border-radius: ${pixelScaler(16)}px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 `;
 
 const ClusteredMarker = styled.View`
@@ -44,7 +45,7 @@ const ClusteredMarker = styled.View`
   width: ${pixelScaler(35)}px;
   height: ${pixelScaler(35)}px;
   border-radius: ${pixelScaler(35)}px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   align-items: center;
   justify-content: center;
 `;
@@ -54,7 +55,7 @@ const ModalDragBar = styled.View`
   width: ${pixelScaler(100)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
-  background-color: #d1d1d6;
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.modalDragBar};
   top: ${pixelScaler(12)}px;
   z-index: 1;
   /* margin-bottom: ${pixelScaler(30)}px; */
@@ -68,7 +69,7 @@ const SplaceInfo = styled.View`
   height: ${pixelScaler(205)}px;
   padding: ${pixelScaler(20)}px ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(15)}px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
 `;
 
@@ -89,10 +90,11 @@ const FoundRouteButton = styled.TouchableOpacity`
 `;
 const TagsContainer = styled.View`
   flex-direction: row;
-  height: ${pixelScaler(45)}px;
-  width: ${pixelScaler(190)}px;
+  width: ${pixelScaler(200)}px;
   flex-wrap: wrap;
   overflow: hidden;
+  position: absolute;
+  bottom: ${pixelScaler(0)}px;
 `;
 
 const Tag = styled.View`
@@ -113,7 +115,7 @@ const BackToMeButton = styled.TouchableOpacity`
   width: ${pixelScaler(35)}px;
   height: ${pixelScaler(35)}px;
   background-color: ${({ theme }: { theme: ThemeType }) => theme.white};
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   border-radius: ${pixelScaler(10)}px;
   align-items: center;
   justify-content: center;
@@ -133,7 +135,6 @@ const ModalMapView = ({
   splaces: SplaceType[];
 }) => {
   const { width } = useWindowDimensions();
-  const height = pixelScaler(760);
   const theme = useContext<ThemeType>(ThemeContext);
 
   const [userLocation, setUserLocation] =
@@ -231,6 +232,7 @@ const ModalMapView = ({
   }, [delta]);
 
   const screenHeight = Dimensions.get("screen").height;
+  const height = pixelScaler(screenHeight - 88);
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
     inputRange: [-1, 0, 1],
@@ -354,7 +356,7 @@ const ModalMapView = ({
                 longitude: e.nativeEvent.coordinate.longitude,
               });
             }}
-            provider="google"
+            provider={PROVIDER_GOOGLE}
             style={{
               width,
               height,
@@ -413,7 +415,6 @@ const ModalMapView = ({
                       ) : (
                         <MarkerContainer
                           onPress={() => {
-                            console.log("hello!");
                             setSelectedSplaceIndex(cluster[0]);
                           }}
                         >
@@ -492,14 +493,19 @@ const ModalMapView = ({
 
                 <TagsContainer>
                   {splaces[selectedSplaceIndex].ratingtags?.map((ratingtag) => (
-                    <Tag key={ratingtag.id}>
-                      <RegText13>{ratingtag.name}</RegText13>
+                    <Tag
+                      key={ratingtag.id + "rat"}
+                      style={{ borderColor: theme.borderHighlight }}
+                    >
+                      <RegText13 style={{ color: theme.borderHighlight }}>
+                        {ratingtag.name}
+                      </RegText13>
                     </Tag>
                   ))}
                   {splaces[selectedSplaceIndex].bigCategories?.map(
-                    (ratingtag) => (
-                      <Tag>
-                        <RegText13>{ratingtag.name}</RegText13>
+                    (bigCategory) => (
+                      <Tag key={bigCategory.id + "big"}>
+                        <RegText13>{bigCategory.name}</RegText13>
                       </Tag>
                     )
                   )}

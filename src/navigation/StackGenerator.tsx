@@ -114,9 +114,14 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       [
         "Chatroom",
         "MomentView",
-        "ImagesViewer",
-        "UploadMoment",
         "Filter",
+        "UploadMoment",
+        "UploadLog",
+        "UploadSeries",
+        "SelectCategory",
+        "SearchSplaceForUpload",
+        "SelectSeries",
+        "ImagesViewer",
       ].includes(focused)
     ) {
       navigation.setOptions({
@@ -157,12 +162,13 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
     );
 
     const translateX = progress.interpolate({
-      inputRange: [0, 1, 1.95, 2],
+      inputRange: [0, 1, 1.95, 2, 3],
       outputRange: [
         screen.width * 1,
         0,
         -screen.width * 0.3,
         -screen.width * 2,
+        -screen.width * 3,
       ], //[-screen.width, 0, screen.width], // [screen.width, 0, -screen.width],
     });
 
@@ -190,9 +196,7 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
               <HeaderBackButton onPress={() => navigation.pop()} />
             ) : null,
           // headerStyleInterpolator: HeaderStyleInterpolators.forSlideLeft,
-          headerShown: !["MomentView", "ImagesViewer", "UploadMoment"].includes(
-            focused
-          ),
+          headerShown: !["MomentView", "UploadMoment"].includes(focused),
         };
       }}
     >
@@ -283,11 +287,7 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       <Stack.Screen name="ServicePolicy" component={ServicePolicy} />
       <Stack.Screen name="TermsOfUse" component={TermsOfUse} />
       <Stack.Screen name="Agreement" component={Agreement} />
-      <Stack.Screen
-        name="ImagesViewer"
-        component={ImagesViewer}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="ImagesViewer" component={ImagesViewer} />
       <Stack.Screen name="StackPickerAlbums" component={StackPickerAlbums} />
       <Stack.Screen name="StackPickerAssets" component={StackPickerAssets} />
       <Stack.Screen name="SuggestNewSplace" component={SuggestNewSplace} />

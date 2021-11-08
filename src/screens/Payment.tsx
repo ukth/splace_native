@@ -15,7 +15,6 @@ const Payment = ({
   };
 }) => {
   function callback(response: any) {
-    console.log(response);
     navigation.push("Splace", response);
   }
   const { pay_method } = route.params;

@@ -120,7 +120,6 @@ const RegisterOwner = () => {
       headerRight: () => (
         <HeaderRightConfirm
           onPress={async () => {
-            console.log(name, birthDay, corpNum, images);
             if (
               name !== "" &&
               birthDay !== "" &&
@@ -140,7 +139,6 @@ const RegisterOwner = () => {
                 }
 
                 const awsUrls = await uploadPhotos(formattedImages);
-                console.log(awsUrls);
                 setImages([]);
                 if (awsUrls.length === images.length) {
                   mutation({
@@ -239,7 +237,7 @@ const RegisterOwner = () => {
             maxLength={10}
           />
         </LabelContainer>
-        <LabelContainer>
+        <LabelContainer style={{ marginBottom: pixelScaler(20) }}>
           <RegText16>사업자등록증</RegText16>
         </LabelContainer>
       </LabelsContainer>

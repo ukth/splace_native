@@ -87,6 +87,7 @@ export const USER_FRAGMENT = gql`
     profileImageUrl
     isFollowing
     isMe
+    isBlocked
     authority
   }
 `;
@@ -628,6 +629,19 @@ export const GET_PERSONAL_CHATROOM = gql`
   ${ROOM_FRAGMENT}
 `;
 
+export const GET_OWNER_CHATROOM = gql`
+  mutation getOwnerChatroom($splaceId: Int!) {
+    getOwnerChatroom(splaceId: $splaceId) {
+      ok
+      error
+      chatroom {
+        ...RoomFragment
+      }
+    }
+  }
+  ${ROOM_FRAGMENT}
+`;
+
 export const CREATE_FOLDER = gql`
   mutation createFolder($title: String!) {
     createFolder(title: $title) {
@@ -709,6 +723,7 @@ export const CREATE_LOG = gql`
     $categories: [String]!
     $bigCategoryIds: [Int]!
     $isPrivate: Boolean!
+    $splaceThumbnail: String
   ) {
     uploadLog(
       imageUrls: $imageUrls
@@ -719,6 +734,7 @@ export const CREATE_LOG = gql`
       categories: $categories
       bigCategoryIds: $bigCategoryIds
       isPrivate: $isPrivate
+      splaceThumbnail: $splaceThumbnail
     ) {
       ok
       error
@@ -995,15 +1011,6 @@ export const EDIT_PROFILE = gql`
   }
 `;
 
-export const CHANGE_PASSWORD = gql`
-  mutation editProfile($password: String) {
-    editProfile(password: $password) {
-      ok
-      error
-    }
-  }
-`;
-
 export const EDIT_MY_INFO = gql`
   mutation editProfile($email: String, $birthDay: String) {
     editProfile(email: $email, birthDay: $birthDay) {
@@ -1016,6 +1023,15 @@ export const EDIT_MY_INFO = gql`
 export const EDIT_FOLDER = gql`
   mutation editFolder($folderId: Int!, $title: String!) {
     editFolder(folderId: $folderId, title: $title) {
+      ok
+      error
+    }
+  }
+`;
+
+export const CHANGE_PASSWORD = gql`
+  mutation editPasswordWithLogin($password: String!, $newPassword: String!) {
+    editPasswordWithLogin(password: $password, newPassword: $newPassword) {
       ok
       error
     }
@@ -1184,8 +1200,13 @@ export const GET_SPLACE_INFO = gql`
 `;
 
 export const GET_SPLACE_BY_KAKAOID = gql`
-  mutation getSplaceByKakao($kakaoId: Int!, $keyword: String!) {
-    getSplaceByKakao(kakaoId: $kakaoId, keyword: $keyword) {
+  mutation getSplaceByKakao(
+    $kakaoId: Int!
+    $keyword: String!
+    $x: Float
+    $y: Float
+  ) {
+    getSplaceByKakao(kakaoId: $kakaoId, keyword: $keyword, x: $x, y: $y) {
       ok
       error
       splace {
@@ -1203,6 +1224,7 @@ export const GET_SPLACE_BY_KAKAOID = gql`
           id
           name
         }
+        activate
       }
     }
   }
@@ -1491,4 +1513,97 @@ export const SEARCH_USER = gql`
     }
   }
   ${USER_FRAGMENT}
+`;
+
+////////
+
+export const LOG_GETSERIES = gql`
+  mutation logSeeSeries($seriesId: Int!) {
+    logSeeSeries(seriesId: $seriesId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LOG_GETLOGSBYSERIES = gql`
+  mutation logGetLogsBySeries($seriesId: Int!) {
+    logGetLogsBySeries(seriesId: $seriesId) {
+      ok
+      error
+    }
+  }
+`;
+export const LOG_GETLOGSBYSPLACE = gql`
+  mutation logGetLogsBySplace($splaceId: Int!) {
+    logGetLogsBySplace(splaceId: $splaceId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LOG_GETSPLACEINFO = gql`
+  mutation logSeeSplace($splaceId: Int!) {
+    logSeeSplace(splaceId: $splaceId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LOG_GETPHOTOLOG = gql`
+  mutation logSeePhotolog($photologId: Int) {
+    logSeePhotolog(photologId: $photologId) {
+      ok
+      error
+    }
+  }
+`;
+
+/////
+
+export const LOG_GETLOGSBYBIGCATEGORIES = gql`
+  mutation logGetLogsByBigCategory($tagId: Int!) {
+    logGetLogsByBigCategory(tagId: $tagId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LOG_GETLOGSBYCATEGORIES = gql`
+  mutation logGetLogsByCategory($tagId: Int!) {
+    logGetLogsByCategory(tagId: $tagId) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LOG_GETSPLACESBYRATINGTAG = gql`
+  mutation logGetSplacesByRatingtag($tagId: Int!) {
+    logGetSplacesByRatingtag(tagId: $tagId) {
+      ok
+      error
+    }
+  }
+`;
+//
+export const LOG_SEARCHCATEORIES = gql`
+  mutation logSearchCategories($keyword: String!) {
+    logSearchCategories(keyword: $keyword) {
+      ok
+      error
+    }
+  }
+`;
+
+export const LOG_SEARCHSPLACES = gql`
+  mutation logSearchSplaces($keyword: String!) {
+    logSearchSplaces(keyword: $keyword) {
+      ok
+      error
+    }
+  }
 `;

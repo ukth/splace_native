@@ -10,7 +10,7 @@ const Container = styled.View`
   height: ${pixelScaler(20)}px;
   padding: 0 ${pixelScaler(30)}px;
   flex-direction: row;
-  margin-bottom: ${pixelScaler(10)}px;
+  margin-bottom: ${pixelScaler(8)}px;
 `;
 
 const Tag = styled.TouchableOpacity`
@@ -18,10 +18,11 @@ const Tag = styled.TouchableOpacity`
   border-width: ${pixelScaler(0.8)}px;
   border-radius: ${pixelScaler(10)}px;
   border-color: ${({ theme }: { theme: ThemeType }) => theme.tagGrey};
-  margin-right: ${pixelScaler(10)}px;
+  margin-right: ${pixelScaler(5)}px;
   padding: 0 ${pixelScaler(10)}px;
   align-items: center;
   justify-content: center;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const SeriesTag = ({

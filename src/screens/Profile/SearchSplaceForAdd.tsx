@@ -86,6 +86,8 @@ const SearchSplaceForAdd = () => {
   const [showMap, setShowMap] = useState<boolean>(false);
   const [address, setAddress] = useState("");
 
+  const [lastKeyword, setLastKeyword] = useState("");
+
   const [coordinate, setCoordinate] = useState({
     lon: 127.02959262855445,
     lat: 37.49944853514956,
@@ -152,8 +154,8 @@ const SearchSplaceForAdd = () => {
           : await keyword2Place(keyword);
         if (data.length > 0) {
           setSearchedAddress(data);
+          setLastKeyword(keyword);
         }
-        console.log(data);
       })();
     } else {
       setSearchedAddress([]);
@@ -162,7 +164,6 @@ const SearchSplaceForAdd = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
     // console.log(data);
     if (data?.getSplaceByKakao?.ok) {
       // console.log(data.getSplaceByKakao.splace);
@@ -208,6 +209,7 @@ const SearchSplaceForAdd = () => {
         data={searchedAddress}
         keyExtractor={(_, index) => "" + index}
         ItemSeparatorComponent={Seperator}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <AddressItemContainer
             onPress={() => {
@@ -216,11 +218,16 @@ const SearchSplaceForAdd = () => {
                   setSplace(undefined);
                   setSplaceSelected(true);
                   spinner.start();
-                  console.log("mutation!!");
                   mutation({
                     variables: {
                       kakaoId: Number(item.id),
-                      keyword: item.name,
+                      keyword: lastKeyword,
+                      ...(location
+                        ? {
+                            x: location.lon,
+                            y: location.lat,
+                          }
+                        : {}),
                     },
                   });
                 }
@@ -242,7 +249,12 @@ const SearchSplaceForAdd = () => {
               </RegText13>
               {item.distance !== 0 ? (
                 <RegText13
-                  style={{ position: "absolute", right: 0, bottom: 0 }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0,
+                    color: theme.greyTextAlone,
+                  }}
                 >
                   {formatDistance(item.distance)}
                 </RegText13>

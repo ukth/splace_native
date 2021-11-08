@@ -10,7 +10,7 @@ export const FloatingMapButton = styled.TouchableOpacity`
   height: ${pixelScaler(60)}px;
   border-radius: ${pixelScaler(60)}px;
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   align-items: center;
   justify-content: center;
   z-index: 0;

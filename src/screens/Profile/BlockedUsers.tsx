@@ -21,6 +21,7 @@ import {
   TitleContainer,
 } from "../../components/Members/StyledComponents";
 import Image from "../../components/Image";
+import { BLANK_PROFILE_IMAGE } from "../../constants";
 
 const BlockedUsers = () => {
   const navigation =
@@ -46,6 +47,8 @@ const BlockedUsers = () => {
   const [mutation, _] = useMutation(UNBLOCK, {
     onCompleted: onUnblockCompleted,
   });
+
+  navigation.addListener("focus", refetch);
 
   return (
     <ScreenContainer style={{ alignItems: "center", justifyContent: "center" }}>
@@ -77,7 +80,7 @@ const BlockedUsers = () => {
                 <MemberThumbnail>
                   <Image
                     source={{
-                      uri: user.profileImageUrl ?? "",
+                      uri: user.profileImageUrl ?? BLANK_PROFILE_IMAGE,
                     }}
                     style={{
                       width: pixelScaler(32),
@@ -88,7 +91,9 @@ const BlockedUsers = () => {
                 </MemberThumbnail>
                 <TitleContainer>
                   <BldText16>{user.username}</BldText16>
-                  <RegText13>{user.name}</RegText13>
+                  {user.name && user.name !== "" ? (
+                    <RegText13>{user.name}</RegText13>
+                  ) : null}
                 </TitleContainer>
               </InfoContainer>
             </MemberContainer>

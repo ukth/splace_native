@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import styled, { ThemeContext } from "styled-components/native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import {
   Alert,
   Animated,
@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import BottomSheetModal from "./BottomSheetModal";
-import { BLANK_IMAGE, coords2address, pixelScaler } from "../utils";
+import { coords2address, pixelScaler } from "../utils";
 import { BldText16, RegText13, RegText16 } from "./Text";
 import { Ionicons } from "@expo/vector-icons";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../types";
@@ -20,13 +20,14 @@ import { Image } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
 import { Icon } from "./Icon";
+import * as Linking from "expo-linking";
 
 const ModalDragBar = styled.View`
   position: absolute;
   width: ${pixelScaler(100)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
-  background-color: #d1d1d6;
+  background-color: ${({ theme }: { theme: ThemeType }) => theme.modalDragBar};
   top: ${pixelScaler(12)}px;
   z-index: 1;
   /* margin-bottom: ${pixelScaler(30)}px; */
@@ -39,12 +40,13 @@ const SplaceContainer = styled.TouchableOpacity`
   width: ${pixelScaler(345)}px;
   padding: ${pixelScaler(20)}px ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(15)}px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
 `;
 
 const SplaceInfoContainer = styled.View`
   flex-direction: row;
+  margin-bottom: ${pixelScaler(20)}px;
   /* background-color: #1040d0; */
 `;
 
@@ -53,23 +55,20 @@ const InfosContainer = styled.View`
   /* background-color: #f01030; */
 `;
 
-const ConfirmButton = styled.TouchableOpacity`
-  position: absolute;
+const FoundRouteButton = styled.TouchableOpacity`
   height: ${pixelScaler(35)}px;
   border-width: ${pixelScaler(1)}px;
   border-radius: ${pixelScaler(10)}px;
   border-color: ${({ theme }: { theme: ThemeType }) => theme.borderHighlight};
   align-items: center;
   justify-content: center;
-  width: ${pixelScaler(305)}px;
-  bottom: ${pixelScaler(20)}px;
-  left: ${pixelScaler(20)}px;
 `;
 
 const TagsContainer = styled.View`
   position: absolute;
   bottom: 0;
-  /* background-color: #9020d0; */
+  flex-direction: row;
+  flex-wrap: wrap;
 `;
 
 const TagsRowContainer = styled.View`
@@ -85,6 +84,7 @@ const Tag = styled.View`
   border-radius: ${pixelScaler(20)}px;
   height: ${pixelScaler(20)}px;
   margin-right: ${pixelScaler(7)}px;
+  margin-bottom: ${pixelScaler(7)}px;
 `;
 
 const ModalMapSplaceView = ({
@@ -100,10 +100,11 @@ const ModalMapSplaceView = ({
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   const { width } = useWindowDimensions();
-  const height = pixelScaler(760);
+
   const theme = useContext<ThemeType>(ThemeContext);
 
   const screenHeight = Dimensions.get("screen").height;
+  const height = pixelScaler(screenHeight - 88);
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
     inputRange: [-1, 0, 1],
@@ -196,7 +197,7 @@ const ModalMapSplaceView = ({
             ref={mapViewRef}
             showsUserLocation={true}
             showsMyLocationButton={false}
-            provider="google"
+            provider={PROVIDER_GOOGLE}
             style={{
               width,
               height,
@@ -236,7 +237,7 @@ const ModalMapSplaceView = ({
               navigation.push("Splace", { splace });
             }}
             style={{
-              height: pixelScaler(splace?.thumbnail?.length ? 185 : 125),
+              height: pixelScaler(splace?.thumbnail?.length ? 205 : 145),
             }}
           >
             <SplaceInfoContainer>
@@ -260,33 +261,91 @@ const ModalMapSplaceView = ({
                 <RegText13>{splace?.address}</RegText13>
                 {splace?.thumbnail?.length && (
                   <TagsContainer>
-                    {splace?.ratingtags?.length !== 0 && (
-                      <TagsRowContainer>
-                        {splace?.ratingtags?.map((tag) => (
-                          <Tag
-                            key={tag.id}
-                            style={{ borderColor: theme.borderHighlight }}
-                          >
-                            <RegText13 style={{ color: theme.borderHighlight }}>
-                              {tag.name}
-                            </RegText13>
-                          </Tag>
-                        ))}
-                      </TagsRowContainer>
-                    )}
-                    {splace?.bigCategories?.length !== 0 && (
-                      <TagsRowContainer>
-                        {splace?.bigCategories?.map((tag) => (
-                          <Tag key={tag.id}>
-                            <RegText13>{tag.name}</RegText13>
-                          </Tag>
-                        ))}
-                      </TagsRowContainer>
-                    )}
+                    {splace?.ratingtags?.map((tag) => (
+                      <Tag
+                        key={tag.id}
+                        style={{ borderColor: theme.borderHighlight }}
+                      >
+                        <RegText13 style={{ color: theme.borderHighlight }}>
+                          {tag.name}
+                        </RegText13>
+                      </Tag>
+                    ))}
+
+                    {splace?.bigCategories?.map((tag) => (
+                      <Tag key={tag.id}>
+                        <RegText13>{tag.name}</RegText13>
+                      </Tag>
+                    ))}
                   </TagsContainer>
                 )}
               </InfosContainer>
             </SplaceInfoContainer>
+            <FoundRouteButton
+              onPress={() => {
+                Alert.alert("지도 앱 선택", "", [
+                  {
+                    text: "Google Maps",
+                    onPress: () =>
+                      Linking.openURL(
+                        "https://maps.google.com/?q=@" +
+                          splace.lat +
+                          "," +
+                          splace.lon
+                      ),
+                  },
+                  {
+                    text: "Apple Maps",
+                    onPress: () =>
+                      Linking.openURL(
+                        "https://maps.apple.com/?q=" +
+                          splace.name +
+                          "&ll=" +
+                          splace.lat +
+                          "," +
+                          splace.lon
+                      ),
+                  },
+                  {
+                    text: "카카오맵",
+                    onPress: () => async () => {
+                      try {
+                        await Linking.openURL(
+                          "kakaomap://look?&p=" + splace.lat + "," + splace.lon
+                        );
+                      } catch {
+                        Alert.alert("카카오맵을 열 수 없습니다.");
+                      }
+                    },
+                  },
+                  {
+                    text: "네이버 지도",
+                    onPress: async () => {
+                      try {
+                        await Linking.openURL(
+                          "nmap://place?name=" +
+                            splace.name +
+                            "&lat=" +
+                            splace.lat +
+                            "&lng=" +
+                            splace.lon
+                        );
+                      } catch {
+                        Alert.alert("네이버 지도를 열 수 없습니다.");
+                      }
+                    },
+                  },
+                  {
+                    text: "취소",
+                    style: "cancel",
+                  },
+                ]);
+              }}
+            >
+              <RegText16 style={{ color: theme.textHighlight }}>
+                길찾기
+              </RegText16>
+            </FoundRouteButton>
           </SplaceContainer>
         </Animated.View>
       </View>

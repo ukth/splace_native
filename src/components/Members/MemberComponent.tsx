@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "styled-components/native";
 import client from "../../apollo";
 import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
-import { BLANK_IMAGE, pixelScaler } from "../../utils";
+import { pixelScaler } from "../../utils";
 import { gql, useMutation } from "@apollo/client";
 import { Alert } from "react-native";
 import { FOLLOW } from "../../queries";
@@ -18,6 +18,7 @@ import {
 } from "./StyledComponents";
 import Image from "../Image";
 import { BldText13, BldText16, RegText13 } from "../Text";
+import { BLANK_PROFILE_IMAGE } from "../../constants";
 
 const MemberComponent = ({ user }: { user: UserType }) => {
   const theme = useContext<ThemeType>(ThemeContext);
@@ -85,7 +86,7 @@ const MemberComponent = ({ user }: { user: UserType }) => {
         <MemberThumbnail>
           <Image
             source={{
-              uri: user.profileImageUrl ?? BLANK_IMAGE,
+              uri: user.profileImageUrl ?? BLANK_PROFILE_IMAGE,
             }}
             style={{
               width: pixelScaler(32),

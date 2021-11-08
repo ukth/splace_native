@@ -38,7 +38,6 @@ const ServicePolicy = () => {
   }, []);
 
   const onCompleted = (data: any) => {
-    console.log(data);
     if (data?.deleteAccount?.ok) {
       logUserOut();
     } else {
@@ -55,9 +54,7 @@ const ServicePolicy = () => {
     <ScreenContainer>
       <View style={{ height: pixelScaler(10) }} />
       <ButtonContainer
-        onPress={() =>
-          Linking.openURL("https://static.splace.co.kr/terms-of-use.html")
-        }
+        onPress={() => Linking.openURL("https://static.splace.co.kr/tos.html")}
       >
         <RegText16>이용 약관</RegText16>
 

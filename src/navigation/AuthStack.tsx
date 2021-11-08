@@ -14,8 +14,6 @@ import RegistrationStack from "./RegistrationStack";
 const Stack = createStackNavigator<AuthStackParamList>();
 
 const AuthStack = () => {
-  console.log("sadnjkfdsj");
-
   return (
     <Stack.Navigator
       initialRouteName="InitialScreen"

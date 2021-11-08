@@ -32,6 +32,7 @@ import { Icon } from "../../components/Icon";
 const LabelContainer = styled.View`
   flex-direction: row;
   margin-bottom: ${pixelScaler(30)}px;
+  align-items: center;
 `;
 
 const LabelsContainer = styled.View`
@@ -112,6 +113,7 @@ const EditSplaceItem = () => {
     } else {
       if (splace.owner?.id === me.id || me.authority === "editor") {
         Alert.alert("정보 변경에 실패했습니다.");
+        // console.log(data);
       }
     }
   };
@@ -170,7 +172,6 @@ const EditSplaceItem = () => {
   }, [itemName, itemPrice, images]);
 
   useEffect(() => {
-    console.log(menuImages);
     if (menuImages.filter((image) => image.width === 0).length > 0) {
       const tmp = [...menuImages];
       for (let i = 0; i < tmp.length; i++) {
@@ -215,7 +216,7 @@ const EditSplaceItem = () => {
             maxLength={30}
           />
         </LabelContainer>
-        <LabelContainer>
+        <LabelContainer style={{ marginBottom: pixelScaler(45) }}>
           <RegText16 style={{ marginRight: pixelScaler(30) }}>가격</RegText16>
           <RegTextInput16
             value={itemPrice?.toString() ?? ""}

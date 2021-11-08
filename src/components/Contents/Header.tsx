@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/core";
 import React from "react";
 import { GestureResponderEvent } from "react-native";
 import styled from "styled-components/native";
+import { BLANK_PROFILE_IMAGE } from "../../constants";
 import { PhotologType, UserType } from "../../types";
 import { pixelScaler } from "../../utils";
 import Image from "../Image";
@@ -10,11 +11,12 @@ import ThreeDots from "../ThreeDots";
 
 const Container = styled.View`
   width: auto;
-  height: ${pixelScaler(60)}px;
+  height: ${pixelScaler(55)}px;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: 0 ${pixelScaler(30)}px;
+  padding-top: ${pixelScaler(3)}px;
 `;
 const Profile = styled.TouchableOpacity`
   flex-direction: row;
@@ -40,7 +42,7 @@ const Header = ({
       >
         {/* <ProfileImage source={{ uri: item.author.profileImageUrl }} /> */}
         <Image
-          source={{ uri: user.profileImageUrl }}
+          source={{ uri: user.profileImageUrl ?? BLANK_PROFILE_IMAGE }}
           style={{
             width: pixelScaler(26),
             height: pixelScaler(26),

@@ -8,10 +8,11 @@ import {
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
+import { BLANK_IMAGE } from "../constants";
 import { Icons } from "../icons";
 import { ADD_SAVES, CREATE_FOLDER, GET_FOLDERS, REMOVE_SAVE } from "../queries";
 import { FolderType, ThemeType } from "../types";
-import { BLANK_IMAGE, pixelScaler, showFlashMessage } from "../utils";
+import { pixelScaler, showFlashMessage } from "../utils";
 import BottomSheetModal from "./BottomSheetModal";
 import Image from "./Image";
 import { RegText13 } from "./Text";
@@ -31,7 +32,7 @@ const FolderThumbnailContainer = styled.TouchableOpacity`
   justify-content: center;
   border-radius: ${pixelScaler(10)}px;
   background-color: ${({ theme }: { theme: ThemeType }) =>
-    theme.blankFolderBackground};
+    theme.imageBackground};
 `;
 
 const RowBar = styled.View`
@@ -178,7 +179,7 @@ export const ModalKeep = ({
                   onPress={() => {
                     Alert.prompt(
                       "새 폴더 생성",
-                      "새로운 폴더의 이름을 기입하세요",
+                      "새로운 폴더의 이름을 입력하세요",
                       (text) => {
                         if (!createMutationLoading) {
                           createMutation({ variables: { title: text.trim() } });

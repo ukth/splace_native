@@ -25,6 +25,7 @@ import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ImagePickerContext } from "../contexts/ImagePicker";
 import MainfeedHeader from "../components/MainfeedHeader";
+import { showFlashMessage } from "../utils";
 
 const { width } = Dimensions.get("window");
 
@@ -53,8 +54,6 @@ const Mainfeed = () => {
       | { type: "series"; data: SeriesType }
     )[]
   >([]);
-  const [lastLogId, setLastLogId] = useState(0);
-  const [lastSeriesId, setSeriesId] = useState(0);
 
   const setFeedData = ({
     logs,
@@ -111,7 +110,11 @@ const Mainfeed = () => {
     onCompleted,
   });
 
-  navigation.addListener("focus", refetch);
+  navigation.addListener("focus", () => {
+    if (!loading) {
+      refetch();
+    }
+  });
 
   useEffect(() => {
     if (data?.getFeed?.logs && data?.getFeed?.series) {
@@ -129,8 +132,6 @@ const Mainfeed = () => {
     await refetch();
     setRefreshing(false);
   };
-
-  const url = Linking.useURL();
 
   const handleUrl = (url: string) => {
     let { path, queryParams } = Linking.parse(url);

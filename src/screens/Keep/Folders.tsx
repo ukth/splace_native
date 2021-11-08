@@ -12,7 +12,7 @@ import {
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
 import { FolderType, StackGeneratorParamList, ThemeType } from "../../types";
-import { BLANK_IMAGE, pixelScaler, strCmpFunc } from "../../utils";
+import { pixelScaler, strCmpFunc } from "../../utils";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -42,6 +42,7 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { Icon } from "../../components/Icon";
+import { BLANK_IMAGE_D1 } from "../../constants";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -52,7 +53,7 @@ const FolderConatiner = styled.View`
 const MemberCountContainer = styled.View`
   position: absolute;
   right: ${pixelScaler(10)}px;
-  bottom: ${pixelScaler(10)}px;
+  bottom: ${pixelScaler(9.3)}px;
   flex-direction: row;
 `;
 
@@ -122,7 +123,7 @@ const Folder = ({
         {folder?.saves?.length > 0 ? (
           <Image
             source={{
-              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE,
+              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE_D1,
             }}
             style={{
               width: pixelScaler(145),
@@ -240,7 +241,6 @@ const Folders = ({
 
   useEffect(() => {
     updateData(data);
-    console.log(data);
   }, [sortMode, data]);
 
   useEffect(() => {
@@ -287,6 +287,7 @@ const Folders = ({
             left: pixelScaler(17.5),
             width: pixelScaler(340),
           }}
+          showsVerticalScrollIndicator={false}
           refreshing={refreshing}
           onRefresh={refresh}
           ListHeaderComponent={() => (
@@ -296,7 +297,7 @@ const Folders = ({
                   onPress={() => {
                     Alert.prompt(
                       "새 폴더 생성",
-                      "새로운 폴더의 이름을 기입하세요",
+                      "새로운 폴더의 이름을 입력하세요",
                       (text) => {
                         createMutation({ variables: { title: text.trim() } });
                       },

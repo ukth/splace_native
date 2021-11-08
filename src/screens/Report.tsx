@@ -16,7 +16,7 @@ import { BldText16 } from "../components/Text";
 
 const Container = styled.View`
   flex: 1;
-  padding: ${pixelScaler(15)}px ${pixelScaler(30)}px;
+  padding: ${pixelScaler(25)}px ${pixelScaler(30)}px;
 `;
 
 const Report = () => {
@@ -28,7 +28,6 @@ const Report = () => {
   const [reason, setReason] = useState("");
 
   const onCompleted = (data: any) => {
-    console.log(data);
     if (data?.reportResources?.ok) {
       Alert.alert("신고가 접수되었습니다.\n검토에 24-72시간이 소요됩니다.");
       navigation.pop();

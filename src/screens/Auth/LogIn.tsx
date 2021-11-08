@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { TouchableWithoutFeedback, Keyboard } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { logUserIn } from "../../apollo";
+import { isLoggedInVar, logUserIn, tokenVar } from "../../apollo";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
   AuthStackParamList,
@@ -14,7 +14,12 @@ import { LOGIN } from "../../queries";
 import { Alert } from "react-native";
 import ScreenContainer from "../../components/ScreenContainer";
 import { setStatusBarStyle } from "expo-status-bar";
-import { BldText13, BldText16, RegText16 } from "../../components/Text";
+import {
+  BldText13,
+  BldText16,
+  RegText13,
+  RegText16,
+} from "../../components/Text";
 import { Icon } from "../../components/Icon";
 import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 import { pixelScaler } from "../../utils";
@@ -32,6 +37,11 @@ const ConfirmButton = styled.TouchableOpacity`
   justify-content: center;
 `;
 
+const TemporaryTextContainer = styled.View`
+  height: ${pixelScaler(15)}px;
+  margin-bottom: ${pixelScaler(25)}px;
+`;
+
 const LogIn = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -39,6 +49,7 @@ const LogIn = () => {
   const theme = useContext<ThemeType>(ThemeContext);
 
   const navigation = useNavigation<StackNavigationProp<AuthStackParamList>>();
+  const [loginFailed, setLoginFailed] = useState(false);
 
   useEffect(() => {
     setStatusBarStyle("dark");
@@ -59,7 +70,6 @@ const LogIn = () => {
   }, []);
 
   const _handleLogInButtonPress = async () => {
-    console.log(username, password, "#####");
     if (username.length >= 4 && password.length >= 6) {
       if (!loading) {
         mutation({
@@ -79,19 +89,15 @@ const LogIn = () => {
       user: any;
     };
   }) => {
-    console.log(data);
     const {
       login: { ok, token, user },
     } = data;
     if (ok) {
       await logUserIn(token, user.id);
-      console.log(token);
-      // isLoggedInVar(true);
-      // tokenVar(
-      //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyOTE2NjgwOH0.yUGginGMQSabKVnG_gItSdGvgozLYl9dTFDf4ig994M"
-      // );
+      tokenVar(token);
+      isLoggedInVar(true);
     } else {
-      Alert.alert("login failed!");
+      setLoginFailed(true);
     }
   };
 
@@ -129,7 +135,7 @@ const LogIn = () => {
           />
           <BldTextInput28
             value={password}
-            style={{ marginBottom: pixelScaler(60), width: pixelScaler(370) }}
+            style={{ marginBottom: pixelScaler(30), width: pixelScaler(370) }}
             onChangeText={(text) => setPassword(text.trim())}
             selectionColor={theme.chatSelection}
             placeholder="비밀번호"
@@ -141,6 +147,11 @@ const LogIn = () => {
             secureTextEntry={true}
             textAlign="center"
           />
+          <TemporaryTextContainer>
+            <RegText13 style={{ color: theme.errorText }}>
+              {loginFailed ? "아이디와 비밀번호가 일치하지 않습니다." : ""}
+            </RegText13>
+          </TemporaryTextContainer>
           <ConfirmButton
             onPress={_handleLogInButtonPress}
             style={{ marginBottom: pixelScaler(75) }}

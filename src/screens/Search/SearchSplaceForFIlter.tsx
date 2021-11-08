@@ -135,7 +135,6 @@ const SearchSplaceForFilter = () => {
           : await keyword2Place(keyword);
         if (data.length > 0) {
           setSearchedAddress(data);
-          console.log(data);
         }
       })();
     } else {
@@ -189,7 +188,12 @@ const SearchSplaceForFilter = () => {
               </RegText13>
               {item.distance !== 0 ? (
                 <RegText13
-                  style={{ position: "absolute", right: 0, bottom: 0 }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0,
+                    color: theme.greyTextAlone,
+                  }}
                 >
                   {formatDistance(item.distance)}
                 </RegText13>

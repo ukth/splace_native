@@ -32,19 +32,6 @@ import { CREATE_SERIES, EDIT_SPLACE, GET_USER_SERIES } from "../../queries";
 import useMe from "../../hooks/useMe";
 import { ProgressContext } from "../../contexts/Progress";
 import { UploadContentContext } from "../../contexts/UploadContent";
-import { Series } from "..";
-
-const LabelContainer = styled.View`
-  flex-direction: row;
-  padding-left: ${pixelScaler(30)}px;
-  align-items: center;
-`;
-
-const TagsContainer = styled.View`
-  flex-direction: row;
-  padding-left: ${pixelScaler(30)}px;
-  flex-wrap: wrap;
-`;
 
 const Tag = styled.TouchableOpacity`
   padding: 0 ${pixelScaler(10)}px;
@@ -53,11 +40,12 @@ const Tag = styled.TouchableOpacity`
   justify-content: center;
   border-radius: ${pixelScaler(25)}px;
   margin-bottom: ${pixelScaler(15)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const EntryContainer = styled.View`
   flex-direction: row;
-  margin-bottom: ${pixelScaler(20)}px;
+  margin-bottom: ${pixelScaler(30)}px;
   padding: 0 ${pixelScaler(30)}px;
   justify-content: space-between;
 `;
@@ -71,6 +59,7 @@ const AddButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   margin-left: ${pixelScaler(20)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 const TextInputContainer = styled.View`
   flex: 1;
@@ -104,9 +93,11 @@ const SelectSeries = () => {
   const me = useMe();
   const { spinner } = useContext(ProgressContext);
 
-  const { data, refetch } = useQuery(GET_USER_SERIES, {
+  const { data, refetch, fetchMore } = useQuery(GET_USER_SERIES, {
     variables: { userId: me.id },
   });
+
+  navigation.addListener("focus", () => refetch());
 
   const onCompleted = (data: any) => {
     spinner.stop();
@@ -121,7 +112,7 @@ const SelectSeries = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <BldText16>편집모드</BldText16>,
+      headerTitle: () => <BldText16>시리즈 선택</BldText16>,
     });
   }, []);
 
@@ -138,7 +129,28 @@ const SelectSeries = () => {
           }}
         />
       ),
-      headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
+      headerLeft: () => (
+        <HeaderBackButton
+          onPress={() => {
+            Alert.alert(
+              "이 페이지를 나가시겠습니까?",
+              "지금 나가면 모든 변경사항이 삭제됩니다.",
+              [
+                {
+                  text: "예",
+                  onPress: () => {
+                    navigation.pop();
+                  },
+                },
+                {
+                  text: "취소",
+                  style: "cancel",
+                },
+              ]
+            );
+          }}
+        />
+      ),
     });
   }, [selectedSeries]);
 
@@ -152,7 +164,7 @@ const SelectSeries = () => {
             selectionColor={theme.chatSelection}
             value={title}
             onChangeText={(text) => {
-              setTitle(text.trim());
+              setTitle(text);
             }}
             onBlur={Keyboard.dismiss}
             onSubmitEditing={Keyboard.dismiss}
@@ -164,7 +176,7 @@ const SelectSeries = () => {
               spinner.start();
               mutation({
                 variables: {
-                  title,
+                  title: title.trim(),
                   isPrivate: false,
                   photologIds: [],
                 },
@@ -173,7 +185,7 @@ const SelectSeries = () => {
             }
           }}
         >
-          <RegText16 style={{ color: theme.textHighlight }}>추가</RegText16>
+          <RegText16 style={{ color: theme.textHighlight }}>생성</RegText16>
         </AddButton>
       </EntryContainer>
       <FlatList
@@ -210,6 +222,19 @@ const SelectSeries = () => {
             </Tag>
           </TagContainer>
         )}
+        onEndReached={() => {
+          if (data?.getUserSeries?.series?.length) {
+            fetchMore({
+              variables: {
+                lastId:
+                  data?.getUserSeries?.series[
+                    data?.getUserSeries?.series.length - 1
+                  ].id,
+                userId: me.id,
+              },
+            });
+          }
+        }}
         keyExtractor={(item) => item.id + ""}
       />
     </ScreenContainer>

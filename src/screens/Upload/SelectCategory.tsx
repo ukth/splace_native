@@ -56,6 +56,7 @@ const Tag = styled.TouchableOpacity`
   margin-right: ${pixelScaler(10)}px;
   flex-direction: row;
   margin-bottom: ${pixelScaler(15)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const EntryContainer = styled.View`
@@ -127,7 +128,7 @@ const SelectCategory = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <BldText16>편집모드</BldText16>,
+      headerTitle: () => <BldText16>카테고리 선택</BldText16>,
       headerRight: () => (
         <HeaderRightConfirm
           onPress={() => {
@@ -149,7 +150,7 @@ const SelectCategory = () => {
   return (
     <ScreenContainer style={{ paddingTop: pixelScaler(30) }}>
       <KeyboardAwareScrollView>
-        <LabelContainer style={{ marginBottom: pixelScaler(30) }}>
+        <LabelContainer style={{ marginBottom: pixelScaler(20) }}>
           <BldText16 style={{ marginRight: pixelScaler(10) }}>
             주요 카테고리
           </BldText16>
@@ -168,7 +169,11 @@ const SelectCategory = () => {
               <RegText16
                 style={
                   selectedBigCategoryIds.includes(bigCategory.id)
-                    ? { color: theme.white }
+                    ? {
+                        borderColor: theme.themeBackground,
+                        borderWidth: pixelScaler(0.67),
+                        color: theme.white,
+                      }
                     : {}
                 }
                 onPress={() => {
@@ -177,10 +182,12 @@ const SelectCategory = () => {
                     tmp.splice(tmp.indexOf(bigCategory.id), 1);
                     setSelectedBigCategoryIds(tmp);
                   } else {
-                    setSelectedBigCategoryIds([
-                      ...selectedBigCategoryIds,
-                      bigCategory.id,
-                    ]);
+                    if (selectedBigCategoryIds.length < 3) {
+                      setSelectedBigCategoryIds([
+                        ...selectedBigCategoryIds,
+                        bigCategory.id,
+                      ]);
+                    }
                   }
                 }}
               >
@@ -191,7 +198,7 @@ const SelectCategory = () => {
         </TagsContainer>
         <LabelContainer
           style={{
-            marginTop: pixelScaler(20),
+            marginTop: pixelScaler(30),
             marginBottom: pixelScaler(10),
           }}
         >
@@ -212,7 +219,6 @@ const SelectCategory = () => {
               onChangeText={(text) => {
                 if (validateCategoryName(text.trim())) {
                   setCategoryText(text.trim());
-                  console.log(text);
                 }
               }}
               onSubmitEditing={Keyboard.dismiss}

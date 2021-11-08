@@ -20,6 +20,7 @@ import {
   HIDE_LOG,
   REMOVE_LOG,
   SCRAP_LOG,
+  UNBLOCK,
   UNSCRAP_LOG,
 } from "../../queries";
 
@@ -34,8 +35,9 @@ const SwiperContainer = styled.View`
 const BottomHeader = styled.View`
   flex-direction: row;
   align-items: center;
-  padding: 0 8%;
-  height: ${pixelScaler(40)}px;
+  padding: 0 ${pixelScaler(30)}px;
+  height: ${pixelScaler(38)}px;
+  margin-bottom: ${pixelScaler(4)}px;
   width: auto;
   justify-content: space-between;
   /* background-color: #458693; */
@@ -53,8 +55,7 @@ const PhotoLog = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState("dots");
   // const [liked, setLiked] = useState<boolean>(false);
-
-  console.log(item);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const onShare = async (id: number) => {
     try {
@@ -92,11 +93,11 @@ const PhotoLog = ({
     if (data?.deletePhotolog?.ok) {
       showFlashMessage({ message: "게시물이 삭제되었습니다." });
       setModalVisible(false);
+      setIsDeleted(true);
       refetch();
     } else {
       setModalVisible(false);
       Alert.alert("게시물을 삭제할 수 없습니다.");
-      console.log(data);
     }
   };
 
@@ -110,7 +111,8 @@ const PhotoLog = ({
   const onHideCompleted = (data: any) => {
     if (data?.hidePhotologs?.ok) {
       showFlashMessage({ message: "숨김처리 되었습니다." });
-      refetch();
+      setModalVisible(false);
+      setIsDeleted(true);
     } else {
       Alert.alert("숨김처리 할 수 없습니다.");
     }
@@ -155,6 +157,7 @@ const PhotoLog = ({
   const onBlockCompleted = (data: any) => {
     if (data?.blockUser?.ok) {
       showFlashMessage({ message: "사용자가 차단되었습니다." });
+      refetch();
     } else {
       Alert.alert("사용자를 차단할 수 없습니다.");
     }
@@ -165,7 +168,21 @@ const PhotoLog = ({
     { onCompleted: onBlockCompleted }
   );
 
-  return (
+  const onUnblockCompleted = (data: any) => {
+    if (data?.unblockUser?.ok) {
+      showFlashMessage({ message: "차단이 해제되었습니다." });
+      refetch();
+    } else {
+      Alert.alert("차단 해제에 실패했습니다.");
+    }
+  };
+
+  const [unblockMutation, { loading: unblockMutationLoading }] = useMutation(
+    UNBLOCK,
+    { onCompleted: onUnblockCompleted }
+  );
+
+  return isDeleted ? null : (
     <Container>
       {type !== "Series" ? (
         <Header user={item.author} pressThreeDots={pressThreeDots} />
@@ -291,6 +308,7 @@ const PhotoLog = ({
               )}
 
               <ModalButtonBox
+                style={{ marginBottom: pixelScaler(30) }}
                 onPress={() => {
                   if (!hideMutationLoading) {
                     setModalVisible(false);
@@ -315,15 +333,47 @@ const PhotoLog = ({
               >
                 <RegText20>신고</RegText20>
               </ModalButtonBox>
-              <ModalButtonBox
-                onPress={() => {
-                  if (!blockMutationLoading) {
-                    blockMutation({ variables: { targetId: item.author.id } });
-                  }
-                }}
-              >
-                <RegText20 style={{ color: "#FF0000" }}>차단</RegText20>
-              </ModalButtonBox>
+              {item.author.isBlocked ? (
+                <ModalButtonBox
+                  onPress={() => {
+                    if (!unblockMutationLoading) {
+                      unblockMutation({
+                        variables: { targetId: item.author.id },
+                      });
+                    }
+                  }}
+                >
+                  <RegText20 style={{ color: "#FF0000" }}>차단 해제</RegText20>
+                </ModalButtonBox>
+              ) : (
+                <ModalButtonBox
+                  onPress={() => {
+                    if (!blockMutationLoading) {
+                      Alert.alert(
+                        "사용자 차단",
+                        "이 사용자를 차단하시겠습니까?",
+                        [
+                          {
+                            text: "확인",
+                            onPress: () => {
+                              setModalVisible(false);
+                              blockMutation({
+                                variables: { targetId: item.author.id },
+                              });
+                            },
+                          },
+                          {
+                            text: "취소",
+                            style: "cancel",
+                          },
+                        ]
+                      );
+                    }
+                  }}
+                >
+                  <RegText20 style={{ color: "#FF0000" }}>차단</RegText20>
+                </ModalButtonBox>
+              )}
             </>
           )
         ) : (

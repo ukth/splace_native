@@ -6,12 +6,12 @@ import { useNavigation } from "@react-navigation/core";
 import styled from "styled-components/native";
 import { pixelScaler } from "../../utils";
 import { SplaceType, ThemeType } from "../../types";
-import { RegText13 } from "../../components/Text";
+import { RegText13 } from "../Text";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Icon } from "../../components/Icon";
+import { Icon } from "../Icon";
 import { useMutation } from "@apollo/client";
 import { RATE_SPLACE } from "../../queries";
-import spinner from "../../components/Spinner";
+import spinner from "../Spinner";
 import { ProgressContext } from "../../contexts/Progress";
 
 const RatingContainer = styled.View`

@@ -70,10 +70,8 @@ const TasteCup = () => {
   const theme = useContext<ThemeType>(ThemeContext);
 
   const onCompleted = (data: any) => {
-    console.log(data);
     spinner.stop();
     if (data?.createPreference?.ok) {
-      console.log(data);
       isLoggedInVar(true);
     } else {
       Alert.alert("에러 발생");
@@ -90,34 +88,23 @@ const TasteCup = () => {
       headerTitle: () => (
         <BldText16>둘 중 하나를 선택해 주세요({scrollIndex + 1}/5)</BldText16>
       ),
-      headerLeft: () => (
-        <HeaderBackButton
-          onPress={() => {
-            if (scrollIndex > 0) {
+      headerLeft: () =>
+        scrollIndex > 0 ? (
+          <HeaderBackButton
+            onPress={() => {
               scrollToIndex(scrollIndex - 1);
-            }
-          }}
-        />
-      ),
+            }}
+          />
+        ) : null,
       headerRight: () =>
-        selectedItems[0] !== null &&
-        selectedItems[1] !== null &&
-        selectedItems[2] !== null &&
-        selectedItems[3] !== null &&
-        selectedItems[4] !== null ? (
+        selectedItems.filter((item) => item === null).length === 0 ? (
           <HeaderRightConfirm
             onPress={() => {
               if (!loading) {
                 spinner.start();
                 mutation({
                   variables: {
-                    preference: [
-                      selectedItems[0],
-                      selectedItems[1],
-                      selectedItems[2],
-                      selectedItems[3],
-                      selectedItems[4],
-                    ],
+                    preference: selectedItems,
                   },
                 });
               }
@@ -155,7 +142,7 @@ const TasteCup = () => {
             {items.map((item) => (
               <Item
                 onPress={() => {
-                  const tmp = { ...selectedItems };
+                  const tmp = [...selectedItems];
                   tmp[index] = item.id;
                   setSelectedItems(tmp);
                   if (scrollIndex < 4) {
@@ -195,9 +182,11 @@ const TasteCup = () => {
                   >
                     {item.line1}
                   </BldText16>
-                  <BldText16 style={{ color: theme.white }}>
-                    {item.line2}
-                  </BldText16>
+                  {item.line2 !== "" ? (
+                    <BldText16 style={{ color: theme.white }}>
+                      {item.line2}
+                    </BldText16>
+                  ) : null}
                 </View>
                 {selectedItems[index] === item.id ? (
                   <SelectedBackground />

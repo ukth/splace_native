@@ -35,7 +35,6 @@ const SuggestNewSplace = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
     if (data?.createSplaces?.ok) {
       Alert.alert(
         "",
@@ -60,10 +59,7 @@ const SuggestNewSplace = () => {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
-      headerTitle: () => <BldText16>위치 정보</BldText16>,
-      headerStyle: {
-        shadowColor: "transparent",
-      },
+      headerTitle: () => <BldText16>새로운 장소/이벤트 제안</BldText16>,
     });
   }, []);
 
@@ -111,7 +107,7 @@ const SuggestNewSplace = () => {
             }}
             placeholder="장소/이벤트 명을 입력해주세요"
             autoCorrect={false}
-            placeholderTextColor={theme.entryPlaceholder}
+            placeholderTextColor={theme.greyTextLight}
             maxLength={20}
             selectionColor={theme.chatSelection}
             onChangeText={(text) => setName(text.trim())}
@@ -160,7 +156,7 @@ const SuggestNewSplace = () => {
             }}
             placeholder="(ex. 4층, A구역, 17번 부스)"
             autoCorrect={false}
-            placeholderTextColor={theme.entryPlaceholder}
+            placeholderTextColor={theme.greyTextLight}
             maxLength={30}
             selectionColor={theme.chatSelection}
             onChangeText={(text) => setDetailAddress(text)}

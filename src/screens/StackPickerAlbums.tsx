@@ -7,10 +7,11 @@ import {
   useWindowDimensions,
   Animated,
   FlatList,
+  Alert,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { AlbumType, StackGeneratorParamList, ThemeType } from "../types";
-import { AlbumTitleKor, BLANK_IMAGE, pixelScaler } from "../utils";
+import { AlbumTitleKor, pixelScaler } from "../utils";
 import { HeaderBackButton } from "../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
 import { BldText16, RegText13 } from "../components/Text";
@@ -21,6 +22,7 @@ import { Icons } from "../icons";
 import * as MediaLibrary from "expo-media-library";
 import { ImagePickerContext } from "../contexts/ImagePicker";
 import { Icon } from "../components/Icon";
+import { BLANK_IMAGE } from "../constants";
 
 const AlbumContainer = styled.TouchableOpacity`
   height: ${pixelScaler(75)}px;
@@ -62,6 +64,11 @@ const StackPickerAlbums = () => {
 
   useEffect(() => {
     (async () => {
+      const { accessPrivileges } = await MediaLibrary.requestPermissionsAsync();
+      if (accessPrivileges === "none") {
+        Alert.alert("앨범 권한이 필요합니다.");
+        navigation.pop();
+      }
       const albumsList = await MediaLibrary.getAlbumsAsync({
         includeSmartAlbums: true,
       });

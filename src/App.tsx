@@ -1,22 +1,22 @@
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
-import { Text, TextInput } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import { ThemeProvider } from "styled-components";
 import { theme } from "../theme";
-import client, { tokenVar } from "./apollo";
+import client from "./apollo";
 import { ApolloProvider } from "@apollo/client";
-import * as Linking from "expo-linking";
 import { ProgressProvider } from "./contexts/Progress";
 import { ImagePickerProvider } from "./contexts/ImagePicker";
 import FlashMessage from "react-native-flash-message";
 import { UploadContentProvider } from "./contexts/UploadContent";
 import { FilterProvider } from "./contexts/Filter";
+import { pixelScaler } from "./utils";
+import { RegText16 } from "./components/Text";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -30,25 +30,6 @@ export default function App() {
     ...(TextInput.defaultProps || {}),
     allowFontScaling: false,
   };
-
-  // const url = Linking.useURL();
-  // console.log("url:", url);
-
-  // const handleDeepLink = (event: any) => {
-  //   console.log("!!", event);
-  // };
-
-  // useEffect(() => {
-  //   console.log("rendered");
-  //   Linking.addEventListener("url", handleDeepLink);
-  //   // return () => {
-  //   //   Linking.removeEventListener("url", handleDeepLink);
-  //   // };
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("UE, url changed", url);
-  // }, [url]);
 
   if (!isLoadingComplete) {
     return null;
@@ -64,7 +45,28 @@ export default function App() {
                   <SafeAreaProvider>
                     <Navigation />
                   </SafeAreaProvider>
-                  <FlashMessage position="top" />
+                  <FlashMessage
+                    position="top"
+                    MessageComponent={({ message: { message } }) => (
+                      <View
+                        style={{
+                          marginTop: pixelScaler(50),
+                          width: pixelScaler(315),
+                          height: pixelScaler(60),
+                          shadowOffset: { width: 0, height: pixelScaler(2) },
+                          shadowOpacity: 0.2,
+                          shadowRadius: pixelScaler(2),
+                          borderRadius: pixelScaler(10),
+                          marginLeft: pixelScaler(30),
+                          backgroundColor: "#f2f2f7",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <RegText16>{message}</RegText16>
+                      </View>
+                    )}
+                  />
                 </ThemeProvider>
               </ApolloProvider>
             </FilterProvider>

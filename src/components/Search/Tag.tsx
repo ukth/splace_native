@@ -15,7 +15,7 @@ const TagContainer = styled.TouchableOpacity`
   justify-content: center;
   margin-right: ${({ color }: { color?: string }) =>
     color ? pixelScaler(5) : pixelScaler(10)}px;
-  margin-bottom: ${pixelScaler(15)}px;
+  margin-bottom: ${pixelScaler(10)}px;
   padding-top: ${pixelScaler(1.3)}px;
 `;
 

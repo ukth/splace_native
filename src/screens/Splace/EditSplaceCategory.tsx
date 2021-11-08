@@ -52,6 +52,7 @@ const Tag = styled.TouchableOpacity`
   margin-right: ${pixelScaler(10)}px;
   flex-direction: row;
   margin-bottom: ${pixelScaler(15)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const EntryContainer = styled.View`
@@ -119,14 +120,15 @@ const EditSplaceCategory = () => {
       } else if (me.authority === "editor") {
         Alert.alert(
           "정보 변경 완료",
-          "건강한 커뮤니티 환경을 위해 같은 장소에 대한 정보 변경은 1시간에 한 번만 가능합니다."
+          "소중한 제한 감사합니다.\n반복적이고 악의적인 정보 변경은 제재조치 대상이 될 수 있습니다."
         );
       }
 
       navigation.pop();
     } else {
       if (splace.owner?.id === me.id || me.authority === "editor") {
-        Alert.alert("정보 변경에 실패했습니다.");
+        Alert.alert("정보 변경에 실패했습니다.", data?.editSplaces?.error);
+        // console.log(data);
       }
     }
   };
@@ -168,7 +170,11 @@ const EditSplaceCategory = () => {
               key={index + ""}
               style={
                 selectedBigCategoryIds.includes(bigCategory.id)
-                  ? { backgroundColor: theme.themeBackground }
+                  ? {
+                      backgroundColor: theme.themeBackground,
+                      borderWidth: pixelScaler(0.67),
+                      borderColor: theme.themeBackground,
+                    }
                   : { borderWidth: pixelScaler(0.67) }
               }
             >
@@ -183,7 +189,7 @@ const EditSplaceCategory = () => {
                     const tmp = [...selectedBigCategoryIds];
                     tmp.splice(tmp.indexOf(bigCategory.id), 1);
                     setSelectedBigCategoryIds(tmp);
-                  } else {
+                  } else if (selectedBigCategoryIds.length < 3) {
                     setSelectedBigCategoryIds([
                       ...selectedBigCategoryIds,
                       bigCategory.id,
@@ -218,7 +224,6 @@ const EditSplaceCategory = () => {
             onChangeText={(text) => {
               if (validateCategoryName(text.trim())) {
                 setCategoryText(text.trim());
-                console.log(text);
               }
             }}
             onBlur={Keyboard.dismiss}

@@ -90,7 +90,6 @@ const EditFixedContents = () => {
   };
 
   const [mutation, { loading }] = useMutation(EDIT_CONTENT, { onCompleted });
-  console.log(splaceId);
 
   useEffect(() => {
     navigation.setOptions({

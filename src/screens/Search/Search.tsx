@@ -16,18 +16,19 @@ import {
   UserType,
 } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
-import {
-  BLANK_IMAGE,
-  convertNumber,
-  pixelScaler,
-  shortenAddress,
-} from "../../utils";
+import { convertNumber, pixelScaler, shortenAddress } from "../../utils";
 import { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Preview from "../../components/Search/Preview";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { SEARCH_CATEGORY, SEARCH_SPLACE, SEARCH_USER } from "../../queries";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import {
+  LOG_SEARCHCATEORIES,
+  LOG_SEARCHSPLACES,
+  SEARCH_CATEGORY,
+  SEARCH_SPLACE,
+  SEARCH_USER,
+} from "../../queries";
 import {
   BldText13,
   BldText16,
@@ -45,6 +46,7 @@ import { ModalKeep } from "../../components/ModalKeep";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import ModalMapSplaceView from "../../components/ModalMapSplaceView";
 import ModalMapView from "../../components/ModalMapView";
+import { BLANK_IMAGE, BLANK_PROFILE_IMAGE } from "../../constants";
 // import { TextInput } from "react-native-gesture-handler";
 
 const HeaderContainer = styled.View`
@@ -107,6 +109,7 @@ const Tag = styled.View`
   align-items: center;
   justify-content: center;
   padding-top: ${pixelScaler(1.3)}px;
+  margin-right: ${pixelScaler(9)}px;
 `;
 
 const SplaceItemContainer = styled.View`
@@ -117,7 +120,7 @@ const SplaceItemContainer = styled.View`
 const LabelContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: ${pixelScaler(13)}px;
+  margin-bottom: ${pixelScaler(11)}px;
   align-items: center;
   width: ${pixelScaler(145)}px;
 `;
@@ -218,6 +221,9 @@ const Search = () => {
     }[]
   >([]);
 
+  const [log_searchCategory, _1] = useMutation(LOG_SEARCHCATEORIES);
+  const [log_searchSplace, _2] = useMutation(LOG_SEARCHSPLACES);
+
   const onCompleted = (data: any) => {
     if (keyword !== "") {
       setSplaceSearched(true);
@@ -316,6 +322,12 @@ const Search = () => {
           >
             {searchBarFocused || (!searchBarFocused && splaceSearched) ? (
               <TouchableOpacity
+                hitSlop={{
+                  top: pixelScaler(10),
+                  bottom: pixelScaler(10),
+                  left: pixelScaler(10),
+                  right: pixelScaler(10),
+                }}
                 onPress={() => {
                   if (searchBarFocused) {
                     setSearchBarFocused(false);
@@ -333,8 +345,8 @@ const Search = () => {
                 <Icon
                   name="header_back"
                   style={{
-                    width: pixelScaler(8),
-                    height: pixelScaler(15),
+                    width: pixelScaler(9),
+                    height: pixelScaler(17),
                     marginRight: pixelScaler(21),
                   }}
                 />
@@ -384,10 +396,10 @@ const Search = () => {
                   }
                 }}
               />
-              {searchBarFocused || splaceSearched ? (
+              {(searchBarFocused || splaceSearched) && tabViewIndex === 0 ? (
                 <TouchableOpacity onPress={() => navigation.push("Filter")}>
                   <Icon
-                    name="filter"
+                    name={filterActivated ? "filter_activated" : "filter"}
                     style={{
                       width: pixelScaler(17),
                       height: pixelScaler(16.2),
@@ -405,7 +417,13 @@ const Search = () => {
         shadowColor: "transparent",
       },
     });
-  }, [keyword, tabViewIndex, searchBarFocused, splaceSearched]);
+  }, [
+    keyword,
+    tabViewIndex,
+    searchBarFocused,
+    splaceSearched,
+    filterActivated,
+  ]);
 
   const {
     loading,
@@ -419,15 +437,36 @@ const Search = () => {
     },
   });
 
+  useEffect(() => {
+    if (splaceSearched && splaceSearchType === "splace") {
+      (async () => {
+        if (!modalKeepVisible) {
+          const res = await refetchSplaces({ ...searchVars });
+          spinner.stop();
+          if (res?.data?.searchSplaces?.ok) {
+            if (splaceSearchType === "splace") {
+              setSearchedSplaces(res.data.searchSplaces.searchedSplaces ?? []);
+              setSplaceSearched(true);
+              setSearchBarFocused(false);
+            } else {
+              setSearchedLogs(res.data.searchSplaces.searchedSplaces ?? []);
+              setSplaceSearched(true);
+              setSearchBarFocused(false);
+            }
+          }
+        }
+      })();
+    }
+  }, [modalKeepVisible]);
+
   const searchSplaceByKeyword = async (keyword: string) => {
     try {
-      if (!loading) {
+      if (!loading && keyword !== "") {
         const variables = {
           type: splaceSearchType,
           keyword,
           ...(filterActivated
-            ? {}
-            : {
+            ? {
                 ...(filter.bigCategoryIds.length
                   ? { bigCategoryIds: filter.bigCategoryIds }
                   : {}),
@@ -453,12 +492,15 @@ const Search = () => {
                   : filter.distance < 1.2
                   ? { distance: 10000 }
                   : {}),
-              }),
+              }
+            : {}),
         };
 
         setSearchVars(variables);
         spinner.start(false);
+
         const res = await refetchSplaces({ ...variables });
+
         spinner.stop();
         if (res?.data?.searchSplaces?.ok) {
           if (splaceSearchType === "splace") {
@@ -471,6 +513,8 @@ const Search = () => {
             setSearchBarFocused(false);
           }
         }
+        log_searchCategory({ variables: { keyword } });
+        log_searchSplace({ variables: { keyword } });
       }
 
       let tmp = [...history];
@@ -579,6 +623,7 @@ const Search = () => {
                           variables: {
                             ...searchVars,
                             lastId: searchedSplaces.length,
+                            type: "splace",
                           },
                         });
                         if (res?.data?.searchSplaces?.ok) {
@@ -600,6 +645,9 @@ const Search = () => {
                               },
                             })
                           }
+                          style={{
+                            marginBottom: pixelScaler(14),
+                          }}
                         >
                           <Image
                             source={{
@@ -613,7 +661,6 @@ const Search = () => {
                               width: pixelScaler(145),
                               height: pixelScaler(145),
                               borderRadius: pixelScaler(10),
-                              marginBottom: pixelScaler(12),
                             }}
                           />
                         </TouchableOpacity>
@@ -656,8 +703,8 @@ const Search = () => {
                                   : "bookmark_thin"
                               }
                               style={{
-                                width: pixelScaler(14.3),
-                                height: pixelScaler(18.5),
+                                width: pixelScaler(12),
+                                height: pixelScaler(18),
                               }}
                             />
                           </TouchableOpacity>
@@ -673,15 +720,16 @@ const Search = () => {
                               {shortenAddress(splaceResult.address)}
                             </RegText13>
                           </Tag>
-                          {splaceResult.stringBC !== "" &&
-                          splaceResult.stringBC?.split(" ").length ? (
+                          {splaceResult.bigCategories &&
+                          splaceResult.bigCategories.split(" ").length > 1 ? (
                             <Tag
                               style={{
                                 height: pixelScaler(20),
+                                borderRadius: pixelScaler(20),
                               }}
                             >
                               <RegText13>
-                                {splaceResult.stringBC?.split(" ")[0]}
+                                {splaceResult.bigCategories?.split(" ")[0]}
                               </RegText13>
                             </Tag>
                           ) : null}
@@ -733,10 +781,12 @@ const Search = () => {
                     setShowMap={setShowMap}
                     splaces={searchedSplaces.map((searchedSplace) => {
                       const coords = searchedSplace.location.split(", ");
-                      const bigCategoryIds =
-                        searchedSplace.bigCategories?.split(", ");
-                      const bigCategoryNames =
-                        searchedSplace.stringBC?.split(", ");
+                      const bigCategoryIds = searchedSplace.stringBC
+                        ?.split(" ")
+                        .filter((id) => id !== "");
+                      const bigCategoryNames = searchedSplace.bigCategories
+                        ?.split(" ")
+                        .filter((id) => id !== "");
                       return {
                         id: searchedSplace.id,
                         lat: Number(coords[0]),
@@ -766,6 +816,7 @@ const Search = () => {
                 data={searchedLogs}
                 numColumns={2}
                 onEndReachedThreshold={0.5}
+                showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={{
@@ -785,19 +836,22 @@ const Search = () => {
                 )}
                 onEndReached={async () => {
                   // console.log("onendreached");
-                  if (Object.keys(searchVars).length > 2) {
-                    const res = await fetchMoreSplaces({
-                      variables: {
-                        ...searchVars,
-                        lastId: searchedSplaces.length,
-                      },
-                    });
-                    if (res?.data?.searchSplaces?.ok) {
-                      setSearchedLogs([
-                        ...searchedSplaces,
-                        ...(res.data.searchSplaces.searchedSplaces ?? []),
-                      ]);
-                      setSplaceSearched(true);
+                  if (searchedSplaces.length === 10) {
+                    if (Object.keys(searchVars).length > 2) {
+                      const res = await fetchMoreSplaces({
+                        variables: {
+                          ...searchVars,
+                          lastId: searchedSplaces.length,
+                          type: "photolog",
+                        },
+                      });
+                      if (res?.data?.searchSplaces?.ok) {
+                        setSearchedLogs([
+                          ...searchedSplaces,
+                          ...(res.data.searchSplaces.searchedSplaces ?? []),
+                        ]);
+                        setSplaceSearched(true);
+                      }
                     }
                   }
                 }}
@@ -852,6 +906,7 @@ const Search = () => {
         )
       ) : tabViewIndex === 1 ? (
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={[
             ...(categoryData?.searchCategories?.bigCategories.map(
               (bigCategory: {
@@ -922,7 +977,7 @@ const Search = () => {
               onPress={() => navigation.push("Profile", { user: item })}
             >
               <Image
-                source={{ uri: item.profileImageUrl ?? BLANK_IMAGE }}
+                source={{ uri: item.profileImageUrl ?? BLANK_PROFILE_IMAGE }}
                 style={{
                   width: pixelScaler(32),
                   height: pixelScaler(32),
@@ -939,6 +994,7 @@ const Search = () => {
             </ListItemContainer>
           )}
           keyExtractor={(item) => item.id + ""}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </ScreenContainer>

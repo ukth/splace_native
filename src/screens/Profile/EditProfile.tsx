@@ -20,7 +20,7 @@ import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldTextInput16, RegTextInput16 } from "../../components/TextInput";
 import { StackGeneratorParamList, ThemeType } from "../../types";
-import { BLANK_IMAGE, pixelScaler } from "../../utils";
+import { pixelScaler } from "../../utils";
 import * as ImagePicker from "expo-image-picker";
 import { EDIT_PROFILE, VALIDATE_USERNAME } from "../../queries";
 import axios from "axios";
@@ -29,6 +29,7 @@ import { ProgressContext } from "../../contexts/Progress";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
 import { BldText16, RegText13 } from "../../components/Text";
+import { BLANK_PROFILE_IMAGE } from "../../constants";
 
 const ProfileImageContainer = styled.TouchableOpacity`
   height: ${pixelScaler(195)}px;
@@ -80,7 +81,6 @@ const EditProfile = () => {
   const [isUsernameValid, setIsUsernameValid] = useState(true);
 
   const onValidateCompleted = (data: any) => {
-    console.log(data, username);
     if (data?.checkUsername?.ok) {
       setIsUsernameValid(true);
     } else {
@@ -102,11 +102,9 @@ const EditProfile = () => {
       } else {
         if (username.length >= 4) {
           if (!validateLoading) {
-            console.log("exec!");
             validateUsernameQuery({ variables: { username } });
           }
         } else if (username !== "") {
-          console.log("hello");
           setIsUsernameValid(false);
         }
       }
@@ -132,7 +130,6 @@ const EditProfile = () => {
     };
   }) => {
     spinner.stop();
-    console.log("hello");
     if (ok) {
       Alert.alert("프로필이 수정되었습니다.");
       navigation.pop();
@@ -190,10 +187,9 @@ const EditProfile = () => {
                     // @ts-ignore
                     const awsURL = res.data[0].location;
                     variables.profileImageUrl = awsURL;
-                    console.log("upload complete", awsURL)!;
                   }
                 }
-                console.log(variables);
+
                 if (url && url.trim() !== old_url) {
                   variables.url = url.trim();
                 }
@@ -207,7 +203,6 @@ const EditProfile = () => {
                   variables.profileMessage = profileMessage;
                 }
 
-                console.log(variables);
                 if (Object.keys(variables).length !== 0) {
                   if ("username" in variables) {
                     if (!validateUsername(variables.username ?? "")) {
@@ -222,7 +217,6 @@ const EditProfile = () => {
                     }
                   }
                   spinner.start();
-                  console.log("spinner start");
                   mutation({ variables });
                 }
               } else {
@@ -280,8 +274,6 @@ const EditProfile = () => {
                 quality: 1,
               });
 
-              console.log(result);
-
               if (!result.cancelled) {
                 setLocalUri(result.uri);
               }
@@ -309,7 +301,7 @@ const EditProfile = () => {
           {localUri === "" ? (
             <Image
               source={{
-                uri: me.profileImageUrl ?? BLANK_IMAGE,
+                uri: me.profileImageUrl ?? BLANK_PROFILE_IMAGE,
               }}
               style={{
                 position: "absolute",

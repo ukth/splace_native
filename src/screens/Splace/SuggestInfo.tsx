@@ -3,11 +3,16 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
+import {
+  SplaceType,
+  StackGeneratorParamList,
+  ThemeType,
+  TimeSetType,
+} from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import * as ImagePicker from "expo-image-picker";
 import Image from "../../components/Image";
-import { BLANK_IMAGE, pixelScaler, uploadPhotos } from "../../utils";
+import { formatOperatingTime, pixelScaler, uploadPhotos } from "../../utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { Alert, SafeAreaView, Switch, Image as LocalImage } from "react-native";
@@ -24,6 +29,7 @@ import { ProgressContext } from "../../contexts/Progress";
 import { API_URL, tokenVar } from "../../apollo";
 import axios from "axios";
 import { Icon } from "../../components/Icon";
+import { BLANK_IMAGE } from "../../constants";
 
 const Container = styled.ScrollView``;
 
@@ -35,10 +41,17 @@ const ThumbnailContainer = styled.View`
   margin-bottom: ${pixelScaler(30)}px;
 `;
 
+const ThumbnailBackground = styled.View`
+  position: absolute;
+  width: 100%;
+  height: ${pixelScaler(125)}px;
+  background-color: rgba(255, 255, 255, 0.5);
+`;
+
 const ThumbnailCameraButton = styled.TouchableOpacity`
   position: absolute;
-  right: ${pixelScaler(0)}px;
-  bottom: ${pixelScaler(0)}px;
+  right: ${pixelScaler(30)}px;
+  bottom: ${pixelScaler(15)}px;
 `;
 
 const LabelButtonsContainer = styled.View`
@@ -56,6 +69,7 @@ const LabelButton = styled.TouchableOpacity`
   width: ${pixelScaler(315)}px;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const ToggleContainer = styled.View`
@@ -104,13 +118,32 @@ const SuggestInfo = () => {
 
   const { spinner } = useContext(ProgressContext);
 
+  const day = new Date().getDay();
+
+  const [operatingTime, setOperatingTime] = useState<TimeSetType[]>();
+
+  const { data, refetch: refetchTimeSet } = useQuery(GET_SPLACE_INFO, {
+    variables: { splaceId: splace.id },
+  });
+
+  useEffect(() => {
+    if (!loading && data?.seeSplace?.ok && data.seeSplace.splace.categories) {
+      setSplace(data?.seeSplace?.splace);
+      if (data?.seeSplace?.splace?.timeSets?.length === 7) {
+        var timeSets = data?.seeSplace?.splace?.timeSets
+          .slice()
+          .sort((a: TimeSetType, b: TimeSetType) => a.day - b.day);
+        setOperatingTime(timeSets);
+      }
+    }
+  }, [data]);
+
   const onCompleted = (data: any) => {
     spinner.stop();
     if (data?.editSplaces?.ok) {
       Alert.alert("변경이 완료되었습니다.");
     } else {
       Alert.alert("정보를 변경할 수 없습니다.");
-      console.log(data);
     }
   };
 
@@ -143,10 +176,12 @@ const SuggestInfo = () => {
             if (localUri !== "") {
               spinner.start();
               const awsUrl = (await uploadPhotos([localUri]))[0];
-              console.log("@!#", awsUrl);
               if (awsUrl) {
                 mutation({
                   variables: {
+                    pets,
+                    noKids,
+                    parking,
                     splaceId: splace.id,
                     thumbnail: awsUrl,
                   },
@@ -158,7 +193,7 @@ const SuggestInfo = () => {
       ),
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
-  }, [localUri]);
+  }, [localUri, pets, noKids, parking]);
 
   return (
     <ScreenContainer>
@@ -185,6 +220,7 @@ const SuggestInfo = () => {
               }}
             />
           )}
+          <ThumbnailBackground />
           <ThumbnailCameraButton
             onPress={() => {
               (async () => {
@@ -219,7 +255,31 @@ const SuggestInfo = () => {
             }
           >
             <RegText16>운영시간</RegText16>
-            <RegText13 style={{ color: theme.text }}></RegText13>
+            <RegText13
+              style={{
+                color: theme.textHighlight,
+                position: "absolute",
+                left: pixelScaler(75),
+              }}
+            >
+              {operatingTime?.filter((timeset) => timeset.open).length
+                ? operatingTime[day].open
+                  ? formatOperatingTime(operatingTime[day].open ?? 0) +
+                    " - " +
+                    formatOperatingTime(operatingTime[day].close ?? 0) +
+                    (operatingTime[day].breakOpen &&
+                    operatingTime[day].breakClose
+                      ? " (Break " +
+                        formatOperatingTime(operatingTime[day].breakOpen ?? 0) +
+                        " - " +
+                        formatOperatingTime(
+                          operatingTime[day].breakClose ?? 0
+                        ) +
+                        ")"
+                      : "")
+                  : "휴무일"
+                : ""}
+            </RegText13>
             <Icon
               name="arrow_right"
               style={{
@@ -233,7 +293,16 @@ const SuggestInfo = () => {
             onPress={() => navigation.push("EditSplaceItem", { splace })}
           >
             <RegText16>상품</RegText16>
-            <RegText13 style={{ color: theme.text }}></RegText13>
+            <RegText13
+              style={{
+                color: theme.textHighlight,
+                position: "absolute",
+                left: pixelScaler(75),
+              }}
+            >
+              {(splace.itemName ?? "") +
+                (splace.itemPrice ? " ₩" + splace.itemPrice : "")}
+            </RegText13>
             <Icon
               name="arrow_right"
               style={{
@@ -334,21 +403,6 @@ const SuggestInfo = () => {
             }}
           />
         </ToggleContainer>
-        <ToggleConfirmButton
-          onPress={() => {
-            spinner.start();
-            mutation({
-              variables: {
-                pets,
-                noKids,
-                parking,
-                splaceId: splace.id,
-              },
-            });
-          }}
-        >
-          <RegText16 style={{ color: theme.textHighlight }}>완료</RegText16>
-        </ToggleConfirmButton>
       </BottomSheetModal>
     </ScreenContainer>
   );

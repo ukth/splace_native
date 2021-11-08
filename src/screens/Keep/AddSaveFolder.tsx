@@ -34,7 +34,7 @@ import {
   RegText16,
   RegText20,
 } from "../../components/Text";
-import { BLANK_IMAGE, pixelScaler, strCmpFunc } from "../../utils";
+import { pixelScaler, shortenAddress, strCmpFunc } from "../../utils";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
@@ -50,6 +50,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
+import { BLANK_IMAGE_D1 } from "../../constants";
 
 export const Item = styled.View`
   width: ${pixelScaler(145)}px;
@@ -83,6 +84,7 @@ const AddressBadge = styled.View`
   align-items: center;
   justify-content: center;
   margin-right: ${pixelScaler(10)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const Category = styled.View`
@@ -91,6 +93,7 @@ const Category = styled.View`
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(20)}px;
   justify-content: center;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const SelectMark = styled.View`
@@ -157,7 +160,7 @@ const SaveItem = ({
 
           <Image
             source={{
-              uri: save.splace.thumbnail ?? BLANK_IMAGE,
+              uri: save.splace.thumbnail ?? BLANK_IMAGE_D1,
             }}
             style={{
               width: pixelScaler(145),
@@ -171,11 +174,13 @@ const SaveItem = ({
         <BldText13>{save.splace.name}</BldText13>
         <BadgesContainer>
           <AddressBadge>
-            <RegText13>{save.splace.address}</RegText13>
+            <RegText13>{shortenAddress(save.splace.address)}</RegText13>
           </AddressBadge>
-          <Category>
-            <RegText13>{"카테고리"}</RegText13>
-          </Category>
+          {save.splace.bigCategories?.length ? (
+            <Category>
+              <RegText13>{save.splace.bigCategories[0]?.name}</RegText13>
+            </Category>
+          ) : null}
         </BadgesContainer>
       </InfoContainer>
     </SaveItemContainer>
@@ -253,6 +258,7 @@ const AddSaveFolder = ({
       {!saves || saves.length > 0 ? (
         <FlatList
           style={{ left: pixelScaler(17.5) }}
+          showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
             <EditButtonsContainer>
               <SortButton
@@ -270,9 +276,10 @@ const AddSaveFolder = ({
                 <Icon
                   name="arrow_right"
                   style={{
-                    width: pixelScaler(10.7),
-                    height: pixelScaler(4),
+                    width: pixelScaler(5),
+                    height: pixelScaler(10.7),
                     transform: [{ rotate: "90deg" }],
+                    marginLeft: pixelScaler(6),
                   }}
                 />
               </SortButton>

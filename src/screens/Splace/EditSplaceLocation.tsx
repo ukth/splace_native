@@ -34,7 +34,6 @@ const EditSplaceLocation = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
     if (data?.editSplaces?.ok) {
       Alert.alert("상세주소가 변경되었습니다.");
       navigation.pop();

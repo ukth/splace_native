@@ -28,7 +28,6 @@ const FixedContents = () => {
 
   navigation.addListener("focus", async () => {
     const refetched = await refetch();
-    console.log(refetched);
     if (refetched?.data?.seeSplace?.ok) {
       setSplace(refetched.data?.seeSplace.splace);
     }

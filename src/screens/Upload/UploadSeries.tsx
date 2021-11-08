@@ -22,7 +22,7 @@ const LabelsContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
 `;
 
-const LabelContainer = styled.TouchableOpacity`
+const LabelContainer = styled.View`
   flex-direction: row;
   height: ${pixelScaler(60)}px;
   align-items: center;
@@ -103,7 +103,7 @@ const UploadSeries = () => {
                 spinner.start();
                 mutation({
                   variables: {
-                    title,
+                    title: title.trim(),
                     isPrivate,
                     photologIds,
                   },
@@ -114,15 +114,11 @@ const UploadSeries = () => {
           />
         ) : null,
     });
-  }, [title, isPrivate, photologIds]);
+  }, [title, isPrivate, photologIds, loading]);
 
   const { data, refetch, fetchMore } = useQuery(GET_USER_LOGS, {
     variables: { userId: me.id },
   });
-
-  useEffect(() => {
-    console.log(photologIds);
-  }, [photologIds]);
 
   return (
     <ScreenContainer>
@@ -141,7 +137,7 @@ const UploadSeries = () => {
         </LabelContainer>
         <LabelContainer>
           <BldTextInput16
-            placeholder="게시물 제목"
+            placeholder="시리즈 제목"
             selectionColor={theme.entrySelection}
             placeholderTextColor={theme.greyTextAlone}
             maxLength={30}
@@ -149,7 +145,10 @@ const UploadSeries = () => {
             numberOfLines={2}
             autoCorrect={false}
             value={title}
-            onChangeText={(text) => setTitle(text.trim())}
+            onChangeText={(text) => setTitle(text)}
+            style={{
+              width: pixelScaler(340),
+            }}
           />
         </LabelContainer>
       </LabelsContainer>
@@ -196,6 +195,7 @@ const UploadSeries = () => {
                 zIndex: 2,
                 left: pixelScaler(15),
                 top: pixelScaler(15),
+                width: pixelScaler(140),
                 color: theme.white,
               }}
             >

@@ -204,10 +204,6 @@ export class ZoomableImage extends Component<
     onShouldBlockNativeResponder: (evt, gestureState) => true,
   });
 
-  componentDidMount() {
-    console.log("mount");
-  }
-
   componentDidUpdate(prevProps: {
     imageWidth: number;
     imageHeight: number;

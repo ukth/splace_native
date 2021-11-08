@@ -34,7 +34,6 @@ const EditSplaceIntro = () => {
 
   const onCompleted = (data: any) => {
     spinner.stop();
-    console.log(data);
     if (data?.editSplaces?.ok) {
       Alert.alert("소개글이 변경되었습니다.");
       navigation.pop();
@@ -71,7 +70,7 @@ const EditSplaceIntro = () => {
     <ScreenContainer
       style={{
         paddingHorizontal: pixelScaler(30),
-        paddingTop: pixelScaler(25),
+        paddingTop: pixelScaler(20),
       }}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

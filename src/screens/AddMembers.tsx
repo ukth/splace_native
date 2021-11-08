@@ -4,7 +4,12 @@ import { RouteProp, useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled, { ThemeContext } from "styled-components/native";
 import { Icon } from "../components/Icon";
@@ -12,6 +17,7 @@ import Image from "../components/Image";
 import ScreenContainer from "../components/ScreenContainer";
 import { BldText16, RegText13 } from "../components/Text";
 import { BldTextInput16 } from "../components/TextInput";
+import { BLANK_PROFILE_IMAGE } from "../constants";
 import useMe from "../hooks/useMe";
 import { GET_FOLLOWERS } from "../queries";
 import {
@@ -20,9 +26,9 @@ import {
   ThemeType,
   UserType,
 } from "../types";
-import { BLANK_IMAGE, pixelScaler } from "../utils";
+import { pixelScaler } from "../utils";
 
-const MemberContainer = styled.TouchableOpacity`
+const MemberContainer = styled.View`
   height: ${pixelScaler(60)}px;
   width: 100%;
   align-items: center;
@@ -95,7 +101,7 @@ const ChatMemberComponent = ({
   const navigation = useNavigation<any>();
 
   return (
-    <MemberContainer
+    <TouchableWithoutFeedback
       onPress={() => {
         if (!roomMemberIds.includes(user.id)) {
           if (userList.includes(user.id)) {
@@ -106,47 +112,49 @@ const ChatMemberComponent = ({
         }
       }}
     >
-      <InfoContainer>
-        <MemberThumbnail>
-          <Image
-            source={{
-              uri: user.profileImageUrl ?? BLANK_IMAGE,
-            }}
-            style={{
-              width: pixelScaler(32),
-              height: pixelScaler(32),
-              borderRadius: pixelScaler(32),
-            }}
-          />
-        </MemberThumbnail>
-        <TitleContainer>
-          <BldText16
-            style={{
-              color: theme.chatMemberUsername,
-              width: pixelScaler(200),
-            }}
-            numberOfLines={1}
-          >
-            {user.username}
-          </BldText16>
-          {user.name ? (
-            <RegText13
+      <MemberContainer>
+        <InfoContainer>
+          <MemberThumbnail>
+            <Image
+              source={{
+                uri: user.profileImageUrl ?? BLANK_PROFILE_IMAGE,
+              }}
               style={{
-                color: theme.chatMemberName,
+                width: pixelScaler(32),
+                height: pixelScaler(32),
+                borderRadius: pixelScaler(32),
+              }}
+            />
+          </MemberThumbnail>
+          <TitleContainer>
+            <BldText16
+              style={{
+                color: theme.chatMemberUsername,
+                width: pixelScaler(200),
               }}
               numberOfLines={1}
             >
-              {user.name}
-            </RegText13>
+              {user.username}
+            </BldText16>
+            {user.name ? (
+              <RegText13
+                style={{
+                  color: theme.chatMemberName,
+                }}
+                numberOfLines={1}
+              >
+                {user.name}
+              </RegText13>
+            ) : null}
+          </TitleContainer>
+          {!roomMemberIds.includes(user.id) ? (
+            <SelectButton>
+              {userList.includes(user.id) ? <Selected /> : null}
+            </SelectButton>
           ) : null}
-        </TitleContainer>
-        {!roomMemberIds.includes(user.id) ? (
-          <SelectButton>
-            {userList.includes(user.id) ? <Selected /> : null}
-          </SelectButton>
-        ) : null}
-      </InfoContainer>
-    </MemberContainer>
+        </InfoContainer>
+      </MemberContainer>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -228,9 +236,9 @@ const AddMembers = ({
         <Icon
           name="search_grey"
           style={{
-            width: pixelScaler(26),
-            height: pixelScaler(26),
-            marginLeft: pixelScaler(5),
+            width: pixelScaler(20),
+            height: pixelScaler(20),
+            marginLeft: pixelScaler(15),
             marginRight: pixelScaler(5),
           }}
         />

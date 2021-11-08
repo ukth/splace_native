@@ -7,12 +7,18 @@ import {
   SplaceType,
   StackGeneratorParamList,
   ThemeType,
+  TimeSetType,
   UserType,
 } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import * as ImagePicker from "expo-image-picker";
 import Image from "../../components/Image";
-import { BLANK_IMAGE, pixelScaler, uploadPhotos } from "../../utils";
+import {
+  formatOperatingTime,
+  pixelScaler,
+  showFlashMessage,
+  uploadPhotos,
+} from "../../utils";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { Alert, SafeAreaView, Switch, Image as LocalImage } from "react-native";
@@ -23,6 +29,7 @@ import {
   EDIT_SPLACE,
   EDIT_SPLACE_TIMESETS,
   GET_SPLACE_INFO,
+  REPORT,
 } from "../../queries";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
@@ -30,6 +37,7 @@ import { API_URL, tokenVar } from "../../apollo";
 import axios from "axios";
 import useMe from "../../hooks/useMe";
 import { Icon } from "../../components/Icon";
+import { BLANK_IMAGE } from "../../constants";
 
 const Container = styled.ScrollView``;
 
@@ -40,14 +48,22 @@ const ThumbnailContainer = styled.View`
     theme.imageBackground};
 `;
 
+const ThumbnailBackground = styled.View`
+  position: absolute;
+  width: 100%;
+  height: ${pixelScaler(125)}px;
+  background-color: rgba(255, 255, 255, 0.5);
+`;
+
 const ThumbnailCameraButton = styled.TouchableOpacity`
   position: absolute;
-  right: ${pixelScaler(0)}px;
-  bottom: ${pixelScaler(0)}px;
+  right: ${pixelScaler(30)}px;
+  bottom: ${pixelScaler(15)}px;
 `;
 
 const LabelButtonsContainer = styled.View`
   padding: ${pixelScaler(30)}px ${pixelScaler(30)}px;
+  padding-bottom: 0;
 `;
 
 const Seperator = styled.View`
@@ -61,6 +77,15 @@ const LabelButton = styled.TouchableOpacity`
   width: ${pixelScaler(315)}px;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+`;
+
+const ReportButton = styled.TouchableOpacity`
+  width: 100%;
+  height: ${pixelScaler(55)}px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ToggleContainer = styled.View`
@@ -105,6 +130,44 @@ const EditSplace = () => {
   const { spinner } = useContext(ProgressContext);
   const me = useMe();
 
+  const day = new Date().getDay();
+
+  const [operatingTime, setOperatingTime] = useState<TimeSetType[]>();
+
+  const { data, refetch: refetchTimeSet } = useQuery(GET_SPLACE_INFO, {
+    variables: { splaceId: splace.id },
+  });
+
+  const onReportCompleted = (data: any) => {
+    spinner.stop();
+    if (data.reportResources?.ok) {
+      showFlashMessage({ message: "폐업, 휴점 신고가 완료되었습니다." });
+    } else if (data.reportResources?.error === "ERROR3P11") {
+      Alert.alert("해당 Splace에 이미 접수된 폐업, 휴점 신고가 존재합니다.");
+    } else {
+      Alert.alert("폐업, 휴점 신고에 실패했습니다.");
+    }
+  };
+
+  const [reportMutation, { loading: reportMutationLoading }] = useMutation(
+    REPORT,
+    {
+      onCompleted: onReportCompleted,
+    }
+  );
+
+  useEffect(() => {
+    if (!loading && data?.seeSplace?.ok && data.seeSplace.splace.categories) {
+      setSplace(data?.seeSplace?.splace);
+      if (data?.seeSplace?.splace?.timeSets?.length === 7) {
+        var timeSets = data?.seeSplace?.splace?.timeSets
+          .slice()
+          .sort((a: TimeSetType, b: TimeSetType) => a.day - b.day);
+        setOperatingTime(timeSets);
+      }
+    }
+  }, [data]);
+
   const onCompleted = (data: any) => {
     spinner.stop();
     if (data?.editSplaces?.ok) {
@@ -128,6 +191,7 @@ const EditSplace = () => {
 
   navigation.addListener("focus", async () => {
     const refetched = await refetch();
+    refetchTimeSet();
     if (refetched?.data?.seeSplace?.ok) {
       setSplace(refetched.data?.seeSplace.splace);
     }
@@ -156,6 +220,9 @@ const EditSplace = () => {
               if (awsUrl) {
                 mutation({
                   variables: {
+                    pets,
+                    noKids,
+                    parking,
                     splaceId: splace.id,
                     thumbnail: awsUrl,
                   },
@@ -167,7 +234,7 @@ const EditSplace = () => {
       ),
       headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
-  }, [localUri]);
+  }, [localUri, pets, noKids, parking]);
 
   return (
     <ScreenContainer>
@@ -194,6 +261,7 @@ const EditSplace = () => {
               }}
             />
           )}
+          <ThumbnailBackground />
           <ThumbnailCameraButton
             onPress={() => {
               (async () => {
@@ -210,7 +278,14 @@ const EditSplace = () => {
               })();
             }}
           >
-            <Ionicons name="camera" size={30} color="white" />
+            <Icon
+              name="gallery_black"
+              style={{
+                zIndex: 1,
+                width: pixelScaler(25),
+                height: pixelScaler(20),
+              }}
+            />
           </ThumbnailCameraButton>
         </ThumbnailContainer>
         <LabelButtonsContainer>
@@ -222,15 +297,14 @@ const EditSplace = () => {
               기본정보
               <RegText16 style={{ color: theme.textHighlight }}>*</RegText16>
             </RegText16>
-            <RegText13 style={{ color: theme.text }}></RegText13>
             <RegText13
               style={{
                 color: theme.textHighlight,
                 position: "absolute",
-                left: pixelScaler(70),
+                left: pixelScaler(75),
               }}
             >
-              내용
+              {splace.name}
             </RegText13>
             <Icon
               name="arrow_right"
@@ -245,10 +319,18 @@ const EditSplace = () => {
             onPress={() => navigation.push("EditSplaceLocation", { splace })}
           >
             <RegText16>
-              위치
+              위치정보
               <RegText16 style={{ color: theme.textHighlight }}>*</RegText16>
             </RegText16>
-            <RegText13 style={{ color: theme.text }}></RegText13>
+            <RegText13
+              style={{
+                color: theme.textHighlight,
+                position: "absolute",
+                left: pixelScaler(75),
+              }}
+            >
+              {splace.address}
+            </RegText13>
             <Icon
               name="arrow_right"
               style={{
@@ -264,7 +346,31 @@ const EditSplace = () => {
             }
           >
             <RegText16>운영시간</RegText16>
-            <RegText13 style={{ color: theme.text }}></RegText13>
+            <RegText13
+              style={{
+                color: theme.textHighlight,
+                position: "absolute",
+                left: pixelScaler(75),
+              }}
+            >
+              {operatingTime?.filter((timeset) => timeset.open).length
+                ? operatingTime[day].open
+                  ? formatOperatingTime(operatingTime[day].open ?? 0) +
+                    " - " +
+                    formatOperatingTime(operatingTime[day].close ?? 0) +
+                    (operatingTime[day].breakOpen &&
+                    operatingTime[day].breakClose
+                      ? " (Break " +
+                        formatOperatingTime(operatingTime[day].breakOpen ?? 0) +
+                        " - " +
+                        formatOperatingTime(
+                          operatingTime[day].breakClose ?? 0
+                        ) +
+                        ")"
+                      : "")
+                  : "휴무일"
+                : ""}
+            </RegText13>
             <Icon
               name="arrow_right"
               style={{
@@ -278,7 +384,16 @@ const EditSplace = () => {
             onPress={() => navigation.push("EditSplaceItem", { splace })}
           >
             <RegText16>상품</RegText16>
-            <RegText13 style={{ color: theme.text }}></RegText13>
+            <RegText13
+              style={{
+                color: theme.textHighlight,
+                position: "absolute",
+                left: pixelScaler(75),
+              }}
+            >
+              {(splace.itemName ?? "") +
+                (splace.itemPrice ? " ₩" + splace.itemPrice : "")}
+            </RegText13>
             <Icon
               name="arrow_right"
               style={{
@@ -345,6 +460,70 @@ const EditSplace = () => {
           </LabelButton>
           <Seperator style={{ backgroundColor: theme.text }} />
         </LabelButtonsContainer>
+        <ReportButton
+          onPress={() =>
+            Alert.alert(
+              "폐업, 휴점 정보 제안",
+              "이 가게의 영업상태가 변경되었나요?",
+              [
+                {
+                  text: "폐업",
+                  onPress: () => {
+                    if (!reportMutationLoading) {
+                      spinner.start();
+                      reportMutation({
+                        variables: {
+                          sourceType: "splace status",
+                          sourceId: splace.id,
+                          reason: "closure",
+                        },
+                      });
+                    }
+                  },
+                },
+                {
+                  text: "휴점",
+                  onPress: () => {
+                    if (!reportMutationLoading) {
+                      spinner.start();
+                      reportMutation({
+                        variables: {
+                          sourceType: "splace status",
+                          sourceId: splace.id,
+                          reason: "break",
+                        },
+                      });
+                    }
+                  },
+                },
+                {
+                  text: "휴점 종료",
+                  onPress: () => {
+                    if (!reportMutationLoading) {
+                      spinner.start();
+                      reportMutation({
+                        variables: {
+                          sourceType: "splace status",
+                          sourceId: splace.id,
+                          reason: "end break",
+                        },
+                      });
+                    }
+                  },
+                },
+                {
+                  text: "취소",
+                  onPress: () => {},
+                  style: "cancel",
+                },
+              ]
+            )
+          }
+        >
+          <RegText13 style={{ color: theme.errorText }}>
+            폐업 및 휴점 신고
+          </RegText13>
+        </ReportButton>
       </Container>
       <BottomSheetModal
         modalVisible={modalVisible}
@@ -397,21 +576,6 @@ const EditSplace = () => {
             }}
           />
         </ToggleContainer>
-        <ToggleConfirmButton
-          onPress={() => {
-            spinner.start();
-            mutation({
-              variables: {
-                pets,
-                noKids,
-                parking,
-                splaceId: splace.id,
-              },
-            });
-          }}
-        >
-          <RegText16 style={{ color: theme.textHighlight }}>완료</RegText16>
-        </ToggleConfirmButton>
       </BottomSheetModal>
     </ScreenContainer>
   );
