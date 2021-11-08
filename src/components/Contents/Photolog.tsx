@@ -97,7 +97,7 @@ const PhotoLog = ({
       refetch();
     } else {
       setModalVisible(false);
-      Alert.alert("게시물을 삭제할 수 없습니다.");
+      Alert.alert("게시물을 삭제할 수 없습니다.", data?.deletePhotolog?.error);
     }
   };
 

@@ -97,11 +97,11 @@ const Series = ({ item }: { item: SeriesType }) => {
   );
 
   const onScrapCompleted = (data: any) => {
-    if (data?.scrapLog?.ok) {
+    if (data?.scrapSeries?.ok) {
       showFlashMessage({ message: "게시물이 스크랩되었습니다." });
       refetch();
     } else {
-      Alert.alert("게시물을 스크랩 할 수 없습니다.");
+      Alert.alert("게시물을 스크랩 할 수 없습니다.", data?.scrapSeries?.error);
     }
   };
 
@@ -111,13 +111,13 @@ const Series = ({ item }: { item: SeriesType }) => {
   );
 
   const onUnscrapCompleted = (data: any) => {
-    if (data?.unscrapLog?.ok) {
+    if (data?.unscrapSeries?.ok) {
       showFlashMessage({ message: "게시물이 스크랩 목록에서 삭제되었습니다." });
       refetch();
     } else {
       Alert.alert(
         "게시물을 스크랩 목록에서 삭제할 수 없습니다.",
-        data?.unscrapLog.error
+        data?.unscrapSeries.error
       );
     }
   };
@@ -266,7 +266,9 @@ const Series = ({ item }: { item: SeriesType }) => {
                 onPress={() => {
                   if (!unscrapMutationLoading) {
                     setModalVisible(false);
-                    unscrapMutation({ variables: { scrapedLogId: item.id } });
+                    unscrapMutation({
+                      variables: { scrapedSeriesId: item.id },
+                    });
                   }
                 }}
               >
@@ -279,7 +281,9 @@ const Series = ({ item }: { item: SeriesType }) => {
                 onPress={() => {
                   if (!scrapMutationLoading) {
                     setModalVisible(false);
-                    scrapMutation({ variables: { photologId: item.id } });
+                    scrapMutation({
+                      variables: { seriesId: item.id },
+                    });
                   }
                 }}
               >
