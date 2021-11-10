@@ -13,7 +13,6 @@ import { Image } from "react-native";
 
 import Colors from "../constants/Colors";
 import { ImagePickerContext } from "../contexts/ImagePicker";
-import useColorScheme from "../hooks/useColorScheme";
 import { BottomTabParamList } from "../types";
 import { pixelScaler } from "../utils";
 import StackGenerator from "./StackGenerator";
