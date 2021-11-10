@@ -110,11 +110,11 @@ const Mainfeed = () => {
     onCompleted,
   });
 
-  navigation.addListener("focus", () => {
-    if (!loading) {
-      refetch();
-    }
-  });
+  // navigation.addListener("focus", () => {
+  //   if (!loading) {
+  //     refetch();
+  //   }
+  // });
 
   useEffect(() => {
     if (data?.getFeed?.logs && data?.getFeed?.series) {

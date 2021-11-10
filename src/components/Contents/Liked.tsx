@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Alert, TouchableOpacity } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { theme } from "../../../theme";
+import client from "../../apollo";
 import { LIKE_PHOTOLOG, UNLIKE_PHOTOLOG } from "../../queries";
 import { PhotologType, ThemeType } from "../../types";
 import { convertNumber, pixelScaler } from "../../utils";
@@ -24,7 +25,14 @@ const Liked = ({ item }: { item: PhotologType }) => {
 
     if (ok) {
       // await logUserIn(token);
-      setLiked(true);
+      client.cache.modify({
+        id: `Photolog:${item.id}`,
+        fields: {
+          isILiked(prev) {
+            return true;
+          },
+        },
+      });
     } else {
       Alert.alert("failed to like content!\n", error);
       setLiked(false);
@@ -39,7 +47,14 @@ const Liked = ({ item }: { item: PhotologType }) => {
     // console.log(ok);
 
     if (ok) {
-      setLiked(false);
+      client.cache.modify({
+        id: `Photolog:${item.id}`,
+        fields: {
+          isILiked(prev) {
+            return false;
+          },
+        },
+      });
     } else {
       Alert.alert("failed to unlike content!\n", error);
       setLiked(true);

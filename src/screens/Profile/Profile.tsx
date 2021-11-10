@@ -3,7 +3,6 @@ import { useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, FlatList, Share, View } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import { CardBox } from "../../components/CardRowBox";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import {
@@ -550,7 +549,9 @@ const Profile = () => {
   const { data: notificationData, refetch: refetchNotifications } =
     useQuery(GET_NOTIFICATIONS);
 
-  useEffect(() => {
+  var updating = false;
+
+  const checkNewNotification = () => {
     if (notificationData?.getMyActivityLogs?.ok) {
       (async () => {
         const followLogs = notificationData.getMyActivityLogs.followLogs;
@@ -575,6 +576,10 @@ const Profile = () => {
         }
       })();
     }
+  };
+
+  useEffect(() => {
+    checkNewNotification();
   }, [notificationData]);
 
   useEffect(() => {
@@ -714,11 +719,15 @@ const Profile = () => {
   );
 
   const updateData = async () => {
-    await refetchProfile();
-    await refetchLogs();
-    await refetchSereis();
-    await refetchMoment();
-    await refetchNotifications();
+    if (!updating) {
+      updating = true;
+      await refetchProfile();
+      await refetchLogs();
+      await refetchSereis();
+      await refetchMoment();
+      await refetchNotifications();
+      updating = false;
+    }
   };
 
   const refresh = async () => {
@@ -728,7 +737,9 @@ const Profile = () => {
       setRefreshing(false);
     }, 10000);
 
-    await updateData();
+    if (!updating) {
+      await updateData();
+    }
     clearTimeout(timer);
     setRefreshing(false);
   };
@@ -789,7 +800,9 @@ const Profile = () => {
     ]);
   }, [logsData, seriesData, momentData]);
 
-  navigation.addListener("focus", () => updateData());
+  navigation.addListener("focus", () => {
+    refetchNotifications();
+  });
 
   return (
     <ScreenContainer>

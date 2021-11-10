@@ -49,6 +49,7 @@ const ImagesViewer = () => {
 
   useEffect(() => {
     navigation.setOptions({
+      title: "",
       headerStyle: {
         backgroundColor: theme.black,
         height: pixelScaler(95),
