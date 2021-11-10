@@ -221,6 +221,7 @@ const PhotoLog = ({
         />
       ) : null}
       <Content item={item} />
+
       <BottomSheetModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
@@ -233,12 +234,6 @@ const PhotoLog = ({
         {modalContent === "dots" ? (
           item.author.isMe ? (
             <>
-              {/* <ModalButtonBox>
-                <RegText20>링크 복사</RegText20>
-              </ModalButtonBox> */}
-              {/* <ModalButtonBox onPress={() => onShare(item.id)}>
-                <RegText20>공유</RegText20>
-              </ModalButtonBox> */}
               <ModalButtonBox
                 onPress={() => {
                   setModalVisible(false);
@@ -275,12 +270,6 @@ const PhotoLog = ({
             </>
           ) : (
             <>
-              {/* <ModalButtonBox>
-                <RegText20>링크 복사</RegText20>
-              </ModalButtonBox> */}
-              {/* <ModalButtonBox onPress={() => onShare(item.id)}>
-                <RegText20>공유</RegText20>
-              </ModalButtonBox> */}
               {item.isScraped ? (
                 <ModalButtonBox
                   onPress={() => {

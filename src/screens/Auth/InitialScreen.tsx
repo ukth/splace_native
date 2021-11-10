@@ -77,7 +77,7 @@ const InitialScreen = () => {
   };
 
   return (
-    <ScreenContainer style={{ backgroundColor: "#f00" }}>
+    <ScreenContainer>
       {backgroundIndex < 0 ? (
         <Animated.View
           style={{

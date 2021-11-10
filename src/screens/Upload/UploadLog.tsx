@@ -132,8 +132,9 @@ const UploadLog = () => {
   const [mutation, { loading }] = useMutation(CREATE_LOG, { onCompleted });
 
   const upload = async (useThumbnail: boolean) => {
-    spinner.start();
+    spinner.start(true, 300);
     const awsUrls = await uploadPhotos(images.map((image) => image.url));
+    // console.log(awsUrls);
     mutation({
       variables: {
         imageUrls: awsUrls,

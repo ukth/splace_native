@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Alert,
-  FlatList,
-  Share,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { Alert, FlatList, Share, View } from "react-native";
 import styled from "styled-components/native";
 import { SeriesType, StackGeneratorParamList } from "../../types";
 import { pixelScaler, showFlashMessage } from "../../utils";

@@ -31,14 +31,12 @@ const Image = ({
         return;
       }
 
-      // otherwise download to cache
       const imageObject = await FileSystem.downloadAsync(
         remoteURI,
         filesystemURI
       );
       setImgURI(imageObject.uri);
     } catch (err) {
-      // console.log("Image loading error:", err);
       setImgURI(remoteURI);
     }
   };
@@ -80,11 +78,12 @@ const Image = ({
   props.style = { backgroundColor: theme.imageBackground, ...props.style };
 
   return uri !== "" ? (
-    <DefaultImage
-      resizeMethod="resize"
-      {...props}
-      source={imgURI !== "" ? { uri: imgURI } : { uri: uri }}
-    />
+    // <DefaultImage
+    //   resizeMethod="resize"
+    //   {...props}
+    //   source={imgURI !== "" ? { uri: imgURI } : { uri: uri }}
+    // />
+    <DefaultImage resizeMethod="resize" {...props} source={{ uri: uri }} />
   ) : null;
 };
 
