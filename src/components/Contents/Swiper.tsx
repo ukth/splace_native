@@ -58,7 +58,7 @@ const Swiper = ({ item }: { item: PhotologType }) => {
             outputRange: [
               0,
               0,
-              -width + 25,
+              -width + 22.5,
               -width * 2 + 25,
               -width * 3 + 24,
               -width * 3 + 24,
@@ -91,14 +91,14 @@ const Swiper = ({ item }: { item: PhotologType }) => {
             source={{ uri: url }}
             style={{
               backgroundColor: "#dadada",
-              marginLeft: pixelScaler(20),
-              width: pixelScaler(315),
+              marginLeft: pixelScaler(5),
+              width: pixelScaler(345),
               height:
                 item.photoSize === 2
-                  ? pixelScaler(420)
+                  ? pixelScaler(460)
                   : item.photoSize === 1
-                  ? pixelScaler(315)
-                  : pixelScaler(236.25),
+                  ? pixelScaler(345)
+                  : pixelScaler(258.75),
               borderRadius: pixelScaler(15),
             }}
           />

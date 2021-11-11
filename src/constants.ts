@@ -1,3 +1,9 @@
+export const API_URL = "api.splace.co.kr";
+
+export const TOKEN = "token";
+export const NOTIFICATION = "check_notification";
+export const MANUAL = "check_menual";
+
 export const ratingtags = [
   { id: 1, name: "Hot" },
   { id: 2, name: "Superhot" },
@@ -9,8 +15,8 @@ export const dayNameKor = ["일", "월", "화", "수", "목", "금", "토"];
 
 export const BLANK_IMAGE =
   "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/blank_grey.png";
-export const BLANK_IMAGE_D1 =
-  "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/blank_grey_d1.png";
+export const BLANK_IMAGE_FOLDER =
+  "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/blank_folder.png";
 export const BLANK_PROFILE_IMAGE =
   "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/super_blank.png";
 

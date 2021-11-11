@@ -12,12 +12,7 @@ import {
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import {
-  BldText13,
-  BldText16,
-  RegText13,
-  RegText9,
-} from "../../components/Text";
+import { BldText16, RegText13, RegText9 } from "../../components/Text";
 import {
   MessageType,
   RoomType,
@@ -143,6 +138,10 @@ const Chatroom = () => {
   const [titleEditing, setTitleEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const titleRef = useRef<any>();
+
+  const isSuper =
+    chatroom.members.length === 2 &&
+    chatroom.members.map((member) => member.id).includes(1);
 
   const {
     data: messageData,
@@ -439,7 +438,7 @@ const Chatroom = () => {
   };
 
   useEffect(() => {
-    if (messageData?.getRoomMessages) {
+    if (messageData?.getRoomMessages && !isSuper) {
       subscribeToMore({
         document: NEW_MESSAGE,
         variables: {
@@ -459,10 +458,7 @@ const Chatroom = () => {
   );
 
   const _handlePressSendButton = () => {
-    if (
-      chatroom.members.length === 2 &&
-      chatroom.members.map((member) => member.id).includes(1)
-    ) {
+    if (isSuper) {
       Alert.alert("super와의 채팅에선 메세지를 보낼 수 없습니다.");
       return;
     }
@@ -580,8 +576,7 @@ const Chatroom = () => {
           }}
         />
       )}
-      {chatroom.members.length === 2 &&
-      chatroom.members.map((member) => member.id).includes(1) ? null : (
+      {!isSuper ? (
         <Entry>
           <EntryTextInputContainer>
             <StyledTextInput
@@ -616,7 +611,7 @@ const Chatroom = () => {
             )}
           </EntryTextInputContainer>
         </Entry>
-      )}
+      ) : null}
     </KeyboardAvoidingView>
   );
 };

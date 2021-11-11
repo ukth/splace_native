@@ -8,12 +8,13 @@ import { useReactiveVar } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
-import { isLoggedInVar } from "../apollo";
+import { isLoggedInVar, menualCheckedVar } from "../apollo";
 import MainTab from "./MainTab";
 import AuthStack from "./AuthStack";
 import { ProgressContext } from "../contexts/Progress";
 import Spinner from "../components/Spinner";
 import ModalImagePicker from "../screens/ModalImagePicker";
+import Manual from "../screens/Manual";
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,7 @@ const Navigation = () => {
             component={MainTab}
           />
           <Stack.Screen name="ImagePicker" component={ModalImagePicker} />
+          <Stack.Screen name="Manual" component={Manual} />
         </Stack.Navigator>
       ) : (
         <AuthStack />

@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import {
-  Alert,
-  Keyboard,
-  TouchableWithoutFeedback,
-  useWindowDimensions,
-} from "react-native";
+import { Alert, Keyboard, TouchableWithoutFeedback } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
@@ -18,7 +13,6 @@ import { pixelScaler } from "../../utils";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import styled, { ThemeContext } from "styled-components/native";
 import { BldText16, RegText16 } from "../../components/Text";
-import { View } from "../../components/Themed";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import useMe from "../../hooks/useMe";
 
@@ -101,7 +95,7 @@ const EditInfo = () => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={{ flex: 1 }}>
+      <ScreenContainer style={{ flex: 1 }}>
         <RowContainer style={{ marginTop: pixelScaler(15) }}>
           <RegText16 style={{ width: pixelScaler(75) }}>이메일</RegText16>
           <RegTextInput16
@@ -164,7 +158,7 @@ const EditInfo = () => {
           themeVariant="light"
           isDarkModeEnabled={false}
         />
-      </View>
+      </ScreenContainer>
     </TouchableWithoutFeedback>
   );
 };

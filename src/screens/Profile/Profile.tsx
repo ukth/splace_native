@@ -28,13 +28,16 @@ import {
 import {
   MomentType,
   PhotologType,
-  RoomType,
   SeriesType,
   StackGeneratorParamList,
   ThemeType,
   UserType,
 } from "../../types";
-import { pixelScaler, showFlashMessage } from "../../utils";
+import {
+  getNotificationsChecked,
+  pixelScaler,
+  showFlashMessage,
+} from "../../utils";
 import * as Linking from "expo-linking";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -49,6 +52,7 @@ import { logUserOut } from "../../apollo";
 import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BLANK_IMAGE, BLANK_PROFILE_IMAGE } from "../../constants";
+import ModalMapView from "../../components/ModalMapView";
 
 const UpperContainer = styled.View`
   margin-bottom: ${pixelScaler(3)}px;
@@ -157,6 +161,14 @@ const MomentDateContainer = styled.View`
   bottom: ${pixelScaler(15)}px;
   background-color: rgba(255, 255, 255, 0.8);
   padding-top: ${pixelScaler(1.3)}px;
+`;
+
+const MessageIndicator = styled.View`
+  width: ${pixelScaler(7)}px;
+  height: ${pixelScaler(7)}px;
+  border-radius: ${pixelScaler(7)}px;
+  background-color: ${({ theme }: { theme: ThemeType }) =>
+    theme.themeBackground};
 `;
 
 const ProfileInfo = ({
@@ -319,7 +331,10 @@ const ProfileInfo = ({
             }
           }}
         >
-          <RegText13>메세지</RegText13>
+          <View style={{ flexDirection: "row" }}>
+            <RegText13>메세지</RegText13>
+            {user.isMe && user.unreadChatExist ? <MessageIndicator /> : null}
+          </View>
         </Button>
 
         {!user.isMe &&
@@ -549,26 +564,35 @@ const Profile = () => {
   const { data: notificationData, refetch: refetchNotifications } =
     useQuery(GET_NOTIFICATIONS);
 
+  const [notificationsChecked, setNotificationsChecked] = useState(0);
+
+  const [showMap, setShowMap] = useState(false);
+
   var updating = false;
 
-  const checkNewNotification = () => {
+  useEffect(() => {
+    (async () => {
+      const tmp = await getNotificationsChecked();
+      setNotificationsChecked(tmp);
+    })();
+  }, []);
+
+  useEffect(() => {
     if (notificationData?.getMyActivityLogs?.ok) {
       (async () => {
         const followLogs = notificationData.getMyActivityLogs.followLogs;
         const editFolderLogs =
           notificationData.getMyActivityLogs.editFolderLogs;
         const likeLogs = notificationData.getMyActivityLogs.likeLogs;
-        const checkNotifications = Number(
-          (await AsyncStorage.getItem("check_notification")) ?? 0
-        );
         if (
           (followLogs?.length &&
-            followLogs[followLogs.length - 1].createdAt > checkNotifications) ||
+            followLogs[followLogs.length - 1].createdAt >
+              notificationsChecked) ||
           (editFolderLogs?.length &&
             editFolderLogs[editFolderLogs.length - 1].createdAt >
-              checkNotifications) ||
+              notificationsChecked) ||
           (likeLogs?.length &&
-            likeLogs[likeLogs.length - 1].createdAt > checkNotifications)
+            likeLogs[likeLogs.length - 1].createdAt > notificationsChecked)
         ) {
           setNewNotification(true);
         } else {
@@ -576,11 +600,7 @@ const Profile = () => {
         }
       })();
     }
-  };
-
-  useEffect(() => {
-    checkNewNotification();
-  }, [notificationData]);
+  }, [notificationData, notificationsChecked]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -593,7 +613,10 @@ const Profile = () => {
                 bottom: pixelScaler(10),
                 left: pixelScaler(10),
               }}
-              onPress={() => navigation.push("Notification")}
+              onPress={() => {
+                setNotificationsChecked(new Date().valueOf());
+                navigation.push("Notification");
+              }}
             >
               <Icon
                 name={newNotification ? "notification_new" : "notification"}
@@ -791,7 +814,9 @@ const Profile = () => {
     </TouchableOpacity>
   );
 
-  const [listData, setListData] = useState<any>([[], [], []]);
+  const [listData, setListData] = useState<
+    [PhotologType[], SeriesType[], MomentType[]]
+  >([[], [], []]);
   useEffect(() => {
     setListData([
       logsData?.getUserLogs?.logs,
@@ -801,6 +826,7 @@ const Profile = () => {
   }, [logsData, seriesData, momentData]);
 
   navigation.addListener("focus", () => {
+    refetchProfile();
     refetchNotifications();
   });
 
@@ -1001,6 +1027,17 @@ const Profile = () => {
           )}
         </BottomSheetModal>
       )}
+      {/* <ModalMapView
+        showMap={showMap}
+        setShowMap={setShowMap}
+        splaces={
+          tabViewIndex === 0
+            ? listData[0].filter((log) => log.splace).map((log) => log.splace)
+            : listData[2]
+                .filter((moment) => moment.splace)
+                .map((moment) => moment.splace)
+        }
+      /> */}
     </ScreenContainer>
   );
 };

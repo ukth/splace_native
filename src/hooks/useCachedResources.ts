@@ -3,9 +3,10 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { isLoggedInVar, tokenVar, cache } from "../apollo";
+import { isLoggedInVar, tokenVar, cache, menualCheckedVar } from "../apollo";
 import { Asset } from "expo-asset";
 import { Image } from "react-native";
+import { MANUAL, TOKEN } from "../constants";
 
 function cacheImages(images: (string | number)[]) {
   return images.map((image) => {
@@ -26,10 +27,14 @@ export default function useCachedResources() {
       try {
         SplashScreen.preventAutoHideAsync();
 
-        const token = await AsyncStorage.getItem("token");
+        const token = await AsyncStorage.getItem(TOKEN);
         if (token) {
           isLoggedInVar(true);
           tokenVar(token);
+        }
+        const menualChecked = await AsyncStorage.getItem(MANUAL);
+        if (menualChecked) {
+          menualCheckedVar(true);
         }
         // Load fonts
         await Font.loadAsync({

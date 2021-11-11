@@ -16,7 +16,7 @@ import {
   ThemeType,
 } from "../types";
 
-import { useQuery } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import PhotoLog from "../components/Contents/Photolog";
 import Series from "../components/Contents/Series";
 import useMe from "../hooks/useMe";
@@ -26,6 +26,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ImagePickerContext } from "../contexts/ImagePicker";
 import MainfeedHeader from "../components/MainfeedHeader";
 import { showFlashMessage } from "../utils";
+import { menualCheckedVar } from "../apollo";
 
 const { width } = Dimensions.get("window");
 

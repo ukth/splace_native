@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Alert, useWindowDimensions } from "react-native";
+import { Alert, useWindowDimensions, View } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation } from "@apollo/client";
@@ -12,7 +12,6 @@ import styled from "styled-components/native";
 import { pixelScaler } from "../../utils";
 import { BldText16, RegText16 } from "../../components/Text";
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "../../components/Themed";
 import { logUserOut } from "../../apollo";
 import { DELETE_ACCOUNT } from "../../queries";
 import * as Linking from "expo-linking";

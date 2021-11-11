@@ -47,7 +47,7 @@ import ModalMapView from "../../components/ModalMapView";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE_D1 } from "../../constants";
+import { BLANK_IMAGE_FOLDER } from "../../constants";
 
 const SaveItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -65,7 +65,7 @@ const BadgesContainer = styled.View`
   margin-top: ${pixelScaler(12)}px;
 `;
 
-const AddressBadge = styled.TouchableOpacity`
+const AddressBadge = styled.View`
   border-width: ${pixelScaler(0.7)}px;
   height: ${pixelScaler(20)}px;
   width: ${pixelScaler(74)}px;
@@ -75,7 +75,7 @@ const AddressBadge = styled.TouchableOpacity`
   padding-top: ${pixelScaler(1.3)}px;
 `;
 
-const Category = styled.TouchableOpacity`
+const Category = styled.View`
   border-width: ${pixelScaler(0.7)}px;
   height: ${pixelScaler(20)}px;
   padding: 0 ${pixelScaler(10)}px;
@@ -162,7 +162,7 @@ const SaveItem = ({
       >
         <Image
           source={{
-            uri: save.splace.thumbnail ?? BLANK_IMAGE_D1,
+            uri: save.splace.thumbnail ?? BLANK_IMAGE_FOLDER,
           }}
           style={{
             width: pixelScaler(145),
@@ -177,14 +177,11 @@ const SaveItem = ({
           <AddressBadge>
             <RegText13>{shortenAddress(save.splace.address)}</RegText13>
           </AddressBadge>
-          {/* {save.splace.bigCategories?.length ? (
+          {save.splace.bigCategories?.length ? (
             <Category>
               <RegText13>{save.splace.bigCategories[0]?.name}</RegText13>
             </Category>
-          ) : null} */}
-          <Category>
-            <RegText13>아아라아</RegText13>
-          </Category>
+          ) : null}
         </BadgesContainer>
       </InfoContainer>
     </SaveItemContainer>

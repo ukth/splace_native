@@ -340,14 +340,11 @@ export const GET_PROFILE = gql`
       error
       profile {
         url
-        photologs {
-          id
-          imageUrls
-        }
         profileMessage
         totalFollowers
         totalFollowing
         totalLogsNumber
+        unreadChatExist
         authority
         ...UserFragment
       }

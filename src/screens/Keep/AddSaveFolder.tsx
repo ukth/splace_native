@@ -50,7 +50,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE_D1 } from "../../constants";
+import { BLANK_IMAGE_FOLDER } from "../../constants";
 
 export const Item = styled.View`
   width: ${pixelScaler(145)}px;
@@ -160,7 +160,7 @@ const SaveItem = ({
 
           <Image
             source={{
-              uri: save.splace.thumbnail ?? BLANK_IMAGE_D1,
+              uri: save.splace.thumbnail ?? BLANK_IMAGE_FOLDER,
             }}
             style={{
               width: pixelScaler(145),

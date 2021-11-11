@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
-  useWindowDimensions,
   View,
   Image,
   Alert,
@@ -21,7 +20,7 @@ import { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Preview from "../../components/Search/Preview";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   LOG_SEARCHCATEORIES,
   LOG_SEARCHSPLACES,
@@ -36,18 +35,14 @@ import {
   RegText16,
 } from "../../components/Text";
 import { Icon } from "../../components/Icon";
-import { BldTextInput16, RegTextInput16 } from "../../components/TextInput";
+import { RegTextInput16 } from "../../components/TextInput";
 import ScreenContainer from "../../components/ScreenContainer";
 import { FilterContext } from "../../contexts/Filter";
-import { Item } from "../../components/Folder";
-import { Ionicons } from "@expo/vector-icons";
 import { ProgressContext } from "../../contexts/Progress";
 import { ModalKeep } from "../../components/ModalKeep";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
-import ModalMapSplaceView from "../../components/ModalMapSplaceView";
 import ModalMapView from "../../components/ModalMapView";
 import { BLANK_IMAGE, BLANK_PROFILE_IMAGE } from "../../constants";
-// import { TextInput } from "react-native-gesture-handler";
 
 const HeaderContainer = styled.View`
   align-items: center;
@@ -91,6 +86,7 @@ const HeaderEntryContainer = styled.View`
   padding-right: ${pixelScaler(30)}px;
   padding-left: ${pixelScaler(30)}px;
 `;
+
 const SearchBar = styled.View`
   flex: 1;
   height: ${pixelScaler(35)}px;
@@ -135,12 +131,6 @@ const ListItemContainer = styled.TouchableOpacity`
   height: ${pixelScaler(60)}px;
 `;
 
-const CloseButton = styled.TouchableOpacity`
-  width: ${pixelScaler(35)}px;
-  align-items: center;
-  justify-content: center;
-`;
-
 const SearchModeSelector = styled.View`
   height: ${pixelScaler(50)}px;
   padding-left: ${pixelScaler(30)}px;
@@ -177,14 +167,12 @@ const Search = () => {
 
   const [tabViewIndex, setTabViewIndex] = useState<0 | 1 | 2>(0);
 
-  const [splaceHistory, setSplaceHistory] = useState<string[]>([]);
-
   const [history, setHistory] = useState<string[]>([]);
 
   const [keyword, setKeyword] = useState<string>("");
   const [splaceSearched, setSplaceSearched] = useState(false);
 
-  const { filter, setFilter, filterActivated } = useContext(FilterContext);
+  const { filter, filterActivated } = useContext(FilterContext);
 
   const { spinner } = useContext(ProgressContext);
 
@@ -905,66 +893,80 @@ const Search = () => {
           />
         )
       ) : tabViewIndex === 1 ? (
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={[
-            ...(categoryData?.searchCategories?.bigCategories.map(
-              (bigCategory: {
-                id: number;
-                name: string;
-                totalPhotologs: number;
-              }) => {
-                return { ...bigCategory, type: "bigCategory" };
-              }
-            ) ?? []),
-            ...(categoryData?.searchCategories?.categories.map(
-              (category: {
-                id: number;
-                name: string;
-                totalPhotologs: number;
-              }) => {
-                return { ...category, type: "category" };
-              }
-            ) ?? []),
-          ]}
-          style={{
-            paddingHorizontal: pixelScaler(30),
-          }}
-          ItemSeparatorComponent={() => <Seperator />}
-          keyExtractor={(item, index) => item.id + "" + index}
-          renderItem={({
-            item,
-          }: {
-            item: {
-              type: "bigCategory" | "category";
-              id: number;
-              name: string;
-              totalPhotologs: number;
-            };
-          }) => (
-            <ListItemContainer
-              onPress={() => {
-                if (item.type === "bigCategory") {
-                  navigation.push("LogsByBigCategory", { bigCategory: item });
-                } else {
-                  navigation.push("LogsByCategory", { category: item });
+        categoryData?.searchCategories?.bigCategories?.length ||
+        categoryData?.searchCategories?.categories?.length ? (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={[
+              ...(categoryData?.searchCategories?.bigCategories.map(
+                (bigCategory: {
+                  id: number;
+                  name: string;
+                  totalPhotologs: number;
+                }) => {
+                  return { ...bigCategory, type: "bigCategory" };
                 }
-              }}
-            >
-              <Tag
-                style={{
-                  borderRadius: pixelScaler(25),
-                  marginRight: pixelScaler(10),
+              ) ?? []),
+              ...(categoryData?.searchCategories?.categories.map(
+                (category: {
+                  id: number;
+                  name: string;
+                  totalPhotologs: number;
+                }) => {
+                  return { ...category, type: "category" };
+                }
+              ) ?? []),
+            ]}
+            style={{
+              paddingHorizontal: pixelScaler(30),
+            }}
+            ItemSeparatorComponent={() => <Seperator />}
+            keyExtractor={(item, index) => item.id + "" + index}
+            renderItem={({
+              item,
+            }: {
+              item: {
+                type: "bigCategory" | "category";
+                id: number;
+                name: string;
+                totalPhotologs: number;
+              };
+            }) => (
+              <ListItemContainer
+                onPress={() => {
+                  if (item.type === "bigCategory") {
+                    navigation.push("LogsByBigCategory", { bigCategory: item });
+                  } else {
+                    navigation.push("LogsByCategory", { category: item });
+                  }
                 }}
               >
-                <RegText16>{item.name}</RegText16>
-              </Tag>
-              <RegText13 style={{ color: theme.greyTextLight }}>
-                {convertNumber(item.totalPhotologs) + "개의 게시물"}
-              </RegText13>
-            </ListItemContainer>
-          )}
-        />
+                <Tag
+                  style={{
+                    borderRadius: pixelScaler(25),
+                    marginRight: pixelScaler(10),
+                  }}
+                >
+                  <RegText16>{item.name}</RegText16>
+                </Tag>
+                <RegText13 style={{ color: theme.greyTextLight }}>
+                  {convertNumber(item.totalPhotologs) + "개의 게시물"}
+                </RegText13>
+              </ListItemContainer>
+            )}
+          />
+        ) : (
+          <BlankMessageContainer>
+            <RegText16
+              style={{
+                color: theme.greyTextAlone,
+                lineHeight: pixelScaler(23),
+              }}
+            >
+              관심있는 카테고리를 검색해 보세요
+            </RegText16>
+          </BlankMessageContainer>
+        )
       ) : (
         <FlatList
           data={userData?.searchUsers?.users}

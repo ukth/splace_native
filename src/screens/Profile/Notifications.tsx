@@ -17,7 +17,7 @@ import ScreenContainer from "../../components/ScreenContainer";
 import { BldText13, BldText16, RegText13 } from "../../components/Text";
 import { FOLLOW, GET_NOTIFICATIONS } from "../../queries";
 import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
-import { pixelScaler } from "../../utils";
+import { checkNotifications, pixelScaler } from "../../utils";
 import { gql, useMutation } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
@@ -95,7 +95,13 @@ const FollowButton = ({ user }: { user: UserType }) => {
 };
 
 const Notification = () => {
-  const { data, refetch } = useQuery(GET_NOTIFICATIONS);
+  const onCompleted = (data: any) => {
+    if (data?.getMyActivityLogs?.ok) {
+      checkNotifications();
+    }
+  };
+
+  const { data, refetch } = useQuery(GET_NOTIFICATIONS, { onCompleted });
   const [notifications, setNotifications] = useState<any[]>();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -103,13 +109,10 @@ const Notification = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
-  const d = new Date();
-
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => <BldText16>알림</BldText16>,
     });
-    AsyncStorage.setItem("check_notification", d.valueOf() + "");
   }, []);
 
   navigation.addListener("focus", refetch);

@@ -42,7 +42,7 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE_D1 } from "../../constants";
+import { BLANK_IMAGE_FOLDER } from "../../constants";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -123,7 +123,7 @@ const Folder = ({
         {folder?.saves?.length > 0 ? (
           <Image
             source={{
-              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE_D1,
+              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE_FOLDER,
             }}
             style={{
               width: pixelScaler(145),

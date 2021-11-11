@@ -191,10 +191,10 @@ const PhotoLog = ({
         style={{
           height:
             item.photoSize === 2
-              ? pixelScaler(420 + 10)
+              ? pixelScaler(460 + 10)
               : item.photoSize === 1
-              ? pixelScaler(315 + 10)
-              : pixelScaler(236.25 + 10),
+              ? pixelScaler(345 + 10)
+              : pixelScaler(258.75 + 10),
         }}
       >
         <Swiper item={item} />

@@ -1,7 +1,9 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Dimensions, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
-import { API_URL, tokenVar } from "./apollo";
+import { menualCheckedVar, tokenVar } from "./apollo";
+import { API_URL, MANUAL, NOTIFICATION } from "./constants";
 import { Splace } from "./screens";
 
 export const convertNumber = (n: number) => {
@@ -421,4 +423,18 @@ export const convertTimeDifference2String = (diff: number) => {
     return Math.floor(diff / (60 * 60000 * 24 * 30)) + "달 전";
   }
   return Math.floor(diff / (60 * 60000 * 24 * 365)) + "년 전";
+};
+
+export const checkNotifications = async () => {
+  const d = new Date();
+  AsyncStorage.setItem(NOTIFICATION, d.valueOf() + "");
+};
+
+export const getNotificationsChecked = async () => {
+  return Number((await AsyncStorage.getItem(NOTIFICATION)) ?? 0);
+};
+
+export const checkMenual = async () => {
+  menualCheckedVar(true);
+  AsyncStorage.setItem(MANUAL, "1");
 };

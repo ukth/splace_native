@@ -89,6 +89,7 @@ export type UserType = {
   isBlocked?: boolean;
   totalLogsNumber?: number;
   url?: string;
+  unreadChatExist?: boolean;
   authority: string;
 };
 

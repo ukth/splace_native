@@ -4,15 +4,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 // import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Image as DefaultImage,
-  Alert,
-  FlatList,
-  ScrollView,
-  Share,
-  Text,
-  View,
-} from "react-native";
+import { Image as DefaultImage, Alert, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styled, { ThemeContext } from "styled-components/native";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
@@ -20,11 +12,9 @@ import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldTextInput16, RegTextInput16 } from "../../components/TextInput";
 import { StackGeneratorParamList, ThemeType } from "../../types";
-import { pixelScaler } from "../../utils";
+import { pixelScaler, uploadPhotos } from "../../utils";
 import * as ImagePicker from "expo-image-picker";
 import { EDIT_PROFILE, VALIDATE_USERNAME } from "../../queries";
-import axios from "axios";
-import { API_URL, tokenVar } from "../../apollo";
 import { ProgressContext } from "../../contexts/Progress";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
@@ -71,10 +61,12 @@ const EditProfile = () => {
     profileMessage: old_profileMessage,
   } = me;
 
-  const [username, setUsername] = useState(old_username);
-  const [name, setName] = useState(old_name);
-  const [url, setUrl] = useState(old_url);
-  const [profileMessage, setProfileMessage] = useState(old_profileMessage);
+  const [username, setUsername] = useState(old_username ?? "");
+  const [name, setName] = useState(old_name ?? "");
+  const [url, setUrl] = useState(old_url ?? "");
+  const [profileMessage, setProfileMessage] = useState(
+    old_profileMessage ?? ""
+  );
   const [localUri, setLocalUri] = useState<string>("");
   const { spinner } = useContext(ProgressContext);
   const [valueChanged, setValueChanged] = useState(false);
@@ -158,28 +150,9 @@ const EditProfile = () => {
                 if (localUri !== "") {
                   // console.log("local in");
 
-                  const formData = new FormData();
+                  const awsUrl = await uploadPhotos([localUri]);
 
-                  formData.append("photos", {
-                    // @ts-ignore
-                    uri: localUri,
-                    name: localUri.substr(localUri.length - 10),
-                    type: "image/jpeg",
-                  });
-
-                  const res = await axios.post(
-                    "http://" + API_URL + "/uploadphoto",
-                    formData,
-                    {
-                      headers: {
-                        "content-type": "multipart/form-data",
-                        // token: tokenVar(),
-                        token: tokenVar() ?? "",
-                      },
-                    }
-                  );
-
-                  if (Object.keys(res.data).length !== 1) {
+                  if (awsUrl.length !== 1) {
                     Alert.alert(
                       "프로필 편집에 실패했습니다.\n(사진 업로드 실패)"
                     );
@@ -190,18 +163,10 @@ const EditProfile = () => {
                   }
                 }
 
-                if (url && url.trim() !== old_url) {
-                  variables.url = url.trim();
-                }
-                if (username && username.trim() !== old_username) {
-                  variables.username = username.trim();
-                }
-                if (name && name !== old_name) {
-                  variables.name = name;
-                }
-                if (profileMessage && profileMessage !== old_profileMessage) {
-                  variables.profileMessage = profileMessage;
-                }
+                variables.url = url.trim();
+                variables.username = username.trim() ?? "";
+                variables.name = name;
+                variables.profileMessage = profileMessage;
 
                 if (Object.keys(variables).length !== 0) {
                   if ("username" in variables) {

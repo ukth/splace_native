@@ -20,7 +20,6 @@ import { RegText16 } from "./components/Text";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
-  // const colorScheme = useColorScheme();
 
   // @ts-ignore
   Text.defaultProps = { ...(Text.defaultProps || {}), allowFontScaling: false };

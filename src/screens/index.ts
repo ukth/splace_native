@@ -120,7 +120,6 @@ export {
   UploadMoment,
   UploadSeries,
   SearchSplaceForUpload,
-  // SearchSplaceForLog,
   SelectCategory,
   SelectSeries,
   EditPhotolog,

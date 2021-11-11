@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
-import { GestureResponderEvent } from "react-native";
+import { GestureResponderEvent, View } from "react-native";
 import { ThemeContext } from "styled-components/native";
 import { ThemeType } from "../../types";
 import { pixelScaler } from "../../utils";
 import { BldText16 } from "../Text";
-import { View } from "../Themed";
 import { GreyButton, InfoContainer, MemberContainer } from "./StyledComponents";
 
 export const GreyButtonComponent = ({

@@ -99,6 +99,8 @@ const ImageItemContainer = styled.TouchableOpacity`
 const ImageItem = styled.Image`
   width: ${pixelScaler(123)}px;
   height: ${pixelScaler(123)}px;
+  background-color: ${({ theme }: { theme: ThemeType }) =>
+    theme.greyBackground};
 `;
 
 const ImageItemFocused = styled.View`
@@ -165,15 +167,6 @@ const ModalImagePicker = () => {
       offset_y: number;
     })[]
   >([]);
-
-  const [editData, setEditData] = useState<
-    | {
-        zoom: number;
-        offset_x: number;
-        offset_y: number;
-      }
-    | undefined
-  >();
 
   const [size, setSize] = useState<{ width: number; height: number }>();
 
@@ -414,9 +407,9 @@ const ModalImagePicker = () => {
         setLoadedImage(assets.assets);
         setFocusedImageIndex(0);
         if (images.length === 0) {
-          setSelectedImages([
-            { ...assets.assets[0], zoom: 1, offset_x: 0, offset_y: 0 },
-          ]);
+          // setSelectedImages([
+          //   { ...assets.assets[0], zoom: 1, offset_x: 0, offset_y: 0 },
+          // ]);
         } else {
           const orgUrls = images.map((image) => image.orgUrl);
           setSelectedImages(
@@ -522,6 +515,7 @@ const ModalImagePicker = () => {
                 borderColor:
                   focusedSize === 0 ? theme.borderHighlight : theme.text,
                 marginLeft: pixelScaler(10),
+                paddingTop: pixelScaler(2),
               }}
             >
               <RegText16
@@ -536,6 +530,7 @@ const ModalImagePicker = () => {
                 borderColor:
                   focusedSize === 1 ? theme.borderHighlight : theme.text,
                 marginLeft: pixelScaler(10),
+                paddingTop: pixelScaler(2),
               }}
             >
               <RegText16
@@ -550,6 +545,7 @@ const ModalImagePicker = () => {
                 borderColor:
                   focusedSize === 2 ? theme.borderHighlight : theme.text,
                 marginLeft: pixelScaler(10),
+                paddingTop: pixelScaler(2),
               }}
             >
               <RegText16

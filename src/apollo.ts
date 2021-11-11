@@ -18,14 +18,12 @@ import { Alert } from "react-native";
 import { ProgressContext } from "./contexts/Progress";
 import { useContext } from "react";
 import { PhotologType, RoomType, SeriesType, UserType } from "./types";
+import { API_URL, TOKEN } from "./constants";
 
 export const isLoggedInVar = makeVar<boolean>(false);
 export const tokenVar = makeVar<string | null>("");
 export const userIdVar = makeVar<number | null>(null);
-
-export const API_URL = "api.splace.co.kr";
-
-const TOKEN = "token";
+export const menualCheckedVar = makeVar<boolean>(false);
 
 export const logUserIn = async (token: string, userId: number) => {
   await AsyncStorage.setItem(TOKEN, token);

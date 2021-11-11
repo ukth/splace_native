@@ -5,7 +5,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
-import { HeaderBackButton } from "../../components/HeaderBackButton";
 import * as VideoThumbnails from "expo-video-thumbnails";
 
 import { Camera } from "expo-camera";
@@ -87,13 +86,11 @@ const UploadMoment = () => {
 
   const camera = useRef<any>();
   const video = useRef<any>();
-  const [ok, setOk] = useState(false);
   const [zoom, setZoom] = useState(0);
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
   const [recordedUri, setRecordedUri] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  // const progress = useRef(new Animated.Value(0)).current;
   const { content, setContent } = useContext(UploadContentContext);
 
   const [progress, setProgress] = useState(new Animated.Value(0));
@@ -104,6 +101,8 @@ const UploadMoment = () => {
   const [isMuted, setIsMuted] = useState(false);
 
   const { spinner } = useContext(ProgressContext);
+
+  const [cameraPermissionGranted, setcameraPermissionGranted] = useState(false);
 
   const onCompleted = (data: any) => {
     spinner.stop();
@@ -123,7 +122,8 @@ const UploadMoment = () => {
 
   const getPermissions = async () => {
     const { granted } = await Camera.requestPermissionsAsync();
-    setOk(granted);
+    await Camera.requestMicrophonePermissionsAsync();
+    setcameraPermissionGranted(granted);
   };
   useEffect(() => {
     getPermissions();
@@ -351,15 +351,24 @@ const UploadMoment = () => {
               transform: [{ translateX: left }],
             }}
           />
-          <Camera
-            ref={camera}
-            type={cameraType}
-            style={{
-              width,
-              height: (width * 4) / 3,
-            }}
-            zoom={zoom}
-          />
+          {cameraPermissionGranted ? (
+            <Camera
+              ref={camera}
+              type={cameraType}
+              style={{
+                width,
+                height: (width * 4) / 3,
+              }}
+              zoom={zoom}
+            />
+          ) : (
+            <View
+              style={{
+                width,
+                height: (width * 4) / 3,
+              }}
+            />
+          )}
           <FooterContainer>
             <RegText13
               style={{

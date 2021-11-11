@@ -5,14 +5,9 @@ import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackGeneratorParamList, UserType } from "../../types";
-import { RegTextInput13 } from "../../components/TextInput";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-import styled from "styled-components/native";
 import { pixelScaler } from "../../utils";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
-import { Ionicons } from "@expo/vector-icons";
-import { View } from "../../components/Themed";
-import { logUserOut } from "../../apollo";
 import { GET_BLOCKED_USER, UNBLOCK } from "../../queries";
 import {
   InfoContainer,

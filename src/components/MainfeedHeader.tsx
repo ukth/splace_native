@@ -1,3 +1,4 @@
+import { useReactiveVar } from "@apollo/client";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useRef, useState } from "react";
@@ -5,6 +6,7 @@ import { Animated, Image, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ScreenStackHeaderRightView } from "react-native-screens";
 import styled from "styled-components/native";
+import { menualCheckedVar } from "../apollo";
 import { Icons } from "../icons";
 import { StackGeneratorParamList, ThemeType } from "../types";
 import { pixelScaler } from "../utils";
@@ -69,6 +71,8 @@ const MainfeedHeader = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
+  const menualChecked = useReactiveVar(menualCheckedVar);
+
   const [showButtons, setShowButtons] = useState(false);
   const openAnim = useRef(new Animated.Value(0)).current;
   const translateX = openAnim.interpolate({
@@ -118,15 +122,33 @@ const MainfeedHeader = () => {
   return (
     <Container>
       <HeaderLeftContainer>
-        <Icon
-          name="super"
-          style={{
-            width: pixelScaler(57),
-            height: pixelScaler(34),
-            marginLeft: pixelScaler(23),
-            marginTop: pixelScaler(5),
-          }}
-        />
+        {menualChecked ? (
+          <Icon
+            name="super"
+            style={{
+              width: pixelScaler(57),
+              height: pixelScaler(34),
+              marginLeft: pixelScaler(23),
+              marginTop: pixelScaler(5),
+            }}
+          />
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.getParent()?.getParent()?.push("Manual");
+            }}
+          >
+            <Icon
+              name="super_necklace"
+              style={{
+                width: pixelScaler(57),
+                height: pixelScaler(34),
+                marginLeft: pixelScaler(23),
+                marginTop: pixelScaler(5),
+              }}
+            />
+          </TouchableOpacity>
+        )}
       </HeaderLeftContainer>
       <HeaderRightContainer>
         <TouchableOpacity
