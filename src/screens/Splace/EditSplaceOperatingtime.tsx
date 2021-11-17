@@ -265,7 +265,7 @@ const EditSplaceOperatingtime = () => {
               let breakDays_var = [];
               for (let i = 0; i < breakWeeks.length; i++) {
                 for (let j = 0; j < breakDays.length; j++) {
-                  breakDays_var.push(i * 7 + j);
+                  breakDays_var.push(breakWeeks[i] * 7 + breakDays[j]);
                 }
               }
               let operatingTime_vars = [];
@@ -324,6 +324,16 @@ const EditSplaceOperatingtime = () => {
         };
       })
     );
+
+    for (let i = 0; i < splace.breakDays.length; i++) {
+      const d = splace.breakDays[i];
+      if (!breakWeeks.includes(Math.floor(d / 7))) {
+        breakWeeks.push(Math.floor(d / 7));
+      }
+      if (!breakDays.includes(d % 7)) {
+        breakDays.push(d);
+      }
+    }
   }, []);
 
   return (

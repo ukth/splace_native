@@ -29,6 +29,7 @@ import {
   MomentType,
   PhotologType,
   SeriesType,
+  SplaceType,
   StackGeneratorParamList,
   ThemeType,
   UserType,
@@ -42,17 +43,16 @@ import * as Linking from "expo-linking";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 import { Icon } from "../../components/Icon";
 import { logUserOut } from "../../apollo";
-import { HeaderRightIcon } from "../../components/HeaderRightIcon";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BLANK_IMAGE, BLANK_PROFILE_IMAGE } from "../../constants";
 import ModalMapView from "../../components/ModalMapView";
+import { FloatingMapButton } from "../../components/FloatingMapButton";
 
 const UpperContainer = styled.View`
   margin-bottom: ${pixelScaler(3)}px;
@@ -84,9 +84,12 @@ const CountsContainer = styled.View`
   margin-bottom: ${pixelScaler(30)}px;
 `;
 
+const CountContainer = styled.View`
+  flex: 1;
+  align-items: center;
+`;
+
 const CountButtonContainer = styled.View`
-  margin-right: ${pixelScaler(40)}px;
-  margin-left: ${pixelScaler(40)}px;
   align-items: center;
 `;
 
@@ -264,24 +267,38 @@ const ProfileInfo = ({
           }}
         />
       </ProfileImageContainer>
-      <CountsContainer>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.push("ProfileUsers", { type: "followers", user });
-          }}
-        >
-          <CountButton count={user.totalFollowers ?? 0} text="팔로워" />
-        </TouchableOpacity>
-        {user.isMe ? (
+      <CountsContainer
+        style={
+          user.isMe
+            ? { marginHorizontal: pixelScaler(30) }
+            : { marginHorizontal: pixelScaler(75) }
+        }
+      >
+        <CountContainer>
           <TouchableOpacity
             onPress={() => {
-              navigation.push("ProfileUsers", { type: "followings", user });
+              navigation.push("ProfileUsers", { type: "followers", user });
             }}
           >
-            <CountButton count={user.totalFollowing ?? 0} text="팔로잉" />
+            <CountButton count={user.totalFollowers ?? 0} text="팔로워" />
           </TouchableOpacity>
+        </CountContainer>
+
+        {user.isMe ? (
+          <CountContainer>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push("ProfileUsers", { type: "followings", user });
+              }}
+            >
+              <CountButton count={user.totalFollowing ?? 0} text="팔로잉" />
+            </TouchableOpacity>
+          </CountContainer>
         ) : null}
-        <CountButton count={user.totalLogsNumber ?? 0} text="로그" />
+
+        <CountContainer>
+          <CountButton count={user.totalLogsNumber ?? 0} text="로그" />
+        </CountContainer>
       </CountsContainer>
       {user.profileMessage || user.url ? (
         <ProfileMessageContainer>
@@ -568,6 +585,8 @@ const Profile = () => {
 
   const [showMap, setShowMap] = useState(false);
 
+  const [splaces, setSplaces] = useState<SplaceType[]>([]);
+
   var updating = false;
 
   useEffect(() => {
@@ -817,6 +836,7 @@ const Profile = () => {
   const [listData, setListData] = useState<
     [PhotologType[], SeriesType[], MomentType[]]
   >([[], [], []]);
+
   useEffect(() => {
     setListData([
       logsData?.getUserLogs?.logs,
@@ -824,6 +844,22 @@ const Profile = () => {
       momentData?.getMyMoments?.moments,
     ]);
   }, [logsData, seriesData, momentData]);
+
+  useEffect(() => {
+    if (tabViewIndex === 0 && listData[0]) {
+      setSplaces(
+        listData[0].filter((log) => log.splace).map((log) => log.splace)
+      );
+    } else if (tabViewIndex === 2 && listData[2]) {
+      setSplaces(
+        listData[2]
+          .filter((moment) => moment.splace)
+          .map((moment) => moment.splace)
+      );
+    } else {
+      setSplaces([]);
+    }
+  }, [listData, tabViewIndex]);
 
   navigation.addListener("focus", () => {
     refetchProfile();
@@ -858,17 +894,6 @@ const Profile = () => {
             />
           )
         }
-        // {
-        //   if (tabViewIndex === 0) {
-        //     return renderLogs({ item, index });
-        //   } else if (tabViewIndex === 1) {
-        //     return renderSeries({ item, index });
-        //   }
-        //   return renderMoments({
-        //     moments: momentData?.getMyMoments?.moments,
-        //     index,
-        //   });
-        // }}
         refreshing={refreshing}
         onRefresh={refresh}
         onEndReached={async () => {
@@ -1027,17 +1052,24 @@ const Profile = () => {
           )}
         </BottomSheetModal>
       )}
-      {/* <ModalMapView
-        showMap={showMap}
-        setShowMap={setShowMap}
-        splaces={
-          tabViewIndex === 0
-            ? listData[0].filter((log) => log.splace).map((log) => log.splace)
-            : listData[2]
-                .filter((moment) => moment.splace)
-                .map((moment) => moment.splace)
-        }
-      /> */}
+      {splaces.length > 0 ? (
+        <FloatingMapButton onPress={() => setShowMap(true)}>
+          <Icon
+            name="map"
+            style={{
+              width: pixelScaler(20.7),
+              height: pixelScaler(22.1),
+            }}
+          />
+        </FloatingMapButton>
+      ) : null}
+      {splaces.length ? (
+        <ModalMapView
+          showMap={showMap}
+          setShowMap={setShowMap}
+          splaces={splaces}
+        />
+      ) : null}
     </ScreenContainer>
   );
 };

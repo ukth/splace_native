@@ -12,7 +12,6 @@ import {
 } from "../../types";
 import { RouteProp, useNavigation } from "@react-navigation/core";
 import { HeaderTitle, StackNavigationProp } from "@react-navigation/stack";
-import { Ionicons } from "@expo/vector-icons";
 import {
   DeleteButton,
   EditButtonsContainer,
@@ -24,7 +23,6 @@ import {
 import {
   BldText13,
   BldText16,
-  BldText20,
   RegText13,
   RegText16,
   RegText20,
@@ -34,7 +32,6 @@ import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
-import { Splace } from "..";
 import {
   ADD_FOLDER_MEMBERS,
   EDIT_FOLDER,
@@ -42,14 +39,13 @@ import {
   LEAVE_FOLDER,
   REMOVE_SAVE,
 } from "../../queries";
-import { fromPromise, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import ModalMapView from "../../components/ModalMapView";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE_FOLDER } from "../../constants";
 
-const SaveItemContainer = styled.View`
+const SaveItemContainer = styled.TouchableOpacity`
   width: ${pixelScaler(170)}px;
   height: ${pixelScaler(225)}px;
   align-items: center;
@@ -110,10 +106,10 @@ const SaveItem = ({
       removeSave: { ok, error },
     } = data;
     if (ok) {
-      Alert.alert("삭제되었습니다.\n", error);
+      Alert.alert("삭제되었습니다.", error);
       refetch();
     } else {
-      Alert.alert("삭제에 실패했습니다.\n", error);
+      Alert.alert("삭제에 실패했습니다.", error);
     }
   };
 
@@ -124,53 +120,66 @@ const SaveItem = ({
     }
   );
 
+  const theme = useContext<ThemeType>(ThemeContext);
+
   return (
-    <SaveItemContainer>
+    <SaveItemContainer
+      onPress={() => {
+        navigation.push("Splace", {
+          splace: save.splace,
+        });
+      }}
+    >
       {editing ? (
         <DeleteButton
           onPress={() => {
             Alert.alert("해당 공간을 삭제하시겠습니까?", "", [
-              // 버튼 배열
               {
-                text: "취소", // 버튼 제목
+                text: "취소",
                 style: "cancel",
               },
               {
                 text: "확인",
                 onPress: () => {
-                  deleteMutation({
-                    variables: {
-                      saveId: save.id,
-                      folderId,
-                    },
-                  });
+                  if (!deleteMutationLoading) {
+                    deleteMutation({
+                      variables: {
+                        saveId: save.id,
+                        folderId,
+                      },
+                    });
+                  }
                 },
-              }, //버튼 제목
-              // 이벤트 발생시 로그를 찍는다
+              },
             ]);
           }}
         >
           <Minus />
         </DeleteButton>
       ) : null}
-      <Item
-        onPress={() => {
-          navigation.push("Splace", {
-            splace: save.splace,
-          });
-        }}
-      >
-        <Image
-          source={{
-            uri: save.splace.thumbnail ?? BLANK_IMAGE_FOLDER,
-          }}
-          style={{
-            width: pixelScaler(145),
-            height: pixelScaler(145),
-            borderRadius: pixelScaler(10),
-          }}
-        />
-      </Item>
+      <View style={{ marginTop: pixelScaler(15) }}>
+        {save.splace.thumbnail ? (
+          <Image
+            source={{
+              uri: save.splace.thumbnail,
+            }}
+            style={{
+              width: pixelScaler(145),
+              height: pixelScaler(145),
+              borderRadius: pixelScaler(10),
+            }}
+          />
+        ) : (
+          <View
+            style={{
+              width: pixelScaler(145),
+              height: pixelScaler(145),
+              borderRadius: pixelScaler(10),
+              backgroundColor: theme.blankFolderBackground,
+            }}
+          />
+        )}
+      </View>
       <InfoContainer>
         <BldText13>{save.splace.name}</BldText13>
         <BadgesContainer>
@@ -188,6 +197,8 @@ const SaveItem = ({
   );
 };
 
+// const ListHeader = () =>
+
 const Folder = ({
   route,
 }: {
@@ -196,7 +207,10 @@ const Folder = ({
   const [editing, setEditing] = useState<boolean>(false);
   const [sortMode, setSortMode] = useState<"createdAt" | "name">("createdAt");
   const theme = useContext<ThemeType>(ThemeContext);
-  const [folder, setFolder] = useState<FolderType>(route.params.folder);
+  const [folder, setFolder] = useState<FolderType>({
+    ...route.params.folder,
+    saves: [],
+  });
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [showMap, setShowMap] = useState(false);
   const [showSortmodeModal, setShowSortmodeModal] = useState(false);
@@ -228,9 +242,9 @@ const Folder = ({
   }) => {
     const { ok, error } = data.editFolder;
     if (ok) {
-      Alert.alert("폴더 이름이 변경되었습니다.");
+      Alert.alert("", "폴더 이름이 변경되었습니다.");
     } else {
-      Alert.alert("폴더 이름을 변경할 수 없습니다.\n", error);
+      Alert.alert("폴더 이름을 변경할 수 없습니다.", error);
     }
   };
 
@@ -262,7 +276,6 @@ const Folder = ({
             style={{
               flexDirection: "row",
               alignItems: "center",
-              // backgroundColor: "#de0",
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             onPress={() => {
@@ -324,8 +337,7 @@ const Folder = ({
     if (ok) {
       navigation.pop();
     } else {
-      // console.log(data);
-      Alert.alert("초대에 실패하였습니다.\n", error);
+      Alert.alert("초대에 실패하였습니다.", error);
     }
   };
 
@@ -343,7 +355,7 @@ const Folder = ({
     if (ok) {
       navigation.navigate("Folders");
     } else {
-      Alert.alert("폴더를 나갈 수 없습니다.\n", error);
+      Alert.alert("폴더를 나갈 수 없습니다.", error);
     }
   };
 
@@ -385,7 +397,9 @@ const Folder = ({
     }
   }, [folderInfo]);
 
-  // console.log(saves);
+  // useEffect(() => {
+  //   console.log(folder.saves.map((save) => save.splace));
+  // }, [folder]);
 
   return (
     <ScreenContainer>
@@ -394,7 +408,7 @@ const Folder = ({
         refreshing={refreshing}
         onRefresh={refresh}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={() => (
+        ListHeaderComponent={
           <EditButtonsContainer>
             <NewFolderButton
               onPress={() => {
@@ -427,7 +441,7 @@ const Folder = ({
               </SortButton>
             ) : null}
           </EditButtonsContainer>
-        )}
+        }
         data={saves}
         renderItem={({ item, index }) => (
           <SaveItem

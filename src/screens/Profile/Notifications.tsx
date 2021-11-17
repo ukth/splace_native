@@ -19,7 +19,6 @@ import { FOLLOW, GET_NOTIFICATIONS } from "../../queries";
 import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
 import { checkNotifications, pixelScaler } from "../../utils";
 import { gql, useMutation } from "@apollo/client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
 
 const ItemContainer = styled.View`
@@ -192,7 +191,8 @@ const Notification = () => {
                   }}
                 >
                   <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
-                  {item?.target?.title} 폴더를 수정하였습니다.
+                  <BldText13>{item?.target?.title}</BldText13> 폴더를
+                  수정하였습니다.
                 </RegText13>
               </ContentContainer>
             ) : item?.__typename === "LikeLog" ? (

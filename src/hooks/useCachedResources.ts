@@ -3,7 +3,7 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { isLoggedInVar, tokenVar, cache, menualCheckedVar } from "../apollo";
+import { isLoggedInVar, tokenVar, menualCheckedVar } from "../apollo";
 import { Asset } from "expo-asset";
 import { Image } from "react-native";
 import { MANUAL, TOKEN } from "../constants";
@@ -34,7 +34,9 @@ export default function useCachedResources() {
         }
         const menualChecked = await AsyncStorage.getItem(MANUAL);
         if (menualChecked) {
-          menualCheckedVar(true);
+          menualCheckedVar(Number(menualChecked));
+        } else {
+          menualCheckedVar(0);
         }
         // Load fonts
         await Font.loadAsync({
@@ -46,7 +48,7 @@ export default function useCachedResources() {
           "NanumSquareRound-L": require("../../assets/fonts/NanumSquareRoundOTFL.otf"),
         });
 
-        // cacheImages([
+        cacheImages([require("../../assets/images/menual/log.jpg")]);
         // require("../../assets/images/registration_images/Find.jpg"),
         // require("../../assets/images/registration_images/discover.jpg"),
         // require("../../assets/images/registration_images/enjoy.jpg"),

@@ -5,23 +5,24 @@ import {
   ScrollView,
   TouchableOpacity,
   useWindowDimensions,
+  View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { checkMenual, pixelScaler } from "../utils";
 import { Icon } from "../components/Icon";
 import ScreenContainer from "../components/ScreenContainer";
-import { ThemeType } from "../types";
-import { useNavigation } from "@react-navigation/core";
+import { RootStackParamList, ThemeType } from "../types";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { BldText16 } from "../components/Text";
+import FeedManual from "../components/Manual/FeedManual";
+import UploadManual from "../components/Manual/UploadManual";
+import KeepManual from "../components/Manual/KeepManual";
 
 const CloseButton = styled.TouchableOpacity`
   position: absolute;
   right: ${pixelScaler(30)}px;
   top: ${pixelScaler(50)}px;
-`;
-
-const UpperContainer = styled.View`
-  height: ${pixelScaler(100)}px;
 `;
 
 const DotsContainer = styled.View`
@@ -30,49 +31,61 @@ const DotsContainer = styled.View`
 `;
 
 const Dots = styled.View`
-  width: ${pixelScaler(11)}px;
-  height: ${pixelScaler(11)}px;
-  border-radius: ${pixelScaler(11)}px;
-  margin-right: ${pixelScaler(13)}px;
+  width: ${pixelScaler(10)}px;
+  height: ${pixelScaler(10)}px;
+  border-radius: ${pixelScaler(10)}px;
+  margin-right: ${pixelScaler(15)}px;
   background-color: ${({ theme }: { theme: ThemeType }) => theme.greyButton};
 `;
 
 const Manual = () => {
   const theme = useContext<ThemeType>(ThemeContext);
   const navigation = useNavigation<StackNavigationProp<any>>();
-
-  const { width, height } = useWindowDimensions();
+  const { n } = useRoute<RouteProp<RootStackParamList, "Manual">>().params;
 
   const [scrollIndex, setScrollIndex] = useState(0);
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <DotsContainer>
-          <Dots
-            style={
-              scrollIndex === 0 ? { backgroundColor: theme.greyTextAlone } : {}
-            }
-          />
-          <Dots
-            style={
-              scrollIndex === 1 ? { backgroundColor: theme.greyTextAlone } : {}
-            }
-          />
-          <Dots
-            style={
-              scrollIndex === 2 ? { backgroundColor: theme.greyTextAlone } : {}
-            }
-          />
-          <Dots
-            style={
-              scrollIndex === 3
-                ? { backgroundColor: theme.greyTextAlone, marginRight: 0 }
-                : { marginRight: 0 }
-            }
-          />
-        </DotsContainer>
-      ),
+      headerTitle: () =>
+        n === 1 ? null : (
+          <DotsContainer>
+            <Dots
+              style={
+                scrollIndex === 0
+                  ? { backgroundColor: theme.greyTextAlone }
+                  : {}
+              }
+            />
+            <Dots
+              style={
+                scrollIndex === 1
+                  ? { backgroundColor: theme.greyTextAlone }
+                  : {}
+              }
+            />
+            <Dots
+              style={
+                scrollIndex === 2
+                  ? n === 2
+                    ? { backgroundColor: theme.greyTextAlone, marginRight: 0 }
+                    : { backgroundColor: theme.greyTextAlone }
+                  : n === 2
+                  ? { marginRight: 0 }
+                  : {}
+              }
+            />
+            {n === 0 ? (
+              <Dots
+                style={
+                  scrollIndex === 3
+                    ? { backgroundColor: theme.greyTextAlone, marginRight: 0 }
+                    : { marginRight: 0 }
+                }
+              />
+            ) : null}
+          </DotsContainer>
+        ),
     });
   }, [scrollIndex]);
 
@@ -88,7 +101,7 @@ const Manual = () => {
             height: 70,
           }}
           onPress={() => {
-            checkMenual();
+            checkMenual(n);
             navigation.pop();
           }}
         >
@@ -107,54 +120,16 @@ const Manual = () => {
 
   return (
     <ScreenContainer style={{ position: "absolute" }}>
-      <UpperContainer></UpperContainer>
-      <ScrollView
-        pagingEnabled={true}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        style={{
-          width,
-          height: height - 100,
-        }}
-        onScroll={({ nativeEvent }) => {
-          const ind = Math.floor(
-            (nativeEvent.contentOffset.x + width / 2) / width
-          );
-          if (ind != scrollIndex) {
-            setScrollIndex(ind);
-          }
-        }}
-        scrollEventThrottle={16}
-      >
-        <Image
-          style={{
-            width: width,
-            height: height - 100,
-          }}
-          source={require("../../assets/images/menual/test.gif")}
+      {n === 0 ? (
+        <FeedManual scrollIndex={scrollIndex} setScrollIndex={setScrollIndex} />
+      ) : n === 1 ? (
+        <UploadManual
+          scrollIndex={scrollIndex}
+          setScrollIndex={setScrollIndex}
         />
-        <Image
-          style={{
-            width,
-            height: height - 100,
-          }}
-          source={require("../../assets/images/menual/test2.gif")}
-        />
-        <Image
-          style={{
-            width,
-            height: height - 100,
-          }}
-          source={require("../../assets/images/menual/test.gif")}
-        />
-        <Image
-          style={{
-            width,
-            height: height - 100,
-          }}
-          source={require("../../assets/images/menual/test2.gif")}
-        />
-      </ScrollView>
+      ) : (
+        <KeepManual scrollIndex={scrollIndex} setScrollIndex={setScrollIndex} />
+      )}
     </ScreenContainer>
   );
 };

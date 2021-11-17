@@ -1,15 +1,6 @@
-import React from "react";
-import {
-  Animated,
-  ScrollView,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import {
-  CardBoxPropType,
-  PhotologType,
-  StackGeneratorParamList,
-} from "../../types";
+import React, { useState } from "react";
+import { Animated, TouchableWithoutFeedback, View } from "react-native";
+import { PhotologType, StackGeneratorParamList } from "../../types";
 import { pixelScaler } from "../../utils";
 import Image from "../Image";
 import Carousel, {
@@ -42,9 +33,6 @@ const Swiper = ({ item }: { item: PhotologType }) => {
 
     const width = carouselProps.itemWidth ?? 0;
 
-    // console.log(typeof(animatedValue));
-    // console.log(animatedValue);
-    // console.log(Object.keys(animatedValue));
     return {
       zIndex: carouselProps.data.length - index,
       opacity: animatedValue.interpolate({
@@ -58,10 +46,10 @@ const Swiper = ({ item }: { item: PhotologType }) => {
             outputRange: [
               0,
               0,
-              -width + 22.5,
-              -width * 2 + 25,
-              -width * 3 + 24,
-              -width * 3 + 24,
+              -width + 27.5,
+              -width * 2 + 27.5,
+              -width * 3 + 29,
+              -width * 3 + 29,
             ],
             extrapolate: "clamp",
           }),
@@ -75,37 +63,57 @@ const Swiper = ({ item }: { item: PhotologType }) => {
     };
   };
 
+  const [scrollIndex, setScrollIndex] = useState(0);
+
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   return (
     <Carousel
       data={item.imageUrls}
+      onSnapToItem={(index: number) => setScrollIndex(index)}
       renderItem={({ item: url, index }) => (
         <TouchableWithoutFeedback
           onPress={() =>
             navigation.push("ImagesViewer", { urls: item.imageUrls })
           }
         >
-          <Image
-            source={{ uri: url }}
-            style={{
-              backgroundColor: "#dadada",
-              marginLeft: pixelScaler(5),
-              width: pixelScaler(345),
-              height:
-                item.photoSize === 2
-                  ? pixelScaler(460)
-                  : item.photoSize === 1
-                  ? pixelScaler(345)
-                  : pixelScaler(258.75),
-              borderRadius: pixelScaler(15),
-            }}
-          />
+          {scrollIndex + 3 > index ? (
+            <Image
+              source={{ uri: url }}
+              style={{
+                backgroundColor: "#dadada",
+                width: pixelScaler(345),
+                marginLeft: pixelScaler(15),
+                height:
+                  item.photoSize === 2
+                    ? pixelScaler(460)
+                    : item.photoSize === 1
+                    ? pixelScaler(345)
+                    : pixelScaler(258.75),
+                borderRadius: pixelScaler(10),
+              }}
+            />
+          ) : (
+            <View
+              style={{
+                backgroundColor: "#dadada",
+                width: pixelScaler(345),
+                marginLeft: pixelScaler(15),
+                height:
+                  item.photoSize === 2
+                    ? pixelScaler(460)
+                    : item.photoSize === 1
+                    ? pixelScaler(345)
+                    : pixelScaler(258.75),
+                borderRadius: pixelScaler(10),
+              }}
+            />
+          )}
         </TouchableWithoutFeedback>
       )}
-      sliderWidth={400}
-      itemWidth={380}
+      sliderWidth={pixelScaler(375)}
+      itemWidth={pixelScaler(375)}
       layout={"stack"}
       layoutCardOffset={12}
       inactiveSlideOpacity={1}

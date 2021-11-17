@@ -83,8 +83,8 @@ const ModalSingleMapView = ({
   const { width } = useWindowDimensions();
   const theme = useContext<ThemeType>(ThemeContext);
 
-  const screenHeight = Dimensions.get("screen").height;
-  const height = pixelScaler(screenHeight - 88);
+  const screenHeight = useWindowDimensions().height;
+  const height = screenHeight - pixelScaler(88);
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
     inputRange: [-1, 0, 1],

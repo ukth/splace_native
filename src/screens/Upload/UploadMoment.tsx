@@ -202,7 +202,7 @@ const UploadMoment = () => {
                     variables: {
                       thumbnail: thumbnailUrl[0],
                       videoUrl: awsUrl,
-                      text: momentText,
+                      text: momentText.trimEnd(),
                       ...(content?.splace
                         ? {
                             splaceId: content.splace.id,

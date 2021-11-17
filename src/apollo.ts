@@ -23,7 +23,7 @@ import { API_URL, TOKEN } from "./constants";
 export const isLoggedInVar = makeVar<boolean>(false);
 export const tokenVar = makeVar<string | null>("");
 export const userIdVar = makeVar<number | null>(null);
-export const menualCheckedVar = makeVar<boolean>(false);
+export const menualCheckedVar = makeVar<number>(0);
 
 export const logUserIn = async (token: string, userId: number) => {
   await AsyncStorage.setItem(TOKEN, token);
@@ -41,7 +41,7 @@ export const logUserOut = async () => {
   await AsyncStorage.setItem(TOKEN, "");
   // console.log("log out!");
   isLoggedInVar(false);
-  tokenVar("a");
+  tokenVar("");
   userIdVar(null);
   // console.log(isLoggedInVar(), tokenVar(), userIdVar());
 };

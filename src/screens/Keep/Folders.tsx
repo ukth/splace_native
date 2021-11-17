@@ -1,4 +1,9 @@
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import {
+  useLazyQuery,
+  useMutation,
+  useQuery,
+  useReactiveVar,
+} from "@apollo/client";
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -11,7 +16,12 @@ import {
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
-import { FolderType, StackGeneratorParamList, ThemeType } from "../../types";
+import {
+  FolderType,
+  RootStackParamList,
+  StackGeneratorParamList,
+  ThemeType,
+} from "../../types";
 import { pixelScaler, strCmpFunc } from "../../utils";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -42,7 +52,8 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE_FOLDER } from "../../constants";
+import { BLANK_IMAGE, BLANK_IMAGE_FOLDER } from "../../constants";
+import { menualCheckedVar } from "../../apollo";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -73,7 +84,6 @@ const Folder = ({
   const theme = useContext<ThemeType>(ThemeContext);
 
   const onDeleteCompleted = (data: any) => {
-    // console.log(data);
     const {
       deleteFolder: { ok, error },
     } = data;
@@ -91,15 +101,15 @@ const Folder = ({
       onCompleted: onDeleteCompleted,
     }
   );
+
   return (
     <FolderConatiner>
       {editing ? (
         <DeleteButton
           onPress={() => {
             Alert.alert("해당 폴더를 삭제하시겠습니까?", "", [
-              // 버튼 배열
               {
-                text: "취소", // 버튼 제목
+                text: "취소",
                 style: "cancel",
               },
               {
@@ -107,8 +117,7 @@ const Folder = ({
                 onPress: () => {
                   deleteMutation({ variables: { folderId: folder.id } });
                 },
-              }, //버튼 제목
-              // 이벤트 발생시 로그를 찍는다
+              },
             ]);
           }}
         >
@@ -120,7 +129,7 @@ const Folder = ({
           navigation.push("Folder", { folder });
         }}
       >
-        {folder?.saves?.length > 0 ? (
+        {folder?.saves?.length === 0 ? (
           <Image
             source={{
               uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE_FOLDER,
@@ -132,12 +141,14 @@ const Folder = ({
             }}
           />
         ) : (
-          <View
+          <Image
+            source={{
+              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE,
+            }}
             style={{
               width: pixelScaler(145),
               height: pixelScaler(145),
               borderRadius: pixelScaler(10),
-              backgroundColor: theme.blankFolderBackground,
             }}
           />
         )}
@@ -180,6 +191,8 @@ const Folders = ({
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
+  const menualChecked = useReactiveVar(menualCheckedVar);
+
   navigation.addListener("focus", async () => {
     await refetch();
   });
@@ -187,6 +200,19 @@ const Folders = ({
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => <BldText16>저장소</BldText16>,
+    });
+    if (menualChecked < 4) {
+      const mainStack = navigation
+        .getParent()
+        ?.getParent<StackNavigationProp<RootStackParamList>>();
+      if (mainStack?.push) {
+        mainStack.push("Manual", { n: 2 });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
       headerRight: () =>
         editing ? (
           <HeaderRightConfirm
@@ -213,35 +239,35 @@ const Folders = ({
     });
   }, [editing]);
 
-  const updateData = async (data: any) => {
-    if (data?.getFolders?.folders) {
-      if (sortMode === "createdAt") {
-        setFolders(
-          [...data?.getFolders?.folders].sort(
-            (a: FolderType, b: FolderType) =>
-              Number(b.createdAt) - Number(a.createdAt)
-          )
-        );
-      } else if (sortMode === "updatedAt") {
-        setFolders(
-          [...data?.getFolders?.folders].sort(
-            (a: FolderType, b: FolderType) =>
-              Number(b.updatedAt) - Number(a.updatedAt)
-          )
-        );
-      } else {
-        setFolders(
-          [...data?.getFolders?.folders].sort((a: FolderType, b: FolderType) =>
-            strCmpFunc(a.title, b.title)
-          )
-        );
-      }
-    }
-  };
+  // const updateData = async (data: any) => {
+  //   if (data?.getFolders?.folders) {
+  //     if (sortMode === "createdAt") {
+  //       setFolders(
+  //         [...data?.getFolders?.folders].sort(
+  //           (a: FolderType, b: FolderType) =>
+  //             Number(b.createdAt) - Number(a.createdAt)
+  //         )
+  //       );
+  //     } else if (sortMode === "updatedAt") {
+  //       setFolders(
+  //         [...data?.getFolders?.folders].sort(
+  //           (a: FolderType, b: FolderType) =>
+  //             Number(b.updatedAt) - Number(a.updatedAt)
+  //         )
+  //       );
+  //     } else {
+  //       setFolders(
+  //         [...data?.getFolders?.folders].sort((a: FolderType, b: FolderType) =>
+  //           strCmpFunc(a.title, b.title)
+  //         )
+  //       );
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    updateData(data);
-  }, [sortMode, data]);
+  // useEffect(() => {
+  //   updateData(data);
+  // }, [sortMode, data]);
 
   useEffect(() => {
     refetch({ orderBy: sortMode });
@@ -257,7 +283,7 @@ const Folders = ({
     }, 10000);
     const data = await refetch();
     clearTimeout(timer);
-    updateData(data);
+    // updateData(data);
     setRefreshing(false);
   };
 
@@ -334,7 +360,7 @@ const Folders = ({
               )}
             </EditButtonsContainer>
           )}
-          data={folders}
+          data={data?.getFolders?.folders}
           renderItem={({ item, index }) => (
             <Folder
               folder={item}
@@ -346,7 +372,10 @@ const Folders = ({
           onEndReached={() => {
             fetchMore({
               variables: {
-                lastId: folders[folders.length - 1].id,
+                lastId:
+                  data?.getFolders?.folders[
+                    data?.getFolders?.folders.length - 1
+                  ].id,
                 orderBy: sortMode,
               },
             });

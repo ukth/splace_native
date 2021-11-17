@@ -17,18 +17,8 @@ import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { pixelScaler } from "../../utils";
 import { theme } from "../../../theme";
 import { RegTextInput16 } from "../../components/TextInput";
-import {
-  Alert,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  ScrollView,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Image, Keyboard } from "react-native";
 import { Icons } from "../../icons";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { EDIT_SPLACE } from "../../queries";
 import useMe from "../../hooks/useMe";
 import { ProgressContext } from "../../contexts/Progress";
 import { UploadContentContext } from "../../contexts/UploadContent";
@@ -228,7 +218,8 @@ const SelectCategory = () => {
             onPress={() => {
               if (
                 selectedCategories.length < 10 &&
-                !selectedCategories.includes(categoryText)
+                !selectedCategories.includes(categoryText) &&
+                categoryText !== ""
               ) {
                 setSelectedCategories([...selectedCategories, categoryText]);
                 setCategoryText("");

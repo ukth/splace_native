@@ -1,3 +1,11 @@
+export type RootStackParamList = {
+  Tabs: undefined;
+  ImagePicker: undefined;
+  Manual: {
+    n: 0 | 1 | 2;
+  };
+};
+
 export type AuthStackParamList = {
   InitialScreen: undefined;
   LogIn: undefined;
@@ -565,6 +573,8 @@ export type IconName =
   | "super_tasty"
   | "super_supertasty"
   | "super_inbox"
+  | "super_clickme"
+  | "super_welcome"
   | "edit"
   | "empty_heart"
   | "filter"
@@ -599,4 +609,7 @@ export type IconName =
   | "wishlist"
   | "close_white"
   | "close"
-  | "messagebox_add";
+  | "messagebox_add"
+  | "manual_camera"
+  | "manual_log"
+  | "manual_series";

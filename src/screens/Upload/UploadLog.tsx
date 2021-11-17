@@ -139,7 +139,7 @@ const UploadLog = () => {
       variables: {
         imageUrls: awsUrls,
         photoSize: imageSize,
-        text: logText,
+        text: logText.trimEnd(),
         seriesIds: content.series?.map((series) => series.id) ?? [],
         categories: content.category ?? [],
         bigCategoryIds:

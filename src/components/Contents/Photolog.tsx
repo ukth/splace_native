@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useContext, useState, PureComponent } from "react";
-import { Alert, Share, TouchableOpacity } from "react-native";
+import { Alert, Share, TouchableOpacity, View } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { PhotologType } from "../../types";
 import { pixelScaler, showFlashMessage } from "../../utils";
@@ -28,9 +28,7 @@ const Container = styled.View`
   margin-bottom: ${pixelScaler(30)}px;
 `;
 
-const SwiperContainer = styled.View`
-  /* background-color: #edee9f; */
-`;
+const SwiperContainer = styled.View``;
 
 const BottomHeader = styled.View`
   flex-direction: row;

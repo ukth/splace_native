@@ -10,6 +10,7 @@ import {
   PanResponder,
   Image,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { ThemeType } from "../../types";
@@ -45,7 +46,7 @@ const ImagePicker = ({
   showPicker: boolean;
   setShowPicker: (_: boolean) => void;
 }) => {
-  const screenHeight = Dimensions.get("screen").height;
+  const screenHeight = useWindowDimensions().height;
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
     inputRange: [-1, 0, 1],

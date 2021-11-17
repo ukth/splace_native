@@ -15,12 +15,14 @@ import { ProgressContext } from "../contexts/Progress";
 import Spinner from "../components/Spinner";
 import ModalImagePicker from "../screens/ModalImagePicker";
 import Manual from "../screens/Manual";
+import { RootStackParamList } from "../types";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 const Navigation = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const { inProgress } = useContext(ProgressContext);
+  const menualChecked = useReactiveVar(menualCheckedVar);
 
   return (
     <NavigationContainer>
@@ -32,6 +34,7 @@ const Navigation = () => {
             component={MainTab}
           />
           <Stack.Screen name="ImagePicker" component={ModalImagePicker} />
+
           <Stack.Screen name="Manual" component={Manual} />
         </Stack.Navigator>
       ) : (

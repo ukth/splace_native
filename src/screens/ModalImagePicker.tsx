@@ -9,9 +9,8 @@ import {
   FlatList,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import { StackGeneratorParamList, ThemeType } from "../types";
+import { ThemeType } from "../types";
 import { AlbumTitleKor, pixelScaler } from "../utils";
-import { HeaderBackButton } from "../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
 import { BldText13, BldText16, RegText13, RegText16 } from "../components/Text";
 import { ZoomableImage } from "../components/ImagePicker/ZoomableImageComponent";
@@ -21,7 +20,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ImagePickerContext } from "../contexts/ImagePicker";
 import { Icons } from "../icons";
 import * as MediaLibrary from "expo-media-library";
-import { manipulateAsync } from "expo-image-manipulator";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { ProgressContext } from "../contexts/Progress";
 import { Icon } from "../components/Icon";
 import { BLANK_IMAGE } from "../constants";
@@ -231,16 +230,25 @@ const ModalImagePicker = () => {
         pixR = image.height / (frameHeight * image.zoom);
       }
 
-      const manipResult = await manipulateAsync(image.uri, [
-        {
-          crop: {
-            width: frameWidth * pixR - 2,
-            height: frameHeight * pixR - 2,
-            originX: -image.offset_x * pixR + 1,
-            originY: -image.offset_y * pixR + 1,
+      const manipResult = await manipulateAsync(
+        image.uri,
+        [
+          {
+            crop: {
+              width: frameWidth * pixR - 2,
+              height: frameHeight * pixR - 2,
+              originX: -image.offset_x * pixR + 1,
+              originY: -image.offset_y * pixR + 1,
+            },
           },
-        },
-      ]);
+          {
+            resize: {
+              width: 1080,
+            },
+          },
+        ],
+        { compress: 0, format: SaveFormat.PNG }
+      );
       // console.log(manipResult);
       tmp.push({
         edited: true,
@@ -363,7 +371,7 @@ const ModalImagePicker = () => {
   }, [selectedImages]);
 
   useEffect(() => {
-    if (focusedSize === 2) {
+    if (focusedSize === 2 && selectedImages[focusedImageIndex]?.uri) {
       Image.getSize(selectedImages[focusedImageIndex].uri, (img_w, img_h) => {
         if (img_w / 236.25 > img_h / 315) {
           setSize({
@@ -558,6 +566,8 @@ const ModalImagePicker = () => {
         </ButtonsContainer>
       </PickerContainer>
       <FlatList
+        maxToRenderPerBatch={10}
+        initialNumToRender={10}
         ref={flatListRef}
         data={loadedImage}
         renderItem={({

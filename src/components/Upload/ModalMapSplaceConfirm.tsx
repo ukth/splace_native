@@ -107,9 +107,7 @@ const ModalMapSplaceConfirm = ({
   const height = pixelScaler(760);
   const theme = useContext<ThemeType>(ThemeContext);
 
-  const { content, setContent } = useContext(UploadContentContext);
-
-  const screenHeight = Dimensions.get("screen").height;
+  const screenHeight = useWindowDimensions().height;
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
     inputRange: [-1, 0, 1],

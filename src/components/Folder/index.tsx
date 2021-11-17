@@ -26,7 +26,6 @@ export const Minus = styled.View`
 `;
 
 export const EditButtonsContainer = styled.View`
-  flex: 1;
   height: ${pixelScaler(40)}px;
   width: ${pixelScaler(375 - 35)}px;
   flex-direction: row;

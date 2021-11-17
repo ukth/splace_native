@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   PanResponder,
+  useWindowDimensions,
 } from "react-native";
 import styled from "styled-components/native";
 import { ThemeType } from "../types";
@@ -37,7 +38,7 @@ const BottomSheetModal = ({
 }) => {
   const { modalVisible, setModalVisible } = props;
   const [showModal, setShowModal] = useState(modalVisible);
-  const screenHeight = Dimensions.get("screen").height;
+  const screenHeight = useWindowDimensions().height;
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
     inputRange: [-1, 0, 1],

@@ -132,22 +132,7 @@ const SelectSeries = () => {
       headerLeft: () => (
         <HeaderBackButton
           onPress={() => {
-            Alert.alert(
-              "이 페이지를 나가시겠습니까?",
-              "지금 나가면 모든 변경사항이 삭제됩니다.",
-              [
-                {
-                  text: "예",
-                  onPress: () => {
-                    navigation.pop();
-                  },
-                },
-                {
-                  text: "취소",
-                  style: "cancel",
-                },
-              ]
-            );
+            navigation.pop();
           }}
         />
       ),

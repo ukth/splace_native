@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
@@ -8,7 +7,6 @@ import {
   Alert,
   FlatList,
   Image as DefaultImage,
-  ScrollView,
   Share,
   TouchableOpacity,
   View,
@@ -23,7 +21,6 @@ import ScreenContainer from "../../components/ScreenContainer";
 import {
   BldText16,
   BldText18,
-  BldText20,
   BldText28,
   RegText13,
   RegText20,
@@ -31,7 +28,6 @@ import {
 import {
   GET_LOGS_BY_SPLACE,
   GET_OWNER_CHATROOM,
-  GET_PERSONAL_CHATROOM,
   GET_SPLACE_INFO,
   LOG_GETLOGSBYSPLACE,
   LOG_GETSPLACEINFO,
@@ -46,9 +42,9 @@ import {
 } from "../../types";
 import {
   convertNumber,
-  coords2address,
   formatOperatingTime,
   formatPhoneString,
+  getWeekNumber,
   pixelScaler,
   priceToText,
 } from "../../utils";
@@ -57,7 +53,6 @@ import * as Linking from "expo-linking";
 import useMe from "../../hooks/useMe";
 import { Icons } from "../../icons";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { theme } from "../../../theme";
 import { ProgressContext } from "../../contexts/Progress";
 import { ModalKeep } from "../../components/ModalKeep";
 import { Icon } from "../../components/Icon";
@@ -75,7 +70,6 @@ const TitleContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${pixelScaler(20)}px;
-  /* background-color: #de0; */
 `;
 
 const ButtonsContainer = styled.View`
@@ -91,7 +85,6 @@ const UnfoldButtonContainer = styled.TouchableOpacity`
 `;
 
 const Button = styled.TouchableOpacity`
-  /* width: ${({ width }: { width: number }) => width}px; */
   flex: 1;
   border-width: ${pixelScaler(1.1)}px;
   border-radius: ${pixelScaler(10)}px;
@@ -158,26 +151,27 @@ const operatingTimeToString = (timeSet: TimeSetType) => {
   return s;
 };
 
-const breakDayToString = (breakDay: number[]) => {
-  if (breakDay.length === 0) {
+const breakDayToString = (breakDays: number[]) => {
+  const tmp = [...breakDays];
+  if (tmp.length === 0) {
     return "정기 휴무일 없음";
   }
 
   let s = "매월 ";
   const weekNumKor = ["첫", "둘", "셋", "넷", "다섯", "여섯"];
   let days = [];
-  let weeks = [Math.floor(breakDay[0] / 7)];
+  let weeks = [Math.floor(tmp[0] / 7)];
 
-  breakDay.sort((a: number, b: number) => a - b);
+  tmp.sort((a: number, b: number) => a - b);
 
   for (let i = 0; i < 7; i++) {
-    if (breakDay.includes(weeks[0] * 7 + i)) {
+    if (tmp.includes(weeks[0] * 7 + i)) {
       days.push(i);
     }
   }
 
   for (let i = weeks[0] + 1; i < 6; i++) {
-    if (breakDay.includes(i * 7 + days[0])) {
+    if (tmp.includes(i * 7 + days[0])) {
       weeks.push(i);
     }
   }
@@ -267,6 +261,11 @@ const Splace = ({
   };
 
   navigation.addListener("focus", () => refetch());
+
+  const isBreakDay = () => {
+    const week = getWeekNumber();
+    return splace?.breakDays?.includes((week - 1) * 7 + day) ?? false;
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -393,9 +392,6 @@ const Splace = ({
     },
   });
 
-  // useEffect(() => {
-  //   console.log(splace.categories);
-  // }, [splace]);
   const onCompleted = (data: any) => {
     spinner.stop();
     if (data.reportResources?.ok) {
@@ -493,7 +489,6 @@ const Splace = ({
                       Alert.alert("연락정보가 없습니다.");
                     }
                   }}
-                  width={pixelScaler(150)}
                 >
                   <RegText13>연락정보</RegText13>
                 </Button>
@@ -528,7 +523,7 @@ const Splace = ({
                       }}
                       style={{ color: theme.textHighlight }}
                     >
-                      {operatingTime[day].open
+                      {!isBreakDay() && operatingTime[day].open
                         ? formatOperatingTime(operatingTime[day].open ?? 0) +
                           " - " +
                           formatOperatingTime(operatingTime[day].close ?? 0) +
@@ -811,7 +806,7 @@ const Splace = ({
                   lineHeight: pixelScaler(17),
                 }}
               >
-                {breakDayToString([1, 4, 15, 17]) + "\n"}
+                {breakDayToString(splace.breakDays) + "\n"}
               </RegText13>
               {/* ) : null} */}
             </View>

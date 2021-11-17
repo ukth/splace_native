@@ -105,7 +105,7 @@ const EditProfile = () => {
 
   const validateUsername = (text: string) => {
     const exp = /^[0-9a-z._]*$/;
-    return exp.test(String(text).toLowerCase());
+    return exp.test(String(text));
   };
 
   const validateUrl = (text: string) => {
@@ -147,8 +147,9 @@ const EditProfile = () => {
                   profileImageUrl?: string;
                   url?: string;
                 } = {};
+
                 if (localUri !== "") {
-                  // console.log("local in");
+                  console.log("local in");
 
                   const awsUrl = await uploadPhotos([localUri]);
 
@@ -157,9 +158,7 @@ const EditProfile = () => {
                       "프로필 편집에 실패했습니다.\n(사진 업로드 실패)"
                     );
                   } else {
-                    // @ts-ignore
-                    const awsURL = res.data[0].location;
-                    variables.profileImageUrl = awsURL;
+                    variables.profileImageUrl = awsUrl[0];
                   }
                 }
 
@@ -233,10 +232,10 @@ const EditProfile = () => {
           onPress={() => {
             (async () => {
               let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [1, 1],
-                quality: 1,
+                quality: 0,
               });
 
               if (!result.cancelled) {

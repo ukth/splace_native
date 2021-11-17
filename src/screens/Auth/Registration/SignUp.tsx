@@ -203,7 +203,7 @@ const SignUp = () => {
           <BldTextInput28
             value={username}
             style={{ marginBottom: pixelScaler(25), width: pixelScaler(370) }}
-            onChangeText={(text) => setUsername(text.trim())}
+            onChangeText={(text) => setUsername(text.trim().toLowerCase())}
             selectionColor={theme.chatSelection}
             placeholder="user_name"
             placeholderTextColor={theme.greyTextLight}

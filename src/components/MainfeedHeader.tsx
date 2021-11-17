@@ -1,14 +1,18 @@
 import { useReactiveVar } from "@apollo/client";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Animated, Image, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ScreenStackHeaderRightView } from "react-native-screens";
-import styled from "styled-components/native";
+import styled, { ThemeContext } from "styled-components/native";
 import { menualCheckedVar } from "../apollo";
 import { Icons } from "../icons";
-import { StackGeneratorParamList, ThemeType } from "../types";
+import {
+  RootStackParamList,
+  StackGeneratorParamList,
+  ThemeType,
+} from "../types";
 import { pixelScaler } from "../utils";
 import { Icon } from "./Icon";
 import { BldText16 } from "./Text";
@@ -16,7 +20,6 @@ import { BldText16 } from "./Text";
 const Container = styled.SafeAreaView`
   width: 100%;
   height: ${pixelScaler(95)}px;
-  /* background-color: #90e0f0; */
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
   box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.25);
 `;
@@ -27,6 +30,7 @@ const HeaderLeftContainer = styled.View`
   bottom: 0;
   width: ${pixelScaler(90)}px;
   height: ${pixelScaler(50)}px;
+  z-index: 1;
 `;
 
 const HeaderRightContainer = styled.View`
@@ -70,6 +74,8 @@ const Tag = styled.TouchableOpacity`
 const MainfeedHeader = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
+  const theme = useContext<ThemeType>(ThemeContext);
 
   const menualChecked = useReactiveVar(menualCheckedVar);
 
@@ -122,7 +128,7 @@ const MainfeedHeader = () => {
   return (
     <Container>
       <HeaderLeftContainer>
-        {menualChecked ? (
+        {menualChecked % 2 === 1 ? (
           <Icon
             name="super"
             style={{
@@ -135,13 +141,18 @@ const MainfeedHeader = () => {
         ) : (
           <TouchableOpacity
             onPress={() => {
-              navigation.getParent()?.getParent()?.push("Manual");
+              const mainStack = navigation
+                .getParent()
+                ?.getParent<StackNavigationProp<RootStackParamList>>();
+              if (mainStack?.push) {
+                mainStack.push("Manual", { n: 0 });
+              }
             }}
           >
             <Icon
-              name="super_necklace"
+              name="super_clickme"
               style={{
-                width: pixelScaler(57),
+                width: pixelScaler(115.9),
                 height: pixelScaler(34),
                 marginLeft: pixelScaler(23),
                 marginTop: pixelScaler(5),
@@ -159,6 +170,14 @@ const MainfeedHeader = () => {
             right: pixelScaler(10),
           }}
           onPress={() => {
+            if (menualChecked % 4 < 2) {
+              const mainStack = navigation
+                .getParent()
+                ?.getParent<StackNavigationProp<RootStackParamList>>();
+              if (mainStack?.push) {
+                mainStack.push("Manual", { n: 1 });
+              }
+            }
             if (showButtons) {
               closeButtons();
             } else {

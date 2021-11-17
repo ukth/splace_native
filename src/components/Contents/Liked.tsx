@@ -13,23 +13,29 @@ import { RegText13 } from "../Text";
 
 const Liked = ({ item }: { item: PhotologType }) => {
   const [liked, setLiked] = useState<boolean>(item.isILiked);
+  const [totalLiked, setTotalLiked] = useState(item.totalLiked);
 
   useEffect(() => {
     setLiked(item.isILiked);
   }, [item.isILiked]);
 
+  useEffect(() => {
+    setTotalLiked(item.totalLiked);
+  }, [item.totalLiked]);
+
   const onLikeCompleted = async (data: any) => {
     const {
       likePhotolog: { ok, error },
     } = data;
-
     if (ok) {
-      // await logUserIn(token);
       client.cache.modify({
         id: `Photolog:${item.id}`,
         fields: {
           isILiked(prev) {
             return true;
+          },
+          totalLiked(prev) {
+            return prev + 1;
           },
         },
       });
@@ -43,15 +49,15 @@ const Liked = ({ item }: { item: PhotologType }) => {
     const {
       unlikePhotolog: { ok, error },
     } = data;
-
-    // console.log(ok);
-
     if (ok) {
       client.cache.modify({
         id: `Photolog:${item.id}`,
         fields: {
           isILiked(prev) {
             return false;
+          },
+          totalLiked(prev) {
+            return prev - 1;
           },
         },
       });
@@ -87,10 +93,7 @@ const Liked = ({ item }: { item: PhotologType }) => {
       <RegText13
         style={{ marginRight: pixelScaler(3), marginLeft: pixelScaler(5) }}
       >
-        {convertNumber(
-          item.totalLiked +
-            (item.isILiked && !liked ? -1 : !item.isILiked && liked ? 1 : 0)
-        )}
+        {convertNumber(totalLiked)}
       </RegText13>
       <TouchableOpacity
         hitSlop={{
@@ -101,22 +104,26 @@ const Liked = ({ item }: { item: PhotologType }) => {
         }}
         onPress={() => {
           // console.log("pressed!");
-          if (liked && !loading_unlike) {
-            ex_unlike({
-              variables: {
-                photologId: item.id,
-              },
-            });
-            setLiked(false);
+          if (liked) {
+            if (!loading_unlike) {
+              setTotalLiked(totalLiked - 1);
+              ex_unlike({
+                variables: {
+                  photologId: item.id,
+                },
+              });
+              setLiked(false);
+            }
           } else {
             if (!loading_like) {
+              setTotalLiked(totalLiked + 1);
               ex_like({
                 variables: {
                   photologId: item.id,
                 },
               });
+              setLiked(true);
             }
-            setLiked(true);
           }
         }}
       >

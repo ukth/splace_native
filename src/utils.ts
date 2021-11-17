@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { Dimensions, View } from "react-native";
+import { Dimensions, useWindowDimensions, View } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import { menualCheckedVar, tokenVar } from "./apollo";
 import { API_URL, MANUAL, NOTIFICATION } from "./constants";
@@ -30,8 +30,10 @@ export const convertNumber = (n: number) => {
   } else "" + n;
 };
 
-const { width, height } = Dimensions.get("window");
-export const pixelScaler = (n: number) => (n * width) / 375;
+export const pixelScaler = (n: number) => {
+  const width = Dimensions.get("window").width;
+  return (n * width) / 375;
+};
 
 const GMT = 9;
 
@@ -434,7 +436,24 @@ export const getNotificationsChecked = async () => {
   return Number((await AsyncStorage.getItem(NOTIFICATION)) ?? 0);
 };
 
-export const checkMenual = async () => {
-  menualCheckedVar(true);
-  AsyncStorage.setItem(MANUAL, "1");
+export const checkMenual = async (n: 0 | 1 | 2) => {
+  var v = menualCheckedVar();
+  if (v % 2 ** (n + 1) < 2 ** n) {
+    v += 2 ** n;
+    menualCheckedVar(v);
+    AsyncStorage.setItem(MANUAL, String(v));
+  }
+};
+
+export const getWeekNumber = () => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const date = today.getDate();
+
+  const firstDate = new Date(year, month, 1);
+  const lastDate = new Date(year, month + 1, 0);
+  const firstDay = firstDate.getDay() === 0 ? 7 : firstDate.getDay();
+  return Math.ceil((date + firstDay - 1) / 7);
 };

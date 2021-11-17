@@ -256,6 +256,8 @@ const Series = () => {
   return (
     <ScreenContainer>
       <FlatList
+        maxToRenderPerBatch={2}
+        initialNumToRender={2}
         ListHeaderComponent={<View style={{ height: pixelScaler(30) }}></View>}
         keyExtractor={(item) => "" + item.id}
         data={logsData?.getLogsBySeries?.seriesElements}

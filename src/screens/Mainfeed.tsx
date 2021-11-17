@@ -1,7 +1,7 @@
 // import { feed } from "../../data";
 
 import React, { useEffect, useContext, useMemo } from "react";
-import { Dimensions, FlatList } from "react-native";
+import { Dimensions, FlatList, useWindowDimensions } from "react-native";
 
 import { GET_FEED, LIKE_PHOTOLOG, UNLIKE_PHOTOLOG } from "../queries";
 
@@ -25,10 +25,6 @@ import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ImagePickerContext } from "../contexts/ImagePicker";
 import MainfeedHeader from "../components/MainfeedHeader";
-import { showFlashMessage } from "../utils";
-import { menualCheckedVar } from "../apollo";
-
-const { width } = Dimensions.get("window");
 
 const Container = styled.View`
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
@@ -100,13 +96,7 @@ const Mainfeed = () => {
     const { getFeed } = data;
     setFeedData({ logs: getFeed.logs ?? [], series: getFeed.series ?? [] });
   };
-  // console.log(
-  //   "######\n",
-  //   tokenVar(),
-  //   userIdVar(),
-  //   isLoggedInVar(),
-  //   "get feed data!"
-  // );
+
   const { loading, error, data, refetch, fetchMore } = useQuery(GET_FEED, {
     onCompleted,
   });
@@ -169,12 +159,27 @@ const Mainfeed = () => {
     };
   }, []);
 
+  const keyExtractor = (
+    item:
+      | {
+          type: "log";
+          data: PhotologType;
+        }
+      | {
+          type: "series";
+          data: SeriesType;
+        }
+  ) => item.type + item.data.id;
+
   return (
     <Container>
       <FlatList
+        maxToRenderPerBatch={4}
+        initialNumToRender={4}
+        windowSize={4}
         data={feed}
         refreshing={refreshing}
-        keyExtractor={(item) => item.type + item.data.id}
+        keyExtractor={keyExtractor}
         onEndReached={async () => {
           await fetchMore({
             variables: {

@@ -8,12 +8,7 @@ import {
   FlatList,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import {
-  SplaceType,
-  StackGeneratorParamList,
-  ThemeType,
-  UserType,
-} from "../../types";
+import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { convertNumber, pixelScaler, shortenAddress } from "../../utils";
 import { useContext } from "react";
@@ -361,7 +356,13 @@ const Search = () => {
                   setSearchBarFocused(true);
                   setSplaceSearched(false);
                 }}
-                placeholder={"Find your special place!"}
+                placeholder={
+                  !searchBarFocused || tabViewIndex === 0
+                    ? "Find your special place!"
+                    : tabViewIndex === 1
+                    ? "카테고리를 검색해 보세요"
+                    : "계정을 검색해 보세요"
+                }
                 placeholderTextColor={theme.searchBarPlaceholder}
                 // onChangeText={(text) => {
                 //   setKeyword(text);
@@ -956,16 +957,7 @@ const Search = () => {
             )}
           />
         ) : (
-          <BlankMessageContainer>
-            <RegText16
-              style={{
-                color: theme.greyTextAlone,
-                lineHeight: pixelScaler(23),
-              }}
-            >
-              관심있는 카테고리를 검색해 보세요
-            </RegText16>
-          </BlankMessageContainer>
+          <BlankMessageContainer></BlankMessageContainer>
         )
       ) : (
         <FlatList

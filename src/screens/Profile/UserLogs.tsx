@@ -72,6 +72,8 @@ const UserLogs = () => {
   return (
     <ScreenContainer>
       <FlatList
+        maxToRenderPerBatch={2}
+        initialNumToRender={2}
         ref={flatList}
         data={data.getUserLogs?.logs}
         refreshing={refreshing}

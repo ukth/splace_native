@@ -47,8 +47,8 @@ const Swiper = ({ item }: { item: FixedContentType }) => {
             outputRange: [
               0,
               0,
-              -width + 25,
-              -width * 2 + 25,
+              -width + 22.5,
+              -width * 2 + 22.5,
               -width * 3 + 24,
               -width * 3 + 24,
             ],
@@ -74,7 +74,7 @@ const Swiper = ({ item }: { item: FixedContentType }) => {
             // shadowOffset: { width: 4, height: 4 },
             // shadowOpacity: 0.3,
             // shadowRadius: 4,
-            borderRadius: 15,
+            borderRadius: pixelScaler(10),
           }}
         >
           <Image
@@ -82,14 +82,14 @@ const Swiper = ({ item }: { item: FixedContentType }) => {
             style={{
               backgroundColor: "#dadada",
               marginLeft: pixelScaler(20),
-              width: pixelScaler(315),
+              width: pixelScaler(345),
               height:
                 item.photoSize === 2
-                  ? pixelScaler(420)
+                  ? pixelScaler(460)
                   : item.photoSize === 1
-                  ? pixelScaler(315)
-                  : pixelScaler(236.25),
-              borderRadius: 15,
+                  ? pixelScaler(345)
+                  : pixelScaler(258.75),
+              borderRadius: pixelScaler(10),
             }}
           />
         </View>

@@ -26,7 +26,6 @@ import * as Location from "expo-location";
 import { BLANK_IMAGE } from "../constants";
 
 const MarkerContainer = styled.TouchableOpacity`
-  /* background-color: #d0a0f0; */
   padding: ${pixelScaler(20)}px ${pixelScaler(20)}px;
   align-items: center;
   justify-content: center;
@@ -151,6 +150,9 @@ const ModalMapView = ({
 
     for (let i = 0; i < splaces.length; i++) {
       const splace = splaces[i];
+      if (!splace) {
+        continue;
+      }
       if (splace.lat > max_lat) {
         max_lat = splace.lat;
       }
@@ -202,6 +204,9 @@ const ModalMapView = ({
       min_lon = 180;
     for (let i = 0; i < indices.length; i++) {
       const splace = splaces[indices[i]];
+      if (!splace) {
+        continue;
+      }
       if (splace.lat > max_lat) {
         max_lat = splace.lat;
       }
@@ -222,7 +227,7 @@ const ModalMapView = ({
   };
 
   useEffect(() => {
-    var dataset = splaces.map((splace) => [splace.lat, splace.lon]);
+    var dataset = splaces.map((splace) => [splace?.lat ?? 0, splace?.lon ?? 0]);
     var optics = new clustering.OPTICS();
     // parameters: 6 - neighborhood radius, 2 - number of points in neighborhood to form a cluster
     var clusters = optics.run(dataset, delta / 20, 1);
@@ -231,8 +236,8 @@ const ModalMapView = ({
     setClustered(clusters);
   }, [delta]);
 
-  const screenHeight = Dimensions.get("screen").height;
-  const height = pixelScaler(screenHeight - 88);
+  const screenHeight = useWindowDimensions().height;
+  const height = screenHeight - pixelScaler(88);
   const panY = useRef(new Animated.Value(screenHeight)).current;
   const translateY = panY.interpolate({
     inputRange: [-1, 0, 1],
@@ -409,6 +414,14 @@ const ModalMapView = ({
                             style={{
                               width: pixelScaler(23),
                               height: pixelScaler(33),
+                              // box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+                              shadowColor: "#000",
+                              shadowOffset: {
+                                width: 0,
+                                height: pixelScaler(2),
+                              },
+                              shadowRadius: pixelScaler(2),
+                              shadowOpacity: 0.1,
                             }}
                           />
                         </MarkerContainer>
