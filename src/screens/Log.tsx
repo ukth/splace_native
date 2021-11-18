@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useWindowDimensions } from "react-native";
+import { ScrollView, useWindowDimensions } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../components/ScreenContainer";
 import PhotoLog from "../components/Contents/Photolog";
@@ -38,7 +38,11 @@ const Log = () => {
   }, []);
 
   return (
-    <ScreenContainer>{item ? <PhotoLog item={item} /> : null}</ScreenContainer>
+    <ScreenContainer>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {item ? <PhotoLog item={item} /> : null}
+      </ScrollView>
+    </ScreenContainer>
   );
 };
 
