@@ -93,7 +93,7 @@ const Liked = ({ item }: { item: PhotologType }) => {
       <RegText13
         style={{ marginRight: pixelScaler(3), marginLeft: pixelScaler(5) }}
       >
-        {convertNumber(totalLiked)}
+        {item.author.isMe ? totalLiked : convertNumber(totalLiked)}
       </RegText13>
       <TouchableOpacity
         hitSlop={{

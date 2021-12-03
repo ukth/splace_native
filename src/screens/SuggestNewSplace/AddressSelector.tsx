@@ -1,28 +1,17 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
-import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-import {
-  calcDistanceByCoords,
-  formatDistance,
-  keyword2Address,
-  pixelScaler,
-} from "../../utils";
-import { Ionicons } from "@expo/vector-icons";
+import { formatDistance, keyword2Address, pixelScaler } from "../../utils";
 import { BldTextInput16 } from "../../components/TextInput";
-import axios from "axios";
-import { API_URL } from "../../apollo";
 import { Alert, FlatList, View } from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import * as Location from "expo-location";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import ModalMapSingleView from "../../components/ModalMapSingleView";
-import { REPORT } from "../../queries";
-import { ProgressContext } from "../../contexts/Progress";
 import { Icon } from "../../components/Icon";
 
 const EntryBackground = styled.View`

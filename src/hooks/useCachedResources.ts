@@ -46,9 +46,14 @@ export default function useCachedResources() {
           "NanumSquareRound-B": require("../../assets/fonts/NanumSquareRoundOTFB.otf"),
           "NanumSquareRound-EB": require("../../assets/fonts/NanumSquareRoundOTFEB.otf"),
           "NanumSquareRound-L": require("../../assets/fonts/NanumSquareRoundOTFL.otf"),
+          "NotoSansKR-Bold": require("../../assets/fonts/NotoSansKR-Medium.otf"),
+          "NotoSansKR-Regular": require("../../assets/fonts/NotoSansKR-Regular.otf"),
         });
 
-        cacheImages([require("../../assets/images/menual/log.jpg")]);
+        cacheImages([
+          require("../../assets/images/menual/log.jpg"),
+          require("../../assets/images/icons/positionpin_small.png"),
+        ]);
         // require("../../assets/images/registration_images/Find.jpg"),
         // require("../../assets/images/registration_images/discover.jpg"),
         // require("../../assets/images/registration_images/enjoy.jpg"),

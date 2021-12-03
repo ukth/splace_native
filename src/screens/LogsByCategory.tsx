@@ -6,7 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { PhotologType, StackGeneratorParamList } from "../types";
 import styled from "styled-components/native";
 import { pixelScaler } from "../utils";
-import { Alert, FlatList } from "react-native";
+import { Alert, FlatList, TouchableWithoutFeedback } from "react-native";
 import { GET_LOGS_BY_CATEGORY, LOG_GETLOGSBYCATEGORIES } from "../queries";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Image from "../components/Image";
@@ -19,7 +19,7 @@ const HeaderContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
 `;
 
-const LogContainer = styled.TouchableOpacity`
+const LogContainer = styled.View`
   margin-right: ${pixelScaler(3)}px;
   margin-bottom: ${pixelScaler(3)}px;
 `;
@@ -28,7 +28,7 @@ const Tag = styled.View`
   height: ${pixelScaler(25)}px;
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(25)}px;
-  border-width: ${pixelScaler(1)}px;
+  border-width: ${pixelScaler(0.67)}px;
   align-items: center;
   justify-content: center;
   padding-top: ${pixelScaler(1.3)}px;
@@ -67,7 +67,7 @@ const LogsByCategory = () => {
   const refresh = async () => {
     setRefreshing(true);
     const timer = setTimeout(() => {
-      Alert.alert("요청시간 초과");
+      Alert.alert("", "요청시간이 초과되었습니다.");
       setRefreshing(false);
     }, 10000);
     await refetch();
@@ -81,6 +81,7 @@ const LogsByCategory = () => {
         data={data?.getLogsByCategory?.logs}
         refreshing={refreshing}
         onRefresh={refresh}
+        showsVerticalScrollIndicator={false}
         numColumns={2}
         onEndReached={() =>
           fetchMore({
@@ -94,15 +95,19 @@ const LogsByCategory = () => {
           })
         }
         renderItem={({ item }: { item: PhotologType }) => (
-          <LogContainer onPress={() => navigation.push("Log", { id: item.id })}>
-            <Image
-              source={{ uri: item.imageUrls[0] }}
-              style={{
-                width: pixelScaler(186),
-                height: pixelScaler(186),
-              }}
-            />
-          </LogContainer>
+          <TouchableWithoutFeedback
+            onPress={() => navigation.push("Log", { id: item.id })}
+          >
+            <LogContainer>
+              <Image
+                source={{ uri: item.imageUrls[0] }}
+                style={{
+                  width: pixelScaler(186),
+                  height: pixelScaler(186),
+                }}
+              />
+            </LogContainer>
+          </TouchableWithoutFeedback>
         )}
       />
     </ScreenContainer>

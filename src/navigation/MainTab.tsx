@@ -58,8 +58,8 @@ const TabBarIcon = ({
       }
       style={
         screenName === "Keep"
-          ? { width: pixelScaler(12.1), height: pixelScaler(17.6) }
-          : { width: pixelScaler(17.2), height: pixelScaler(17) }
+          ? { width: pixelScaler(12.5), height: pixelScaler(18) }
+          : { width: pixelScaler(18), height: pixelScaler(18) }
       }
     />
   );

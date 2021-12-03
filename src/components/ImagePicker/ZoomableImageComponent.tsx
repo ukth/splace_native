@@ -1,16 +1,5 @@
-import React, { Component, useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Image,
-  PanResponder,
-  PanResponderInstance,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import * as MediaLibrary from "expo-media-library";
+import React, { Component } from "react";
+import { Image, PanResponder, PanResponderInstance, View } from "react-native";
 
 export class ZoomableImage extends Component<
   {

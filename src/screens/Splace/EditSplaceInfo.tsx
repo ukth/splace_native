@@ -12,7 +12,6 @@ import { pixelScaler } from "../../utils";
 import { RegTextInput16 } from "../../components/TextInput";
 import { EDIT_SPLACE } from "../../queries";
 import { Alert } from "react-native";
-import { RotationGestureHandler } from "react-native-gesture-handler";
 import { ProgressContext } from "../../contexts/Progress";
 
 const EntryContainer = styled.View`
@@ -71,7 +70,7 @@ const EditSplaceInfo = () => {
             if (phone !== "" && phone) {
               if (!validatePhone(phone)) {
                 Alert.alert("유효하지 않은 전화번호입니다.");
-                RotationGestureHandler;
+                return;
               }
               variables.phone = phone;
             }
@@ -83,10 +82,14 @@ const EditSplaceInfo = () => {
               variables.url = url;
             }
             if (name !== "" && name) {
-              variables.url = url;
+              variables.name = name;
             }
-            spinner.start();
-            mutation({ variables });
+            if (Object.keys(variables)) {
+              spinner.start();
+              mutation({ variables });
+            } else {
+              navigation.pop();
+            }
           }}
         />
       ),
@@ -149,7 +152,7 @@ const EditSplaceInfo = () => {
           placeholderTextColor={theme.editSplacePlaceholder}
           autoCapitalize="none"
           autoCorrect={false}
-          maxLength={20}
+          maxLength={200}
           selectionColor={theme.chatSelection}
         />
       </EntryContainer>

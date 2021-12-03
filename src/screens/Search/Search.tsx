@@ -6,6 +6,7 @@ import {
   Keyboard,
   TouchableOpacity,
   FlatList,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
@@ -37,7 +38,11 @@ import { ProgressContext } from "../../contexts/Progress";
 import { ModalKeep } from "../../components/ModalKeep";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import ModalMapView from "../../components/ModalMapView";
-import { BLANK_IMAGE, BLANK_PROFILE_IMAGE } from "../../constants";
+import {
+  BLANK_IMAGE,
+  BLANK_PROFILE_IMAGE,
+  NO_THUMBNAIL,
+} from "../../constants";
 
 const HeaderContainer = styled.View`
   align-items: center;
@@ -364,9 +369,6 @@ const Search = () => {
                     : "계정을 검색해 보세요"
                 }
                 placeholderTextColor={theme.searchBarPlaceholder}
-                // onChangeText={(text) => {
-                //   setKeyword(text);
-                // }}
                 onChangeText={(text) => {
                   if (tabViewIndex !== 0) {
                     setKeyword(text.trim());
@@ -488,7 +490,10 @@ const Search = () => {
         setSearchVars(variables);
         spinner.start(false);
 
+        // console.log(variables);
+
         const res = await refetchSplaces({ ...variables });
+        // console.log(res);
 
         spinner.stop();
         if (res?.data?.searchSplaces?.ok) {
@@ -606,8 +611,7 @@ const Search = () => {
                     style={{ marginLeft: pixelScaler(30) }}
                     onEndReachedThreshold={0.5}
                     onEndReached={async () => {
-                      // console.log("onendreached");
-                      if (Object.keys(searchVars).length > 2) {
+                      if (Object.keys(searchVars).length >= 2) {
                         const res: any = await fetchMoreSplaces({
                           variables: {
                             ...searchVars,
@@ -626,7 +630,7 @@ const Search = () => {
                     }}
                     renderItem={({ item: splaceResult }) => (
                       <SplaceItemContainer>
-                        <TouchableOpacity
+                        <TouchableWithoutFeedback
                           onPress={() =>
                             navigation.push("Splace", {
                               splace: {
@@ -634,9 +638,6 @@ const Search = () => {
                               },
                             })
                           }
-                          style={{
-                            marginBottom: pixelScaler(14),
-                          }}
                         >
                           <Image
                             source={{
@@ -644,15 +645,18 @@ const Search = () => {
                                 splaceResult.thumbnail &&
                                 splaceResult.thumbnail !== ""
                                   ? splaceResult.thumbnail
-                                  : BLANK_IMAGE,
+                                  : NO_THUMBNAIL,
                             }}
                             style={{
                               width: pixelScaler(145),
                               height: pixelScaler(145),
                               borderRadius: pixelScaler(10),
+                              borderWidth: pixelScaler(0.4),
+                              borderColor: theme.imageBorder,
+                              marginBottom: pixelScaler(14),
                             }}
                           />
-                        </TouchableOpacity>
+                        </TouchableWithoutFeedback>
                         <LabelContainer>
                           <TouchableOpacity
                             onPress={() =>
@@ -705,9 +709,7 @@ const Search = () => {
                               height: pixelScaler(20),
                             }}
                           >
-                            <RegText13>
-                              {shortenAddress(splaceResult.address)}
-                            </RegText13>
+                            <RegText13>{splaceResult.address}</RegText13>
                           </Tag>
                           {splaceResult.bigCategories &&
                           splaceResult.bigCategories.split(" ").length > 1 ? (
@@ -824,23 +826,21 @@ const Search = () => {
                   </TouchableOpacity>
                 )}
                 onEndReached={async () => {
-                  // console.log("onendreached");
-                  if (searchedSplaces.length === 10) {
-                    if (Object.keys(searchVars).length > 2) {
-                      const res = await fetchMoreSplaces({
-                        variables: {
-                          ...searchVars,
-                          lastId: searchedSplaces.length,
-                          type: "photolog",
-                        },
-                      });
-                      if (res?.data?.searchSplaces?.ok) {
-                        setSearchedLogs([
-                          ...searchedSplaces,
-                          ...(res.data.searchSplaces.searchedSplaces ?? []),
-                        ]);
-                        setSplaceSearched(true);
-                      }
+                  if (Object.keys(searchVars).length >= 2) {
+                    const res = await fetchMoreSplaces({
+                      variables: {
+                        ...searchVars,
+                        lastId: searchedLogs.length,
+                        type: "photolog",
+                      },
+                    });
+
+                    if (res?.data?.searchSplaces?.ok) {
+                      setSearchedLogs([
+                        ...searchedLogs,
+                        ...(res.data.searchSplaces.searchedSplaces ?? []),
+                      ]);
+                      setSplaceSearched(true);
                     }
                   }
                 }}
@@ -955,6 +955,9 @@ const Search = () => {
                 </RegText13>
               </ListItemContainer>
             )}
+            ListFooterComponent={() => (
+              <View style={{ height: pixelScaler(200) }} />
+            )}
           />
         ) : (
           <BlankMessageContainer></BlankMessageContainer>
@@ -977,6 +980,8 @@ const Search = () => {
                   height: pixelScaler(32),
                   borderRadius: pixelScaler(32),
                   marginRight: pixelScaler(10),
+                  borderWidth: pixelScaler(0.4),
+                  borderColor: theme.imageBorder,
                 }}
               />
               <View>
@@ -989,6 +994,9 @@ const Search = () => {
           )}
           keyExtractor={(item) => item.id + ""}
           showsVerticalScrollIndicator={false}
+          ListFooterComponent={() => (
+            <View style={{ height: pixelScaler(200) }} />
+          )}
         />
       )}
     </ScreenContainer>

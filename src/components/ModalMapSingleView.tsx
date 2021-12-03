@@ -33,11 +33,11 @@ const MarkerContainer = styled.TouchableOpacity`
 
 const ModalDragBar = styled.View`
   position: absolute;
-  width: ${pixelScaler(100)}px;
+  width: ${pixelScaler(120)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
   background-color: ${({ theme }: { theme: ThemeType }) => theme.modalDragBar};
-  top: ${pixelScaler(12)}px;
+  top: ${pixelScaler(8)}px;
   z-index: 1;
   /* margin-bottom: ${pixelScaler(30)}px; */
 `;
@@ -111,7 +111,7 @@ const ModalSingleMapView = ({
         panY.setValue(gestureState.dy);
       },
       onPanResponderRelease: (event, gestureState) => {
-        if (gestureState.dy > 0 && gestureState.vy > 1.5) {
+        if (gestureState.dy > 0 && gestureState.vy > 0) {
           closeModal();
         } else {
           resetBottomSheet.start();

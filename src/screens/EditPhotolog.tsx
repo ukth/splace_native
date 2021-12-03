@@ -9,7 +9,7 @@ import { RegTextInput13 } from "../components/TextInput";
 import { HeaderBackButton } from "../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
 import styled, { ThemeContext } from "styled-components/native";
-import { pixelScaler } from "../utils";
+import { pixelScaler, showFlashMessage } from "../utils";
 import { EDIT_LOG, REPORT } from "../queries";
 import { ProgressContext } from "../contexts/Progress";
 import { BldText16 } from "../components/Text";
@@ -41,7 +41,7 @@ const EditPhotolog = () => {
 
   const onCompleted = (data: any) => {
     if (data?.editPhotolog?.ok) {
-      Alert.alert("게시물이 수정되었습니다.");
+      showFlashMessage({ message: "게시물이 수정되었습니다." });
       navigation.pop();
     } else {
       Alert.alert("게시물 수정에 실패했습니다.");

@@ -13,23 +13,15 @@ import styled, { ThemeContext } from "styled-components/native";
 import * as ImagePicker from "expo-image-picker";
 import Image from "../../components/Image";
 import { formatOperatingTime, pixelScaler, uploadPhotos } from "../../utils";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Ionicons } from "@expo/vector-icons";
 import { Alert, SafeAreaView, Switch, Image as LocalImage } from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-import {
-  EDIT_SPLACE,
-  EDIT_SPLACE_TIMESETS,
-  GET_SPLACE_INFO,
-} from "../../queries";
+import { EDIT_SPLACE, GET_SPLACE_INFO } from "../../queries";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
-import { API_URL, tokenVar } from "../../apollo";
-import axios from "axios";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE } from "../../constants";
+import { BLANK_IMAGE, dayNameKor, NO_THUMBNAIL } from "../../constants";
 
 const Container = styled.ScrollView``;
 
@@ -212,7 +204,7 @@ const SuggestInfo = () => {
           ) : (
             <Image
               source={{
-                uri: splace.thumbnail ?? BLANK_IMAGE,
+                uri: splace.thumbnail ?? NO_THUMBNAIL,
               }}
               style={{
                 width: "100%",
@@ -225,10 +217,10 @@ const SuggestInfo = () => {
             onPress={() => {
               (async () => {
                 let result = await ImagePicker.launchImageLibraryAsync({
-                  mediaTypes: ImagePicker.MediaTypeOptions.All,
+                  mediaTypes: ImagePicker.MediaTypeOptions.Images,
                   allowsEditing: true,
                   aspect: [1, 1],
-                  quality: 1,
+                  quality: 0,
                 });
 
                 if (!result.cancelled) {
@@ -262,6 +254,7 @@ const SuggestInfo = () => {
                 left: pixelScaler(75),
               }}
             >
+              {dayNameKor[day] + " "}
               {operatingTime?.filter((timeset) => timeset.open).length
                 ? operatingTime[day].open
                   ? formatOperatingTime(operatingTime[day].open ?? 0) +

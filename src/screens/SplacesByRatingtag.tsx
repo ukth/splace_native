@@ -11,7 +11,7 @@ import {
 } from "../types";
 import styled, { ThemeContext } from "styled-components/native";
 import { pixelScaler, shortenAddress } from "../utils";
-import { FlatList } from "react-native";
+import { FlatList, TouchableWithoutFeedback } from "react-native";
 import {
   GET_LOGS_BY_CATEGORY,
   GET_SPLACES_BY_RATINGTAG,
@@ -22,7 +22,7 @@ import Image from "../components/Image";
 import { BldText13, RegText13, RegText16 } from "../components/Text";
 import { ModalKeep } from "../components/ModalKeep";
 import { Icon } from "../components/Icon";
-import { BLANK_IMAGE } from "../constants";
+import { BLANK_IMAGE, NO_THUMBNAIL } from "../constants";
 
 const Tag = styled.View`
   height: ${pixelScaler(25)}px;
@@ -111,11 +111,11 @@ const SplacesByRatingtag = () => {
         keyExtractor={(item) => item.id + ""}
         renderItem={({ item: splace }: { item: SplaceType }) => (
           <SplaceItemContainer>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPress={() => navigation.push("Splace", { splace })}
             >
               <Image
-                source={{ uri: splace.thumbnail ?? BLANK_IMAGE }}
+                source={{ uri: splace.thumbnail ?? NO_THUMBNAIL }}
                 style={{
                   width: pixelScaler(145),
                   height: pixelScaler(145),
@@ -123,7 +123,7 @@ const SplacesByRatingtag = () => {
                   marginBottom: pixelScaler(12),
                 }}
               />
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
             <LabelContainer>
               <TouchableOpacity
                 onPress={() => navigation.push("Splace", { splace })}

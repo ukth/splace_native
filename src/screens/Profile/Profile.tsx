@@ -1,7 +1,14 @@
 import { useQuery } from "@apollo/client";
 
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, FlatList, Share, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Share,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
@@ -40,7 +47,6 @@ import {
   showFlashMessage,
 } from "../../utils";
 import * as Linking from "expo-linking";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMutation } from "@apollo/client";
@@ -264,6 +270,8 @@ const ProfileInfo = ({
             width: pixelScaler(105),
             height: pixelScaler(105),
             borderRadius: pixelScaler(100),
+            borderWidth: pixelScaler(0.4),
+            borderColor: theme.imageBorder,
           }}
         />
       </ProfileImageContainer>
@@ -793,44 +801,41 @@ const Profile = () => {
     item: PhotologType;
     index: number;
   }) => (
-    <TouchableOpacity
+    <TouchableWithoutFeedback
       onPress={() => {
-        navigation.push("UserLogs", {
-          user,
-          initialScrollIndex: index,
-          data: logsData,
-          refetch: refetchLogs,
-          fetchMore: fetchMoreLogs,
-        });
-      }}
-      style={{
-        width: pixelScaler(186),
-        height: pixelScaler(186),
-        marginRight: pixelScaler(3),
-        marginBottom: pixelScaler(3),
+        navigation.push("Log", { id: item.id });
       }}
     >
-      <Image
-        source={{ uri: item.imageUrls[0] }}
+      <View
         style={{
           width: pixelScaler(186),
           height: pixelScaler(186),
+          marginRight: pixelScaler(3),
+          marginBottom: pixelScaler(3),
         }}
-      />
-
-      {item.isPrivate ? (
-        <Icon
-          name="lock_white"
+      >
+        <Image
+          source={{ uri: item.imageUrls[0] }}
           style={{
-            position: "absolute",
-            right: pixelScaler(15),
-            top: pixelScaler(12),
-            width: pixelScaler(12),
-            height: pixelScaler(17),
+            width: pixelScaler(186),
+            height: pixelScaler(186),
           }}
         />
-      ) : null}
-    </TouchableOpacity>
+
+        {item.isPrivate ? (
+          <Icon
+            name="lock_white"
+            style={{
+              position: "absolute",
+              right: pixelScaler(15),
+              top: pixelScaler(12),
+              width: pixelScaler(12),
+              height: pixelScaler(17),
+            }}
+          />
+        ) : null}
+      </View>
+    </TouchableWithoutFeedback>
   );
 
   const [listData, setListData] = useState<

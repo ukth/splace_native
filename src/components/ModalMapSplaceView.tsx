@@ -24,16 +24,16 @@ import * as Linking from "expo-linking";
 
 const ModalDragBar = styled.View`
   position: absolute;
-  width: ${pixelScaler(100)}px;
+  width: ${pixelScaler(120)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
   background-color: ${({ theme }: { theme: ThemeType }) => theme.modalDragBar};
-  top: ${pixelScaler(12)}px;
+  top: ${pixelScaler(8)}px;
   z-index: 1;
   /* margin-bottom: ${pixelScaler(30)}px; */
 `;
 
-const SplaceContainer = styled.TouchableOpacity`
+const SplaceContainer = styled.View`
   position: absolute;
   left: ${pixelScaler(15)}px;
   bottom: ${pixelScaler(45)}px;
@@ -131,7 +131,7 @@ const ModalMapSplaceView = ({
         panY.setValue(gestureState.dy);
       },
       onPanResponderRelease: (event, gestureState) => {
-        if (gestureState.dy > 0 && gestureState.vy > 1.5) {
+        if (gestureState.dy > 0 && gestureState.vy > 0) {
           closeModal();
         } else {
           resetBottomSheet.start();
@@ -231,122 +231,128 @@ const ModalMapSplaceView = ({
               </Marker>
             )}
           </MapView>
-          <SplaceContainer
+          <TouchableWithoutFeedback
             onPress={() => {
               setShowMap(false);
               navigation.push("Splace", { splace });
             }}
-            style={{
-              height: pixelScaler(splace?.thumbnail?.length ? 205 : 145),
-            }}
           >
-            <SplaceInfoContainer>
-              {splace?.thumbnail?.length && (
-                <Image
-                  style={{
-                    width: pixelScaler(110),
-                    height: pixelScaler(110),
-                    borderRadius: pixelScaler(10),
-                    marginRight: pixelScaler(10),
-                  }}
-                  source={{
-                    uri: splace?.thumbnail,
-                  }}
-                />
-              )}
-              <InfosContainer>
-                <BldText16 style={{ marginBottom: pixelScaler(10) }}>
-                  {splace?.name}
-                </BldText16>
-                <RegText13>{splace?.address}</RegText13>
-                {splace?.thumbnail?.length && (
-                  <TagsContainer>
-                    {splace?.ratingtags?.map((tag) => (
-                      <Tag
-                        key={tag.id}
-                        style={{ borderColor: theme.borderHighlight }}
-                      >
-                        <RegText13 style={{ color: theme.borderHighlight }}>
-                          {tag.name}
-                        </RegText13>
-                      </Tag>
-                    ))}
-
-                    {splace?.bigCategories?.map((tag) => (
-                      <Tag key={tag.id}>
-                        <RegText13>{tag.name}</RegText13>
-                      </Tag>
-                    ))}
-                  </TagsContainer>
-                )}
-              </InfosContainer>
-            </SplaceInfoContainer>
-            <FoundRouteButton
-              onPress={() => {
-                Alert.alert("지도 앱 선택", "", [
-                  {
-                    text: "Google Maps",
-                    onPress: () =>
-                      Linking.openURL(
-                        "https://maps.google.com/?q=@" +
-                          splace.lat +
-                          "," +
-                          splace.lon
-                      ),
-                  },
-                  {
-                    text: "Apple Maps",
-                    onPress: () =>
-                      Linking.openURL(
-                        "https://maps.apple.com/?q=" +
-                          splace.name +
-                          "&ll=" +
-                          splace.lat +
-                          "," +
-                          splace.lon
-                      ),
-                  },
-                  {
-                    text: "카카오맵",
-                    onPress: () => async () => {
-                      try {
-                        await Linking.openURL(
-                          "kakaomap://look?&p=" + splace.lat + "," + splace.lon
-                        );
-                      } catch {
-                        Alert.alert("카카오맵을 열 수 없습니다.");
-                      }
-                    },
-                  },
-                  {
-                    text: "네이버 지도",
-                    onPress: async () => {
-                      try {
-                        await Linking.openURL(
-                          "nmap://place?name=" +
-                            splace.name +
-                            "&lat=" +
-                            splace.lat +
-                            "&lng=" +
-                            splace.lon
-                        );
-                      } catch {
-                        Alert.alert("네이버 지도를 열 수 없습니다.");
-                      }
-                    },
-                  },
-                  {
-                    text: "취소",
-                    style: "cancel",
-                  },
-                ]);
+            <SplaceContainer
+              style={{
+                height: pixelScaler(splace?.thumbnail?.length ? 205 : 145),
               }}
             >
-              <RegText16 style={{ color: theme.textHighlight }}>
-                길찾기
-              </RegText16>
-            </FoundRouteButton>
-          </SplaceContainer>
+              <SplaceInfoContainer>
+                {splace?.thumbnail?.length && (
+                  <Image
+                    style={{
+                      width: pixelScaler(110),
+                      height: pixelScaler(110),
+                      borderRadius: pixelScaler(10),
+                      marginRight: pixelScaler(10),
+                    }}
+                    source={{
+                      uri: splace?.thumbnail,
+                    }}
+                  />
+                )}
+                <InfosContainer>
+                  <BldText16 style={{ marginBottom: pixelScaler(10) }}>
+                    {splace?.name}
+                  </BldText16>
+                  <RegText13>{splace?.address}</RegText13>
+                  {splace?.thumbnail?.length && (
+                    <TagsContainer>
+                      {splace?.ratingtags?.map((tag) => (
+                        <Tag
+                          key={tag.id}
+                          style={{ borderColor: theme.borderHighlight }}
+                        >
+                          <RegText13 style={{ color: theme.borderHighlight }}>
+                            {tag.name}
+                          </RegText13>
+                        </Tag>
+                      ))}
+
+                      {splace?.bigCategories?.map((tag) => (
+                        <Tag key={tag.id}>
+                          <RegText13>{tag.name}</RegText13>
+                        </Tag>
+                      ))}
+                    </TagsContainer>
+                  )}
+                </InfosContainer>
+              </SplaceInfoContainer>
+              <FoundRouteButton
+                onPress={() => {
+                  Alert.alert("지도 앱 선택", "", [
+                    {
+                      text: "Google Maps",
+                      onPress: () =>
+                        Linking.openURL(
+                          "https://maps.google.com/?q=@" +
+                            splace.lat +
+                            "," +
+                            splace.lon
+                        ),
+                    },
+                    {
+                      text: "Apple Maps",
+                      onPress: () =>
+                        Linking.openURL(
+                          "https://maps.apple.com/?q=" +
+                            splace.name +
+                            "&ll=" +
+                            splace.lat +
+                            "," +
+                            splace.lon
+                        ),
+                    },
+                    {
+                      text: "카카오맵",
+                      onPress: () => async () => {
+                        try {
+                          await Linking.openURL(
+                            "kakaomap://look?&p=" +
+                              splace.lat +
+                              "," +
+                              splace.lon
+                          );
+                        } catch {
+                          Alert.alert("카카오맵을 열 수 없습니다.");
+                        }
+                      },
+                    },
+                    {
+                      text: "네이버 지도",
+                      onPress: async () => {
+                        try {
+                          await Linking.openURL(
+                            "nmap://place?name=" +
+                              splace.name +
+                              "&lat=" +
+                              splace.lat +
+                              "&lng=" +
+                              splace.lon
+                          );
+                        } catch {
+                          Alert.alert("네이버 지도를 열 수 없습니다.");
+                        }
+                      },
+                    },
+                    {
+                      text: "취소",
+                      style: "cancel",
+                    },
+                  ]);
+                }}
+              >
+                <RegText16 style={{ color: theme.textHighlight }}>
+                  길찾기
+                </RegText16>
+              </FoundRouteButton>
+            </SplaceContainer>
+          </TouchableWithoutFeedback>
         </Animated.View>
       </View>
     </Modal>

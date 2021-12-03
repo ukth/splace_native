@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Alert, FlatList, useWindowDimensions } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { StackGeneratorParamList, UserType } from "../../types";
+import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { pixelScaler } from "../../utils";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
@@ -17,10 +17,13 @@ import {
 } from "../../components/Members/StyledComponents";
 import Image from "../../components/Image";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
+import { ThemeContext } from "styled-components/native";
 
 const BlockedUsers = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
+  const theme = useContext<ThemeType>(ThemeContext);
 
   useEffect(() => {
     navigation.setOptions({
@@ -81,6 +84,8 @@ const BlockedUsers = () => {
                       width: pixelScaler(32),
                       height: pixelScaler(32),
                       borderRadius: pixelScaler(32),
+                      borderWidth: pixelScaler(0.4),
+                      borderColor: theme.imageBorder,
                     }}
                   />
                 </MemberThumbnail>

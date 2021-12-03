@@ -21,7 +21,12 @@ import client, { tokenVar, userIdVar } from "../../apollo";
 import { Icon } from "../../components/Icon";
 import Image from "../../components/Image";
 import ScreenContainer from "../../components/ScreenContainer";
-import { BldText13, RegText13, RegText9 } from "../../components/Text";
+import {
+  BldText13,
+  BldText16,
+  RegText13,
+  RegText9,
+} from "../../components/Text";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
 import useMe from "../../hooks/useMe";
 import { CREATE_ROOM, GET_ROOMS, ROOM_UPDATE } from "../../queries";
@@ -31,7 +36,7 @@ import {
   ThemeType,
   UserType,
 } from "../../types";
-import { pixelScaler } from "../../utils";
+import { convertTimeDifference2String, pixelScaler } from "../../utils";
 
 const RoomContainer = styled.TouchableOpacity`
   height: ${pixelScaler(75)}px;
@@ -68,6 +73,14 @@ const UnreadMark = styled.View`
   top: 0px;
 `;
 
+const CreateButtonContainer = styled.View`
+  width: ${pixelScaler(30)}px;
+  height: ${pixelScaler(30)}px;
+  align-items: center;
+  justify-content: center;
+  margin-right: ${pixelScaler(23)}px;
+`;
+
 const RoomItem = ({ room }: { room: RoomType }) => {
   const me = useMe();
   useEffect(() => {
@@ -83,14 +96,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
   if (room.updatedAt) {
     const diff = new Date().getTime() - Number(room.updatedAt);
 
-    if (diff < 60 * 60 * 1000) {
-      const min = Math.floor(diff / 60000);
-      timeText = min !== 0 ? min + "분 전" : "방금 전";
-    } else if (Math.floor(diff / (60 * 60000)) < 24) {
-      timeText = Math.floor(diff / (60 * 60000)) + "시간 전";
-    } else {
-      timeText = Math.floor(diff / (60 * 60000 * 24)) + "일 전";
-    }
+    timeText = convertTimeDifference2String(diff);
   }
 
   const updated =
@@ -152,6 +158,8 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 width: pixelScaler(32),
                 height: pixelScaler(32),
                 borderRadius: pixelScaler(32),
+                borderWidth: pixelScaler(0.4),
+                borderColor: theme.imageBorder,
               }}
             />
           </MemberThumbnail>
@@ -171,6 +179,8 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 width: pixelScaler(26),
                 height: pixelScaler(26),
                 borderRadius: pixelScaler(26),
+                borderWidth: pixelScaler(0.4),
+                borderColor: theme.imageBorder,
               }}
             />
             <Image
@@ -187,6 +197,8 @@ const RoomItem = ({ room }: { room: RoomType }) => {
                 width: pixelScaler(26),
                 height: pixelScaler(26),
                 borderRadius: pixelScaler(26),
+                borderWidth: pixelScaler(0.4),
+                borderColor: theme.imageBorder,
               }}
             />
           </MemberThumbnail>
@@ -271,16 +283,29 @@ const Chatrooms = () => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={() => navigation.push("CreateChatroom")}>
-          <Icon
-            name="messagebox_add"
-            style={{
-              width: pixelScaler(22),
-              height: pixelScaler(21.4),
-              marginRight: pixelScaler(27),
-            }}
-          />
+          <CreateButtonContainer>
+            <View
+              style={{
+                position: "absolute",
+                width: pixelScaler(16),
+                height: pixelScaler(1.9),
+                borderRadius: pixelScaler(2),
+                backgroundColor: theme.black,
+              }}
+            />
+            <View
+              style={{
+                position: "absolute",
+                width: pixelScaler(1.9),
+                height: pixelScaler(16),
+                borderRadius: pixelScaler(2),
+                backgroundColor: theme.black,
+              }}
+            />
+          </CreateButtonContainer>
         </TouchableOpacity>
       ),
+      headerTitle: () => <BldText16>채팅</BldText16>,
     });
   }, []);
 
@@ -329,7 +354,7 @@ const Chatrooms = () => {
             style={{
               marginHorizontal: pixelScaler(30),
               backgroundColor: theme.chatRoomItemBorder,
-              height: pixelScaler(0.6),
+              height: pixelScaler(0.33),
             }}
           />
         )}

@@ -54,7 +54,7 @@ const Members = ({
   const refresh = async () => {
     setRefreshing(true);
     const timer = setTimeout(() => {
-      Alert.alert("요청시간 초과");
+      Alert.alert("", "요청시간이 초과되었습니다.");
       setRefreshing(false);
     }, 10000);
     await updateMembers();

@@ -69,6 +69,12 @@ export const BldText20 = styled.Text`
   color: ${theme.light.text};
 `;
 
+export const BldText24 = styled.Text`
+  font-size: ${pixelScaler(24)}px;
+  font-family: "NanumSquareRound-B";
+  color: ${theme.light.text};
+`;
+
 export const BldText28 = styled.Text`
   font-size: ${pixelScaler(28)}px;
   font-family: "NanumSquareRound-B";

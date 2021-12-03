@@ -47,7 +47,6 @@ const UserLogs = () => {
   const onScrollToIndexFailed = ({ index }: { index: number }) => {
     // Layout doesn't know the exact location of the requested element.
     // Falling back to calculating the destination manually
-
     const wait = new Promise((resolve) => setTimeout(resolve, 500));
     wait.then(() => {
       flatList.current?.scrollToIndex({ index: index, animated: true });
@@ -72,15 +71,13 @@ const UserLogs = () => {
   return (
     <ScreenContainer>
       <FlatList
-        maxToRenderPerBatch={2}
-        initialNumToRender={2}
         ref={flatList}
         data={data.getUserLogs?.logs}
         refreshing={refreshing}
         keyExtractor={keyExtractor}
         initialScrollIndex={initialScrollIndex}
         onScrollToIndexFailed={onScrollToIndexFailed}
-        onEndReached={onEndReached}
+        // onEndReached={onEndReached}
         onRefresh={refresh}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}

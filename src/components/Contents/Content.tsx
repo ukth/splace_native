@@ -52,7 +52,7 @@ const Content = ({ item }: { item: PhotologType }) => {
         <RegText13
           style={{
             lineHeight: pixelScaler(17),
-            marginBottom: shortText || showFullText ? pixelScaler(13) : 0,
+            marginBottom: pixelScaler(11.6),
           }}
           onPress={() => {
             if (showFullText) {
@@ -84,7 +84,7 @@ const Content = ({ item }: { item: PhotologType }) => {
             <RegText13
               style={{
                 color: theme.greyTextAlone,
-                marginBottom: pixelScaler(10),
+                marginBottom: pixelScaler(11.6),
               }}
             >
               {"  " + timeText}
@@ -93,18 +93,21 @@ const Content = ({ item }: { item: PhotologType }) => {
         </RegText13>
       ) : (
         <RegText13
-          style={{ color: theme.greyTextAlone, marginBottom: pixelScaler(10) }}
+          style={{
+            color: theme.greyTextAlone,
+            marginBottom: pixelScaler(11.6),
+          }}
         >
           {timeText}
         </RegText13>
       )}
-      {shortText || showFullText ? (
-        <Tags
-          splace={item.splace}
-          bigCategories={item.bigCategories ?? []}
-          categories={item.categories ?? []}
-        />
-      ) : null}
+      {/* {shortText || showFullText ? ( */}
+      <Tags
+        splace={item.splace}
+        bigCategories={item.bigCategories ?? []}
+        categories={item.categories ?? []}
+      />
+      {/* ) : null} */}
     </ContentContainer>
   );
 };

@@ -21,7 +21,7 @@ import ScreenContainer from "../../components/ScreenContainer";
 import {
   BldText16,
   BldText18,
-  BldText28,
+  BldText24,
   RegText13,
   RegText20,
 } from "../../components/Text";
@@ -56,11 +56,11 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { ProgressContext } from "../../contexts/Progress";
 import { ModalKeep } from "../../components/ModalKeep";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE, dayNameKor } from "../../constants";
+import { BLANK_IMAGE, dayNameKor, NO_THUMBNAIL } from "../../constants";
 
 const ListHeaderContainer = styled.View``;
 const UpperContainer = styled.View`
-  padding-top: ${pixelScaler(30)}px;
+  padding-top: ${pixelScaler(25)}px;
   padding-left: ${pixelScaler(30)}px;
   padding-right: ${pixelScaler(30)}px;
 `;
@@ -114,6 +114,7 @@ const Tag = styled.View`
     color ?? theme.text};
   margin-right: ${pixelScaler(8)}px;
   margin-bottom: ${pixelScaler(8)}px;
+  padding-top: ${pixelScaler(1.3)}px;
 `;
 
 const ContentHeaderContainer = styled.View`
@@ -154,7 +155,7 @@ const operatingTimeToString = (timeSet: TimeSetType) => {
 const breakDayToString = (breakDays: number[]) => {
   const tmp = [...breakDays];
   if (tmp.length === 0) {
-    return "정기 휴무일 없음";
+    return "";
   }
 
   let s = "매월 ";
@@ -448,7 +449,7 @@ const Splace = ({
               <TouchableWithoutFeedback
                 onPress={() =>
                   navigation.push("ImagesViewer", {
-                    urls: [splace.thumbnail ?? BLANK_IMAGE],
+                    urls: [splace.thumbnail ?? ""],
                   })
                 }
               >
@@ -460,9 +461,9 @@ const Splace = ({
             )}
             <UpperContainer>
               <TitleContainer>
-                <BldText28 style={{ width: pixelScaler(287) }}>
+                <BldText24 style={{ width: pixelScaler(287) }}>
                   {splace?.name}
-                </BldText28>
+                </BldText24>
                 <TouchableOpacity
                   onPress={() => {
                     setModalKeepVisible(true);
@@ -612,7 +613,7 @@ const Splace = ({
                   />
                 </UnfoldButtonContainer>
               </TextContainer>
-              {!fold ? (
+              {!fold && splace.intro?.length ? (
                 <FoldedInfoContainer>
                   <RegText13
                     style={{
@@ -622,28 +623,29 @@ const Splace = ({
                   >
                     {splace.intro}
                   </RegText13>
-                  <TagsContainer>
-                    {(splace.ratingtags ?? []).map((ratingtag) => (
-                      <Tag
-                        style={{ borderColor: theme.borderHighlight }}
-                        key={ratingtag.id + ""}
-                      >
-                        <RegText13 style={{ color: theme.textHighlight }}>
-                          {ratingtag.name}
-                        </RegText13>
-                      </Tag>
-                    ))}
-                    {[
-                      ...(splace.bigCategories ?? []),
-                      ...(splace.categories ?? []),
-                    ].map((category) => (
-                      <Tag key={category.id + ""}>
-                        <RegText13>{category.name}</RegText13>
-                      </Tag>
-                    ))}
-                  </TagsContainer>
                 </FoldedInfoContainer>
               ) : null}
+
+              <TagsContainer>
+                {(splace.ratingtags ?? []).map((ratingtag) => (
+                  <Tag
+                    style={{ borderColor: theme.borderHighlight }}
+                    key={ratingtag.id + ""}
+                  >
+                    <RegText13 style={{ color: theme.textHighlight }}>
+                      {ratingtag.name}
+                    </RegText13>
+                  </Tag>
+                ))}
+                {[
+                  ...(splace.bigCategories ?? []),
+                  ...(splace.categories ?? []),
+                ].map((category) => (
+                  <Tag key={category.id + ""}>
+                    <RegText13>{category.name}</RegText13>
+                  </Tag>
+                ))}
+              </TagsContainer>
 
               <ContentHeaderContainer>
                 <BldText18>
@@ -689,27 +691,26 @@ const Splace = ({
           item: PhotologType;
           index: number;
         }) => (
-          <TouchableOpacity
-            key={"" + index}
-            style={{
-              marginRight: pixelScaler(3),
-              marginBottom: pixelScaler(3),
-            }}
+          <TouchableWithoutFeedback
             onPress={() => {
-              navigation.push("SplaceLogs", {
-                splace,
-                initialScrollIndex: index,
-                data: logsData,
-                refetch: refetchLogs,
-                fetchMore: fetchMore,
+              navigation.push("Log", {
+                id: item.id,
               });
             }}
           >
-            <Image
-              source={{ uri: item.imageUrls[0] }}
-              style={{ width: pixelScaler(186), height: pixelScaler(186) }}
-            />
-          </TouchableOpacity>
+            <View
+              key={"" + index}
+              style={{
+                marginRight: pixelScaler(3),
+                marginBottom: pixelScaler(3),
+              }}
+            >
+              <Image
+                source={{ uri: item.imageUrls[0] }}
+                style={{ width: pixelScaler(186), height: pixelScaler(186) }}
+              />
+            </View>
+          </TouchableWithoutFeedback>
         )}
       />
       <ModalMapView
@@ -800,14 +801,16 @@ const Splace = ({
                 </RegText13>
               ))}
               {/* {splace.breakDays.length !== 0 ? ( */}
-              <RegText13
-                style={{
-                  color: theme.errorText,
-                  lineHeight: pixelScaler(17),
-                }}
-              >
-                {breakDayToString(splace.breakDays) + "\n"}
-              </RegText13>
+              {splace.breakDays.length ? (
+                <RegText13
+                  style={{
+                    color: theme.errorText,
+                    lineHeight: pixelScaler(17),
+                  }}
+                >
+                  {breakDayToString(splace.breakDays) + "\n"}
+                </RegText13>
+              ) : null}
               {/* ) : null} */}
             </View>
           )

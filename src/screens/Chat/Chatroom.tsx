@@ -23,7 +23,7 @@ import { pixelScaler } from "../../utils";
 import * as Clipboard from "expo-clipboard";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
-import client, { userIdVar } from "../../apollo";
+import client from "../../apollo";
 import {
   ADD_ROOM_MEMBERS,
   EDIT_ROOM_TITLE,
@@ -36,21 +36,14 @@ import {
 } from "../../queries";
 import { ApolloCache, gql, useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-import { BldTextInput16 } from "../../components/TextInput";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
-import { Icon } from "../../components/Icon";
-import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
 
 const Entry = styled.View`
   width: 100%;
   padding: ${pixelScaler(10)}px ${pixelScaler(15)}px;
-  /* background-color: #f0e0d0; */
-  /* align-items: center; */
   flex-direction: row;
   border-top-width: ${pixelScaler(0.3)}px;
-  /* border-top-color: ${({ theme }: { theme: ThemeType }) =>
-    theme.chatEntryBorderTop}; */
   border-top-color: rgba(60, 60, 67, 0.2);
   margin-bottom: ${pixelScaler(30)}px;
 `;
@@ -58,9 +51,6 @@ const Entry = styled.View`
 const EntryTextInputContainer = styled.View`
   flex-direction: row;
   padding: 0px ${pixelScaler(15)}px;
-  /* height: ${pixelScaler(35)}px; */
-  /* padding-top: ${pixelScaler(4)}px;
-  padding-bottom: ${pixelScaler(7)}px; */
   background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.chatEntryInputBackground};
   flex: 1;
@@ -72,7 +62,6 @@ const EntryTextInputContainer = styled.View`
 const StyledTextInput = styled.TextInput`
   width: ${pixelScaler(270)}px;
   font-size: ${pixelScaler(13.5)}px;
-  /* background-color: #f0d0a0; */
   margin-top: ${pixelScaler(4.6)}px;
   margin-bottom: ${pixelScaler(9.3)}px;
   line-height: ${pixelScaler(17)}px;
@@ -338,6 +327,7 @@ const Chatroom = () => {
     if (message.createdAt.includes("-")) {
       message.createdAt = String(new Date(message.createdAt).valueOf());
     }
+
     const newMessage = client.cache.writeFragment({
       fragment: gql`
         fragment NewMessage on Message {
@@ -358,8 +348,6 @@ const Chatroom = () => {
         ...message,
       },
     });
-
-    // console.log(newMessage);
 
     client.cache.modify({
       id: `getRoomMessagesResult:${chatroom.id}`,
@@ -417,8 +405,7 @@ const Chatroom = () => {
     } = result;
     if (ok) {
       updateCache(message);
-      // refetch();
-      // console.log("cache mod!");
+
       setMyMessage("");
       read_chatroom({
         variables: { chatroomId: chatroom.id },
@@ -434,7 +421,6 @@ const Chatroom = () => {
         variables: { chatroomId: chatroom.id },
       });
     }
-    // console.log("sub mod!");
   };
 
   useEffect(() => {
@@ -499,7 +485,13 @@ const Chatroom = () => {
           keyExtractor={(message: any) => "" + message.id}
           renderItem={({ item, index }) => {
             // DateSectioningLine
-            var date = new Date(Number(item.createdAt));
+            var date;
+            if (item.createdAt.includes("-")) {
+              date = new Date(item.createdAt);
+              console.log(date);
+            } else {
+              date = new Date(Number(item.createdAt));
+            }
 
             const hrs = date.getHours();
 
@@ -507,7 +499,7 @@ const Chatroom = () => {
 
             const showDate =
               index === messages.length - 1 ||
-              Math.floor((Number(item.createdAt) + 3600000 * 9) / 86400000) !==
+              Math.floor((date.valueOf() + 3600000 * 9) / 86400000) !==
                 Math.floor(
                   (Number(messages[index + 1].createdAt) + 3600000 * 9) /
                     86400000
@@ -516,8 +508,9 @@ const Chatroom = () => {
             const showTime =
               index === 0 ||
               item.author.id !== messages[index - 1].author.id ||
-              Math.floor(Number(item.createdAt) / 60000) !==
-                Math.floor(Number(messages[index - 1].createdAt) / 60000);
+              (messages[index - 1].createdAt.length === 13 &&
+                Math.floor(Number(date.valueOf()) / 60000) !==
+                  Math.floor(Number(messages[index - 1].createdAt) / 60000));
 
             const showName =
               showDate ||
@@ -542,7 +535,9 @@ const Chatroom = () => {
                     {item.isMine ? null : (
                       <Username>
                         <RegText13>
-                          {item.author.name ?? item.author.username}
+                          {item.author.name.length
+                            ? item.author.name
+                            : item.author.username}
                         </RegText13>
                       </Username>
                     )}
@@ -601,7 +596,6 @@ const Chatroom = () => {
               </SendButton>
             ) : (
               <SendButton
-                // onPress={_handlePressSendButton}
                 hitSlop={{ top: 10, bottom: 10, left: 15, right: 15 }}
               >
                 <BldText16 style={{ color: theme.greyTextLight }}>

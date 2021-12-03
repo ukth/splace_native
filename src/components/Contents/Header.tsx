@@ -1,9 +1,9 @@
 import { useNavigation } from "@react-navigation/core";
-import React from "react";
+import React, { useContext } from "react";
 import { GestureResponderEvent } from "react-native";
-import styled from "styled-components/native";
+import styled, { ThemeContext } from "styled-components/native";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
-import { PhotologType, UserType } from "../../types";
+import { PhotologType, ThemeType, UserType } from "../../types";
 import { pixelScaler } from "../../utils";
 import Image from "../Image";
 import { BldText13 } from "../Text";
@@ -31,6 +31,7 @@ const Header = ({
   pressThreeDots: (event: GestureResponderEvent) => void;
 }) => {
   const navigation = useNavigation<any>();
+  const theme = useContext<ThemeType>(ThemeContext);
   return (
     <Container>
       <Profile
@@ -48,6 +49,8 @@ const Header = ({
             height: pixelScaler(26),
             borderRadius: pixelScaler(13),
             marginRight: pixelScaler(10),
+            borderWidth: pixelScaler(0.4),
+            borderColor: theme.imageBorder,
           }}
         />
 

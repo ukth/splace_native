@@ -49,7 +49,7 @@ const AddButtonContainer = styled.View`
   align-items: center;
   justify-content: center;
   border-radius: ${pixelScaler(5)}px;
-  border-width: ${pixelScaler(1.67)}px;
+  border-width: ${pixelScaler(2)}px;
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
 `;
 
@@ -78,6 +78,8 @@ const MainfeedHeader = () => {
   const theme = useContext<ThemeType>(ThemeContext);
 
   const menualChecked = useReactiveVar(menualCheckedVar);
+
+  var [timer, setTimer] = useState<NodeJS.Timeout>();
 
   const [showButtons, setShowButtons] = useState(false);
   const openAnim = useRef(new Animated.Value(0)).current;
@@ -119,9 +121,13 @@ const MainfeedHeader = () => {
   const openButtons = () => {
     // setShowModal(true);
     unfoldButtons.start(() => setShowButtons(true));
+    setTimer(setTimeout(() => closeButtons(), 7000));
   };
 
   const closeButtons = () => {
+    if (timer) {
+      clearTimeout(timer);
+    }
     foldButtons.start(() => setShowButtons(false));
   };
 

@@ -7,17 +7,10 @@ import {
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
-import {
-  getMainDefinition,
-  offsetLimitPagination,
-} from "@apollo/client/utilities";
+import { getMainDefinition } from "@apollo/client/utilities";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { createUploadLink } from "apollo-upload-client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { Alert } from "react-native";
-import { ProgressContext } from "./contexts/Progress";
-import { useContext } from "react";
-import { PhotologType, RoomType, SeriesType, UserType } from "./types";
 import { API_URL, TOKEN } from "./constants";
 
 export const isLoggedInVar = makeVar<boolean>(false);
@@ -27,50 +20,36 @@ export const menualCheckedVar = makeVar<number>(0);
 
 export const logUserIn = async (token: string, userId: number) => {
   await AsyncStorage.setItem(TOKEN, token);
-  // console.log("input:", userId, token);
   isLoggedInVar(true);
   tokenVar(token);
   userIdVar(userId);
-  // console.log("logged in!");
-  // console.log(tokenVar());
-  // console.log(userIdVar());
-  // console.log(isLoggedInVar());
 };
 
 export const logUserOut = async () => {
   await AsyncStorage.setItem(TOKEN, "");
-  // console.log("log out!");
   isLoggedInVar(false);
   tokenVar("");
   userIdVar(null);
-  // console.log(isLoggedInVar(), tokenVar(), userIdVar());
 };
 
 const httpLink = createHttpLink({
   uri: "https://" + API_URL + "/graphql",
 });
 
-// const uploadHttpLink = createUploadLink({
-//   uri: "http://localhost:4000/graphql",
-// });
-
 const wsLink = new WebSocketLink({
   uri: "ws://" + API_URL + "/graphql",
   options: {
     connectionParams: () => ({
       token: tokenVar(),
-      // token: AsyncStorage.getItem(TOKEN),
     }),
   },
 });
 
 const authLink = setContext((_, { headers }) => {
-  // console.log("set context!", tokenVar());
   return {
     headers: {
       ...headers,
       token: tokenVar(),
-      // token: AsyncStorage.getItem(TOKEN),
     },
   };
 });
@@ -85,16 +64,6 @@ const onErrorLink = onError(({ graphQLErrors, networkError }) => {
     Alert.alert("네트워크 연결을 확인해주세요");
   }
 });
-
-// export const cache = new InMemoryCache({
-//   typePolicies: {
-//     Query: {
-//       fields: {
-//         seeFeed: offsetLimitPagination(),
-//       },
-//     },
-//   },
-// });
 
 export const cache = new InMemoryCache({
   typePolicies: {
@@ -125,10 +94,6 @@ export const cache = new InMemoryCache({
         getMyRooms: {
           keyArgs: false,
           merge(existing, incoming) {
-            // console.log(existing);
-            // console.log("existing", existing);
-            // console.log("incoming", incoming);
-
             if (!existing) {
               return incoming;
             }
@@ -173,8 +138,6 @@ export const cache = new InMemoryCache({
         getUserLogs: {
           keyArgs: ["userId"],
           merge(existing, incoming) {
-            // console.log(existing);
-
             if (!existing) {
               return incoming;
             }
@@ -193,8 +156,6 @@ export const cache = new InMemoryCache({
                 }
               }
             }
-            // console.log("not included");
-            // console.log("existing,\n", existing, "\n\nincoming\n", incoming);
 
             return {
               ...incoming,
@@ -246,6 +207,12 @@ export const cache = new InMemoryCache({
             };
           },
         },
+        searchCategories: {
+          keyArgs: ["keyword"],
+        },
+        searchUsers: {
+          keyArgs: ["keyword"],
+        },
       },
     },
     Mutation: {
@@ -253,8 +220,6 @@ export const cache = new InMemoryCache({
         getBigCategories: {
           keyArgs: ["tagId"],
           merge(existing, incoming) {
-            // console.log("existing\n", existing);
-            // console.log("incoming\n", incoming);
             return existing;
           },
         },

@@ -23,7 +23,7 @@ const Tag = styled.View`
   height: ${pixelScaler(25)}px;
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(25)}px;
-  border-width: ${pixelScaler(1)}px;
+  border-width: ${pixelScaler(0.67)}px;
   align-items: center;
   justify-content: center;
   padding-top: ${pixelScaler(1.3)}px;
@@ -48,7 +48,7 @@ const LogsByBigCategory = () => {
   const refresh = async () => {
     setRefreshing(true);
     const timer = setTimeout(() => {
-      Alert.alert("요청시간 초과");
+      Alert.alert("", "요청시간이 초과되었습니다.");
       setRefreshing(false);
     }, 10000);
     await refetch();
@@ -79,6 +79,7 @@ const LogsByBigCategory = () => {
         data={data?.getLogsByBigCategory?.logs}
         refreshing={refreshing}
         onRefresh={refresh}
+        showsVerticalScrollIndicator={false}
         onEndReached={() =>
           fetchMore({
             variables: {

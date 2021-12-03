@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useContext, useEffect } from "react";
-import { FlatList, View } from "react-native";
+import React, { useContext } from "react";
+import { FlatList, TouchableWithoutFeedback, View } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import useBigCategories from "../../hooks/useBigCategories";
 import { GET_RECOMMENDED_CATEGORIES, GET_RECOMMENDED_LOG } from "../../queries";
@@ -14,7 +14,6 @@ import {
   ThemeType,
 } from "../../types";
 import { pixelScaler } from "../../utils";
-import { CardBox, RowCardBoxContainer } from "../CardRowBox";
 import Image from "../Image";
 import ScreenContainer from "../ScreenContainer";
 import Tag from "./Tag";
@@ -29,7 +28,7 @@ const TagBox = styled.View`
   flex-wrap: wrap;
 `;
 
-const LogContainer = styled.TouchableOpacity`
+const LogContainer = styled.View`
   margin-right: ${pixelScaler(3)}px;
   margin-bottom: ${pixelScaler(3)}px;
 `;
@@ -67,7 +66,6 @@ const Preview = () => {
                 />
               )
             )}
-
             {recommendedCategories?.suggestTags?.bigCategories?.map(
               (category: BigCategoryType) => (
                 <Tag
@@ -84,15 +82,19 @@ const Preview = () => {
           </TagBox>
         )}
         renderItem={({ item }: { item: PhotologType }) => (
-          <LogContainer onPress={() => navigation.push("Log", { id: item.id })}>
-            <Image
-              source={{ uri: item.imageUrls[0] }}
-              style={{
-                width: pixelScaler(186),
-                height: pixelScaler(186),
-              }}
-            />
-          </LogContainer>
+          <TouchableWithoutFeedback
+            onPress={() => navigation.push("Log", { id: item.id })}
+          >
+            <LogContainer>
+              <Image
+                source={{ uri: item.imageUrls[0] }}
+                style={{
+                  width: pixelScaler(186),
+                  height: pixelScaler(186),
+                }}
+              />
+            </LogContainer>
+          </TouchableWithoutFeedback>
         )}
         showsVerticalScrollIndicator={false}
       />

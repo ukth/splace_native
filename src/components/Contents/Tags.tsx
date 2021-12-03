@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
-import styled from "styled-components/native";
+import React, { useContext, useEffect, useState } from "react";
+import styled, { ThemeContext } from "styled-components/native";
 import {
   BigCategoryType,
   CategoryType,
@@ -12,6 +12,8 @@ import {
 import { pixelScaler, shortenAddress } from "../../utils";
 import { RegText13 } from "../Text";
 import ModalMapSplaceView from "../ModalMapSplaceView";
+import { Icon } from "../Icon";
+import { Image } from "react-native";
 
 const Container = styled.View`
   flex-direction: row;
@@ -21,14 +23,15 @@ const Container = styled.View`
 
 const Tag = styled.TouchableOpacity`
   height: ${pixelScaler(20)}px;
-  border-width: ${pixelScaler(0.6)}px;
+  border-width: ${pixelScaler(0.67)}px;
   border-color: ${({ theme }: { theme: ThemeType }) => theme.tagBorder};
-  padding: 0 ${pixelScaler(10)}px;
+  padding: 0 ${pixelScaler(9)}px;
   align-items: center;
   justify-content: center;
   margin-right: ${pixelScaler(8)}px;
   margin-bottom: ${pixelScaler(8)}px;
   padding-top: ${pixelScaler(1.3)}px;
+  flex-direction: row;
 `;
 
 const Tags = ({
@@ -44,12 +47,27 @@ const Tags = ({
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   // console.log(tags);
 
+  const theme = useContext<ThemeType>(ThemeContext);
+
   const [showMap, setShowMap] = useState(false);
 
   return (
     <Container>
       {splace?.address ? (
-        <Tag style={{ borderRadius: 0 }} onPress={() => setShowMap(true)}>
+        <Tag
+          style={{
+            borderRadius: 0,
+          }}
+          onPress={() => setShowMap(true)}
+        >
+          <Image
+            source={require("../../../assets/images/icons/positionpin_small.png")}
+            style={{
+              width: pixelScaler(8.3),
+              height: pixelScaler(12),
+              marginRight: pixelScaler(6),
+            }}
+          />
           <RegText13>{shortenAddress(splace?.address)}</RegText13>
         </Tag>
       ) : null}

@@ -217,7 +217,7 @@ export const formatPhoneString = (phoneString: string) => {
     return (
       phoneString.substr(0, 3) +
       "-" +
-      phoneString.substring(2, phoneString.length - 4) +
+      phoneString.substring(3, phoneString.length - 4) +
       "-" +
       phoneString.substr(phoneString.length - 4, 4)
     );
@@ -404,7 +404,11 @@ export const showFlashMessage = ({ message }: { message: string }) => {
 
 export const shortenAddress = (address: string) => {
   const words = address.split(" ");
-  return words[0].substr(0, 2) + ", " + words[1].substr(0, 2);
+
+  let add = words[0] + " ";
+  add += words[1];
+
+  return add;
 };
 
 export const convertTimeDifference2String = (diff: number) => {

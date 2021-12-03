@@ -15,15 +15,13 @@ import {
   BldText20,
   RegText13,
   RegText16,
-  RegText20,
 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { format2DecimalNumber, pixelScaler } from "../../utils";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { Alert, Switch, View } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { EDIT_SPLACE, EDIT_SPLACE_TIMESETS } from "../../queries";
+import { Alert, Switch } from "react-native";
+import { EDIT_SPLACE_TIMESETS } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
 import useMe from "../../hooks/useMe";
 import { dayNameKor } from "../../constants";
@@ -354,7 +352,7 @@ const EditSplaceOperatingtime = () => {
           <DaysButton
             key={number}
             onPress={() => {
-              if (focusedDay != number) {
+              if (focusedDay != number && selectedDays.length === 1) {
                 setIsFirst(false);
               }
               if (!selectedDays.includes(number)) {

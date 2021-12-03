@@ -1,8 +1,10 @@
+import { GestureResponderEvent, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components/native";
 import { ThemeType } from "../types";
 import { pixelScaler } from "../utils";
+import React from "react";
 
-export const FloatingMapButton = styled.TouchableOpacity`
+export const Container = styled.View`
   position: absolute;
   right: ${pixelScaler(15)}px;
   bottom: ${pixelScaler(15)}px;
@@ -15,3 +17,17 @@ export const FloatingMapButton = styled.TouchableOpacity`
   justify-content: center;
   z-index: 0;
 `;
+
+export const FloatingMapButton = ({
+  onPress,
+  children,
+}: {
+  onPress: (event: GestureResponderEvent) => void;
+  children: React.ReactNode;
+}) => {
+  return (
+    <TouchableWithoutFeedback onPress={onPress}>
+      <Container>{children}</Container>
+    </TouchableWithoutFeedback>
+  );
+};

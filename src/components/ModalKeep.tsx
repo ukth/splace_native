@@ -4,11 +4,11 @@ import {
   Alert,
   FlatList,
   GestureResponderEvent,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
-import { BLANK_IMAGE } from "../constants";
+import { BLANK_IMAGE, NO_THUMBNAIL } from "../constants";
 import { Icons } from "../icons";
 import { ADD_SAVES, CREATE_FOLDER, GET_FOLDERS, REMOVE_SAVE } from "../queries";
 import { FolderType, ThemeType } from "../types";
@@ -24,7 +24,7 @@ const FolderItemContainer = styled.View`
   align-items: center;
 `;
 
-const FolderThumbnailContainer = styled.TouchableOpacity`
+const FolderThumbnailContainer = styled.View`
   height: ${pixelScaler(95)}px;
   width: ${pixelScaler(95)}px;
   margin-bottom: ${pixelScaler(10)}px;
@@ -49,7 +49,7 @@ const ColumnBar = styled.View`
   background-color: ${({ theme }: { theme: ThemeType }) => theme.white};
 `;
 
-const SelectedBackground = styled.TouchableOpacity`
+const SelectedBackground = styled.View`
   position: absolute;
   height: ${pixelScaler(95)}px;
   width: ${pixelScaler(95)}px;
@@ -175,7 +175,7 @@ export const ModalKeep = ({
           if (folder === "new") {
             return (
               <FolderItemContainer>
-                <FolderThumbnailContainer
+                <TouchableWithoutFeedback
                   onPress={() => {
                     Alert.prompt(
                       "새 폴더 생성",
@@ -189,9 +189,11 @@ export const ModalKeep = ({
                     );
                   }}
                 >
-                  <RowBar />
-                  <ColumnBar />
-                </FolderThumbnailContainer>
+                  <FolderThumbnailContainer>
+                    <RowBar />
+                    <ColumnBar />
+                  </FolderThumbnailContainer>
+                </TouchableWithoutFeedback>
                 <RegText13 numberOfLines={1}>새 폴더 생성</RegText13>
               </FolderItemContainer>
             );
@@ -201,7 +203,7 @@ export const ModalKeep = ({
               .indexOf(splaceId);
             return (
               <FolderItemContainer>
-                <FolderThumbnailContainer
+                <TouchableWithoutFeedback
                   onPress={() => {
                     if (!addMutationLoading) {
                       addMutation({
@@ -213,35 +215,39 @@ export const ModalKeep = ({
                     }
                   }}
                 >
-                  <Image
-                    source={{
-                      uri: folder.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE,
-                    }}
-                    style={{
-                      width: pixelScaler(95),
-                      height: pixelScaler(95),
-                      borderRadius: pixelScaler(10),
-                    }}
-                  />
-                  {saveIdx !== -1 ? (
-                    <SelectedBackground
-                      onPress={() => {
-                        if (!removeMutationLoading) {
-                          removeMutation({
-                            variables: {
-                              saveId: folder.saves[saveIdx].id,
-                              folderId: folder.id,
-                            },
-                          });
-                        }
+                  <FolderThumbnailContainer>
+                    <Image
+                      source={{
+                        uri: folder.saves[0]?.splace?.thumbnail ?? NO_THUMBNAIL,
                       }}
-                    >
-                      <SelectedIndicatorBackground>
-                        <SelectedIndicator />
-                      </SelectedIndicatorBackground>
-                    </SelectedBackground>
-                  ) : null}
-                </FolderThumbnailContainer>
+                      style={{
+                        width: pixelScaler(95),
+                        height: pixelScaler(95),
+                        borderRadius: pixelScaler(10),
+                      }}
+                    />
+                    {saveIdx !== -1 ? (
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          if (!removeMutationLoading) {
+                            removeMutation({
+                              variables: {
+                                saveId: folder.saves[saveIdx].id,
+                                folderId: folder.id,
+                              },
+                            });
+                          }
+                        }}
+                      >
+                        <SelectedBackground>
+                          <SelectedIndicatorBackground>
+                            <SelectedIndicator />
+                          </SelectedIndicatorBackground>
+                        </SelectedBackground>
+                      </TouchableWithoutFeedback>
+                    ) : null}
+                  </FolderThumbnailContainer>
+                </TouchableWithoutFeedback>
                 <RegText13 numberOfLines={1}>{folder.title}</RegText13>
               </FolderItemContainer>
             );

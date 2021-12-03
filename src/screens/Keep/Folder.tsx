@@ -1,5 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
 
@@ -45,7 +52,7 @@ import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
 
-const SaveItemContainer = styled.TouchableOpacity`
+const SaveItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
   height: ${pixelScaler(225)}px;
   align-items: center;
@@ -62,7 +69,7 @@ const BadgesContainer = styled.View`
 `;
 
 const AddressBadge = styled.View`
-  border-width: ${pixelScaler(0.7)}px;
+  border-width: ${pixelScaler(0.67)}px;
   height: ${pixelScaler(20)}px;
   width: ${pixelScaler(74)}px;
   align-items: center;
@@ -72,7 +79,7 @@ const AddressBadge = styled.View`
 `;
 
 const Category = styled.View`
-  border-width: ${pixelScaler(0.7)}px;
+  border-width: ${pixelScaler(0.67)}px;
   height: ${pixelScaler(20)}px;
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(20)}px;
@@ -123,77 +130,81 @@ const SaveItem = ({
   const theme = useContext<ThemeType>(ThemeContext);
 
   return (
-    <SaveItemContainer
+    <TouchableWithoutFeedback
       onPress={() => {
         navigation.push("Splace", {
           splace: save.splace,
         });
       }}
     >
-      {editing ? (
-        <DeleteButton
-          onPress={() => {
-            Alert.alert("해당 공간을 삭제하시겠습니까?", "", [
-              {
-                text: "취소",
-                style: "cancel",
-              },
-              {
-                text: "확인",
-                onPress: () => {
-                  if (!deleteMutationLoading) {
-                    deleteMutation({
-                      variables: {
-                        saveId: save.id,
-                        folderId,
-                      },
-                    });
-                  }
+      <SaveItemContainer>
+        {editing ? (
+          <DeleteButton
+            onPress={() => {
+              Alert.alert("해당 공간을 삭제하시겠습니까?", "", [
+                {
+                  text: "취소",
+                  style: "cancel",
                 },
-              },
-            ]);
-          }}
-        >
-          <Minus />
-        </DeleteButton>
-      ) : null}
-      <View style={{ marginTop: pixelScaler(15) }}>
-        {save.splace.thumbnail ? (
-          <Image
-            source={{
-              uri: save.splace.thumbnail,
+                {
+                  text: "확인",
+                  onPress: () => {
+                    if (!deleteMutationLoading) {
+                      deleteMutation({
+                        variables: {
+                          saveId: save.id,
+                          folderId,
+                        },
+                      });
+                    }
+                  },
+                },
+              ]);
             }}
-            style={{
-              width: pixelScaler(145),
-              height: pixelScaler(145),
-              borderRadius: pixelScaler(10),
-            }}
-          />
-        ) : (
-          <View
-            style={{
-              width: pixelScaler(145),
-              height: pixelScaler(145),
-              borderRadius: pixelScaler(10),
-              backgroundColor: theme.blankFolderBackground,
-            }}
-          />
-        )}
-      </View>
-      <InfoContainer>
-        <BldText13>{save.splace.name}</BldText13>
-        <BadgesContainer>
-          <AddressBadge>
-            <RegText13>{shortenAddress(save.splace.address)}</RegText13>
-          </AddressBadge>
-          {save.splace.bigCategories?.length ? (
-            <Category>
-              <RegText13>{save.splace.bigCategories[0]?.name}</RegText13>
-            </Category>
-          ) : null}
-        </BadgesContainer>
-      </InfoContainer>
-    </SaveItemContainer>
+          >
+            <Minus />
+          </DeleteButton>
+        ) : null}
+        <View style={{ marginTop: pixelScaler(15) }}>
+          {save.splace.thumbnail ? (
+            <Image
+              source={{
+                uri: save.splace.thumbnail,
+              }}
+              style={{
+                width: pixelScaler(145),
+                height: pixelScaler(145),
+                borderRadius: pixelScaler(10),
+                borderWidth: pixelScaler(0.4),
+                borderColor: theme.imageBorder,
+              }}
+            />
+          ) : (
+            <View
+              style={{
+                width: pixelScaler(145),
+                height: pixelScaler(145),
+                borderRadius: pixelScaler(10),
+                backgroundColor: theme.blankFolderBackground,
+              }}
+            />
+          )}
+        </View>
+        <InfoContainer>
+          <BldText13>{save.splace.name}</BldText13>
+          <BadgesContainer>
+            <AddressBadge>
+              <RegText13>{shortenAddress(save.splace.address)}</RegText13>
+            </AddressBadge>
+            {save.splace.bigCategories?.length ? (
+              <Category>
+                <RegText13>{save.splace.bigCategories[0]?.name}</RegText13>
+              </Category>
+            ) : null}
+          </BadgesContainer>
+        </InfoContainer>
+      </SaveItemContainer>
+    </TouchableWithoutFeedback>
   );
 };
 

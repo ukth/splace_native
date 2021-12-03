@@ -15,6 +15,8 @@ export const dayNameKor = ["일", "월", "화", "수", "목", "금", "토"];
 
 export const BLANK_IMAGE =
   "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/blank_grey.png";
+export const NO_THUMBNAIL =
+  "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/no_thumbnail.png";
 export const BLANK_IMAGE_FOLDER =
   "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/blank_folder.png";
 export const BLANK_PROFILE_IMAGE =

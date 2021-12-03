@@ -6,7 +6,7 @@ import styled, { ThemeContext } from "styled-components/native";
 import { PhotologType } from "../../types";
 import { pixelScaler, showFlashMessage } from "../../utils";
 import BottomSheetModal from "../BottomSheetModal";
-import { BldText20, RegText20 } from "../Text";
+import { BldText18, BldText20, RegText20 } from "../Text";
 import Content from "./Content";
 import Header from "./Header";
 import Liked from "./Liked";
@@ -35,7 +35,7 @@ const BottomHeader = styled.View`
   align-items: center;
   padding: 0 ${pixelScaler(30)}px;
   height: ${pixelScaler(38)}px;
-  margin-bottom: ${pixelScaler(4)}px;
+  margin-bottom: ${pixelScaler(2)}px;
   width: auto;
   justify-content: space-between;
   /* background-color: #458693; */
@@ -206,9 +206,9 @@ const PhotoLog = ({
             }
           }}
         >
-          <BldText20 numberOfLines={1}>
+          <BldText18 numberOfLines={1}>
             {item.splace?.name ?? "Splace"}
-          </BldText20>
+          </BldText18>
         </TouchableOpacity>
         <Liked item={item} />
       </BottomHeader>

@@ -53,6 +53,7 @@ const Tag = styled.TouchableOpacity`
   flex-direction: row;
   margin-bottom: ${pixelScaler(15)}px;
   padding-top: ${pixelScaler(1.3)}px;
+  border-width: ${pixelScaler(0.67)}px;
 `;
 
 const EntryContainer = styled.View`
@@ -100,7 +101,7 @@ const EditSplaceCategory = () => {
 
   const [selectedBigCategoryIds, setSelectedBigCategoryIds] = useState<
     number[]
-  >([]);
+  >(splace.bigCategories?.map((cat) => cat.id) ?? []);
 
   // const {width, height} = useWindowDimensions();
 
@@ -172,10 +173,9 @@ const EditSplaceCategory = () => {
                 selectedBigCategoryIds.includes(bigCategory.id)
                   ? {
                       backgroundColor: theme.themeBackground,
-                      borderWidth: pixelScaler(0.67),
                       borderColor: theme.themeBackground,
                     }
-                  : { borderWidth: pixelScaler(0.67) }
+                  : {}
               }
             >
               <RegText16

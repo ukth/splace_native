@@ -78,7 +78,15 @@ const Series = () => {
           <BldText16 style={{ marginBottom: pixelScaler(5) }}>
             {seriesInfo?.seeSeries?.series?.title}
           </BldText16>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              if (seriesInfo?.seeSeries?.series?.author) {
+                navigation.push("Profile", {
+                  user: seriesInfo?.seeSeries?.series?.author,
+                });
+              }
+            }}
+          >
             <BldText13
               style={{
                 color: theme.seriesHeaderGreyText,
@@ -245,7 +253,7 @@ const Series = () => {
   const refresh = async () => {
     setRefreshing(true);
     const timer = setTimeout(() => {
-      Alert.alert("요청시간 초과");
+      Alert.alert("", "요청시간이 초과되었습니다.");
       setRefreshing(false);
     }, 10000);
     await refetch();
@@ -258,7 +266,7 @@ const Series = () => {
       <FlatList
         maxToRenderPerBatch={2}
         initialNumToRender={2}
-        ListHeaderComponent={<View style={{ height: pixelScaler(30) }}></View>}
+        ListHeaderComponent={<View style={{ height: pixelScaler(30) }} />}
         keyExtractor={(item) => "" + item.id}
         data={logsData?.getLogsBySeries?.seriesElements}
         renderItem={renderItem}
@@ -266,6 +274,9 @@ const Series = () => {
         onRefresh={refresh}
         refreshing={refreshing}
         showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => (
+          <View style={{ height: pixelScaler(40) }} />
+        )}
       />
       {splaces.length > 0 ? (
         <ModalMapView

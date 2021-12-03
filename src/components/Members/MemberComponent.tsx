@@ -92,6 +92,8 @@ const MemberComponent = ({ user }: { user: UserType }) => {
               width: pixelScaler(32),
               height: pixelScaler(32),
               borderRadius: pixelScaler(32),
+              borderWidth: pixelScaler(0.4),
+              borderColor: theme.imageBorder,
             }}
           />
         </MemberThumbnail>

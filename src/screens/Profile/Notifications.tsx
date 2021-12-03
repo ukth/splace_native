@@ -17,14 +17,18 @@ import ScreenContainer from "../../components/ScreenContainer";
 import { BldText13, BldText16, RegText13 } from "../../components/Text";
 import { FOLLOW, GET_NOTIFICATIONS } from "../../queries";
 import { StackGeneratorParamList, ThemeType, UserType } from "../../types";
-import { checkNotifications, pixelScaler } from "../../utils";
+import {
+  checkNotifications,
+  convertTimeDifference2String,
+  pixelScaler,
+} from "../../utils";
 import { gql, useMutation } from "@apollo/client";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
 
 const ItemContainer = styled.View`
   height: ${pixelScaler(75)}px;
   width: auto;
-  border-bottom-width: ${pixelScaler(0.67)}px;
+  border-bottom-width: ${pixelScaler(0.33)}px;
   border-bottom-color: ${({ theme }: { theme: ThemeType }) =>
     theme.notificationSeperator};
   flex-direction: row;
@@ -103,6 +107,8 @@ const Notification = () => {
   const { data, refetch } = useQuery(GET_NOTIFICATIONS, { onCompleted });
   const [notifications, setNotifications] = useState<any[]>();
 
+  const theme = useContext<ThemeType>(ThemeContext);
+
   const [refreshing, setRefreshing] = useState(false);
 
   const navigation =
@@ -150,76 +156,95 @@ const Notification = () => {
         onRefresh={refresh}
         data={notifications}
         keyExtractor={(item) => item.__typename + item.id}
-        renderItem={({ item }) => (
-          <ItemContainer>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.push("Profile", { user: item.requestUser })
-              }
-            >
-              <Image
-                source={{
-                  uri:
-                    item?.requestUser?.profileImageUrl ?? BLANK_PROFILE_IMAGE,
-                }}
-                style={{
-                  width: pixelScaler(32),
-                  height: pixelScaler(32),
-                  borderRadius: pixelScaler(32),
-                  marginRight: pixelScaler(15),
-                }}
-              />
-            </TouchableOpacity>
-            {item?.__typename === "FollowLog" ? (
-              <ContentContainer>
-                <RegText13
-                  style={{
-                    width: pixelScaler(155),
-                    lineHeight: pixelScaler(17),
-                  }}
-                >
-                  <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
-                  {item?.target?.title} 회원님을 팔로우하였습니다.
-                </RegText13>
-                <FollowButton user={item.requestUser} />
-              </ContentContainer>
-            ) : item?.__typename === "EditFolderLog" ? (
-              <ContentContainer>
-                <RegText13
-                  style={{
-                    lineHeight: pixelScaler(17),
-                  }}
-                >
-                  <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
-                  <BldText13>{item?.target?.title}</BldText13> 폴더를
-                  수정하였습니다.
-                </RegText13>
-              </ContentContainer>
-            ) : item?.__typename === "LikeLog" ? (
-              <ContentContainer>
-                <RegText13
-                  style={{
-                    width: pixelScaler(212),
-                    lineHeight: pixelScaler(17),
-                  }}
-                >
-                  <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
-                  회원님의 게시물을 좋아합니다.
-                </RegText13>
+        renderItem={({ item }) => {
+          let timeText = "";
+          if (item.createdAt) {
+            const diff = new Date().getTime() - Number(item.createdAt);
+
+            timeText = convertTimeDifference2String(diff);
+          }
+          return (
+            <ItemContainer>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.push("Profile", { user: item.requestUser })
+                }
+              >
                 <Image
-                  source={{ uri: item?.target?.imageUrls[0] }}
+                  source={{
+                    uri:
+                      item?.requestUser?.profileImageUrl ?? BLANK_PROFILE_IMAGE,
+                  }}
                   style={{
-                    position: "absolute",
-                    right: 0,
-                    width: pixelScaler(45),
-                    height: pixelScaler(45),
-                    borderRadius: pixelScaler(10),
+                    width: pixelScaler(32),
+                    height: pixelScaler(32),
+                    borderRadius: pixelScaler(32),
+                    marginRight: pixelScaler(15),
+                    borderWidth: pixelScaler(0.4),
+                    borderColor: theme.imageBorder,
                   }}
                 />
-              </ContentContainer>
-            ) : null}
-          </ItemContainer>
-        )}
+              </TouchableOpacity>
+              {item?.__typename === "FollowLog" ? (
+                <ContentContainer>
+                  <RegText13
+                    style={{
+                      width: pixelScaler(155),
+                      lineHeight: pixelScaler(17),
+                    }}
+                  >
+                    <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
+                    {item?.target?.title} 회원님을 팔로우하였습니다.{" "}
+                    <RegText13 style={{ color: theme.greyTextAlone }}>
+                      {timeText}
+                    </RegText13>
+                  </RegText13>
+                  <FollowButton user={item.requestUser} />
+                </ContentContainer>
+              ) : item?.__typename === "EditFolderLog" ? (
+                <ContentContainer>
+                  <RegText13
+                    style={{
+                      lineHeight: pixelScaler(17),
+                    }}
+                  >
+                    <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
+                    <BldText13>{item?.target?.title}</BldText13> 폴더를
+                    수정하였습니다.{" "}
+                    <RegText13 style={{ color: theme.greyTextAlone }}>
+                      {timeText}
+                    </RegText13>
+                  </RegText13>
+                </ContentContainer>
+              ) : item?.__typename === "LikeLog" ? (
+                <ContentContainer>
+                  <RegText13
+                    style={{
+                      width: pixelScaler(212),
+                      lineHeight: pixelScaler(17),
+                    }}
+                  >
+                    <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
+                    회원님의 게시물을 좋아합니다.{" "}
+                    <RegText13 style={{ color: theme.greyTextAlone }}>
+                      {timeText}
+                    </RegText13>
+                  </RegText13>
+                  <Image
+                    source={{ uri: item?.target?.imageUrls[0] }}
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      width: pixelScaler(45),
+                      height: pixelScaler(45),
+                      borderRadius: pixelScaler(10),
+                    }}
+                  />
+                </ContentContainer>
+              ) : null}
+            </ItemContainer>
+          );
+        }}
         showsVerticalScrollIndicator={false}
       />
     </ScreenContainer>

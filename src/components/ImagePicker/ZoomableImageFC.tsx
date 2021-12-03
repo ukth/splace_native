@@ -1,16 +1,5 @@
-import React, { Component, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Animated,
-  Image,
-  PanResponder,
-  PanResponderInstance,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import { pixelScaler } from "../../utils";
+import React, { useState } from "react";
+import { Image, PanResponder, View } from "react-native";
 
 const ZoomableImage = ({
   imageWidth,

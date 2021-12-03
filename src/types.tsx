@@ -475,6 +475,8 @@ export type ThemeType = {
 
   chatRoomBackground: string;
 
+  imageBorder: string;
+
   chatDateText: string;
 
   myChatBubble: string;

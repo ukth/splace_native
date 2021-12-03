@@ -54,7 +54,7 @@ const AddButton = styled.TouchableOpacity`
   border-radius: ${pixelScaler(10)}px;
   width: ${pixelScaler(65)}px;
   height: ${pixelScaler(35)}px;
-  border-width: ${pixelScaler(1)}px;
+  border-width: ${pixelScaler(0.67)}px;
   border-color: ${({ theme }: { theme: ThemeType }) => theme.textHighlight};
   align-items: center;
   justify-content: center;

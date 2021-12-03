@@ -50,7 +50,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE_FOLDER } from "../../constants";
+import { BLANK_IMAGE_FOLDER, NO_THUMBNAIL } from "../../constants";
 
 export const Item = styled.View`
   width: ${pixelScaler(145)}px;
@@ -78,7 +78,7 @@ const BadgesContainer = styled.View`
 `;
 
 const AddressBadge = styled.View`
-  border-width: ${pixelScaler(0.7)}px;
+  border-width: ${pixelScaler(0.67)}px;
   height: ${pixelScaler(20)}px;
   width: ${pixelScaler(74)}px;
   align-items: center;
@@ -88,7 +88,7 @@ const AddressBadge = styled.View`
 `;
 
 const Category = styled.View`
-  border-width: ${pixelScaler(0.7)}px;
+  border-width: ${pixelScaler(0.67)}px;
   height: ${pixelScaler(20)}px;
   padding: 0 ${pixelScaler(10)}px;
   border-radius: ${pixelScaler(20)}px;
@@ -139,6 +139,8 @@ const SaveItem = ({
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
+  const theme = useContext<ThemeType>(ThemeContext);
+
   return (
     <SaveItemContainer>
       <TouchableWithoutFeedback
@@ -160,12 +162,14 @@ const SaveItem = ({
 
           <Image
             source={{
-              uri: save.splace.thumbnail ?? BLANK_IMAGE_FOLDER,
+              uri: save.splace.thumbnail ?? NO_THUMBNAIL,
             }}
             style={{
               width: pixelScaler(145),
               height: pixelScaler(145),
               borderRadius: pixelScaler(10),
+              borderWidth: pixelScaler(0.4),
+              borderColor: theme.imageBorder,
             }}
           />
         </Item>

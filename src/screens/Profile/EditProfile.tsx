@@ -272,6 +272,8 @@ const EditProfile = () => {
                 width: pixelScaler(105),
                 height: pixelScaler(105),
                 borderRadius: pixelScaler(105),
+                borderWidth: pixelScaler(0.4),
+                borderColor: theme.imageBorder,
               }}
             />
           ) : (

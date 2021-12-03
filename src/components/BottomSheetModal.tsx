@@ -16,7 +16,7 @@ import { pixelScaler } from "../utils";
 
 const ModalDragBar = styled.View`
   position: absolute;
-  width: ${pixelScaler(100)}px;
+  width: ${pixelScaler(120)}px;
   height: ${pixelScaler(4)}px;
   border-radius: ${pixelScaler(2)}px;
   background-color: ${({ theme }: { theme: ThemeType }) =>
@@ -65,7 +65,7 @@ const BottomSheetModal = ({
         panY.setValue(gestureState.dy);
       },
       onPanResponderRelease: (event, gestureState) => {
-        if (gestureState.dy > 0 && gestureState.vy > 1.5) {
+        if (gestureState.dy > 0 && gestureState.vy > 0) {
           setModalVisible(false);
         } else {
           setModalVisible(true);

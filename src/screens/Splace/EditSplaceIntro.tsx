@@ -15,11 +15,6 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { EDIT_SPLACE } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
 
-const TextCounterContainer = styled.View`
-  width: ${pixelScaler(315)}px;
-  align-items: flex-end;
-`;
-
 const EditSplaceIntro = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();

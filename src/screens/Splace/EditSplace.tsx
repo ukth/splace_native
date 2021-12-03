@@ -3,13 +3,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import ScreenContainer from "../../components/ScreenContainer";
 import { useMutation, useQuery } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack";
-import {
-  SplaceType,
-  StackGeneratorParamList,
-  ThemeType,
-  TimeSetType,
-  UserType,
-} from "../../types";
+import { StackGeneratorParamList, ThemeType, TimeSetType } from "../../types";
 import styled, { ThemeContext } from "styled-components/native";
 import * as ImagePicker from "expo-image-picker";
 import Image from "../../components/Image";
@@ -19,25 +13,17 @@ import {
   showFlashMessage,
   uploadPhotos,
 } from "../../utils";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Ionicons } from "@expo/vector-icons";
 import { Alert, SafeAreaView, Switch, Image as LocalImage } from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
-import {
-  EDIT_SPLACE,
-  EDIT_SPLACE_TIMESETS,
-  GET_SPLACE_INFO,
-  REPORT,
-} from "../../queries";
+import { EDIT_SPLACE, GET_SPLACE_INFO, REPORT } from "../../queries";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
-import { API_URL, tokenVar } from "../../apollo";
-import axios from "axios";
 import useMe from "../../hooks/useMe";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE } from "../../constants";
+import { BLANK_IMAGE, dayNameKor, NO_THUMBNAIL } from "../../constants";
+import { of } from "zen-observable";
 
 const Container = styled.ScrollView``;
 
@@ -214,20 +200,36 @@ const EditSplace = () => {
       headerRight: () => (
         <HeaderRightConfirm
           onPress={async () => {
+            var variables: {
+              pets?: boolean;
+              noKids?: boolean;
+              parking?: boolean;
+              splaceId?: number;
+              thumbnail?: string;
+            } = {};
             if (localUri !== "") {
-              spinner.start();
               const awsUrl = (await uploadPhotos([localUri]))[0];
               if (awsUrl) {
-                mutation({
-                  variables: {
-                    pets,
-                    noKids,
-                    parking,
-                    splaceId: splace.id,
-                    thumbnail: awsUrl,
-                  },
-                });
+                variables.thumbnail = awsUrl;
               }
+            }
+            if (splace.noKids !== noKids) {
+              variables.noKids = noKids;
+            }
+            if (splace.parking !== parking) {
+              variables.parking = parking;
+            }
+            if (splace.pets !== pets) {
+              variables.pets = pets;
+            }
+
+            if (Object.keys(variables).length > 0) {
+              spinner.start();
+              mutation({
+                variables,
+              });
+            } else {
+              navigation.pop();
             }
           }}
         />
@@ -253,7 +255,7 @@ const EditSplace = () => {
           ) : (
             <Image
               source={{
-                uri: splace.thumbnail ?? BLANK_IMAGE,
+                uri: splace.thumbnail ?? NO_THUMBNAIL,
               }}
               style={{
                 width: "100%",
@@ -266,10 +268,10 @@ const EditSplace = () => {
             onPress={() => {
               (async () => {
                 let result = await ImagePicker.launchImageLibraryAsync({
-                  mediaTypes: ImagePicker.MediaTypeOptions.All,
+                  mediaTypes: ImagePicker.MediaTypeOptions.Images,
                   allowsEditing: true,
                   aspect: [1, 1],
-                  quality: 1,
+                  quality: 0,
                 });
 
                 if (!result.cancelled) {
@@ -353,6 +355,7 @@ const EditSplace = () => {
                 left: pixelScaler(75),
               }}
             >
+              {dayNameKor[day] + " "}
               {operatingTime?.filter((timeset) => timeset.open).length
                 ? operatingTime[day].open
                   ? formatOperatingTime(operatingTime[day].open ?? 0) +

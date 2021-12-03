@@ -12,6 +12,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
@@ -25,7 +27,6 @@ import {
 import { pixelScaler, strCmpFunc } from "../../utils";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { BldTextInput16 } from "../../components/TextInput";
 import {
@@ -52,7 +53,7 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE, BLANK_IMAGE_FOLDER } from "../../constants";
+import { BLANK_IMAGE, BLANK_IMAGE_FOLDER, NO_THUMBNAIL } from "../../constants";
 import { menualCheckedVar } from "../../apollo";
 
 const FolderConatiner = styled.View`
@@ -132,23 +133,27 @@ const Folder = ({
         {folder?.saves?.length === 0 ? (
           <Image
             source={{
-              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE_FOLDER,
+              uri: NO_THUMBNAIL,
             }}
             style={{
               width: pixelScaler(145),
               height: pixelScaler(145),
               borderRadius: pixelScaler(10),
+              borderWidth: pixelScaler(0.4),
+              borderColor: theme.imageBorder,
             }}
           />
         ) : (
           <Image
             source={{
-              uri: folder?.saves[0]?.splace?.thumbnail ?? BLANK_IMAGE,
+              uri: folder?.saves[0]?.splace?.thumbnail ?? NO_THUMBNAIL,
             }}
             style={{
               width: pixelScaler(145),
               height: pixelScaler(145),
               borderRadius: pixelScaler(10),
+              borderWidth: pixelScaler(0.4),
+              borderColor: theme.imageBorder,
             }}
           />
         )}
@@ -193,10 +198,6 @@ const Folders = ({
 
   const menualChecked = useReactiveVar(menualCheckedVar);
 
-  navigation.addListener("focus", async () => {
-    await refetch();
-  });
-
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => <BldText16>저장소</BldText16>,
@@ -224,6 +225,12 @@ const Folders = ({
           <TouchableOpacity
             onPress={() => {
               setEditing(!editing);
+            }}
+            hitSlop={{
+              top: pixelScaler(10),
+              bottom: pixelScaler(10),
+              right: pixelScaler(10),
+              left: pixelScaler(10),
             }}
           >
             <Icon

@@ -33,17 +33,11 @@ const Container = styled.View`
 // ({ navigation,}: { navigation: StackNavigationProp<StackGeneratorParamList>;}) => {
 const Mainfeed = () => {
   const theme = useContext(ThemeContext);
-  // const [loading, setLoading] = useState(true);
+
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
   const me = useMe();
-
-  useEffect(() => {
-    navigation.setOptions({
-      header: () => <MainfeedHeader />,
-    });
-  }, []);
 
   const [feed, setFeed] = useState<
     (
@@ -101,12 +95,6 @@ const Mainfeed = () => {
     onCompleted,
   });
 
-  // navigation.addListener("focus", () => {
-  //   if (!loading) {
-  //     refetch();
-  //   }
-  // });
-
   useEffect(() => {
     if (data?.getFeed?.logs && data?.getFeed?.series) {
       setFeedData({
@@ -138,7 +126,6 @@ const Mainfeed = () => {
   };
 
   const handleDeepLink = (event: any) => {
-    // console.log("!!", event);
     if (event.url) {
       handleUrl(event.url);
     }

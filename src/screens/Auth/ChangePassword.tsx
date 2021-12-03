@@ -1,48 +1,20 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
-import {
-  TouchableWithoutFeedback,
-  Keyboard,
-  Image,
-  Text,
-  Alert,
-} from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import { TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StackNavigationProp } from "@react-navigation/stack";
-import {
-  AuthStackParamList,
-  RegistrationStackParamList,
-  ThemeType,
-} from "../../types";
+import { AuthStackParamList, ThemeType } from "../../types";
 import { setStatusBarStyle } from "expo-status-bar";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
-import { BldText13, BldText16, RegText13 } from "../../components/Text";
+import { BldText13, BldText16 } from "../../components/Text";
 import { HeaderRightIcon } from "../../components/HeaderRightIcon";
 import { pixelScaler } from "../../utils";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldTextInput28 } from "../../components/TextInput";
 import { useMutation } from "@apollo/client";
-import {
-  EDIT_PASSWORD,
-  REQUEST_CERTIFICATE,
-  VERIFY_CERTIFICATE,
-} from "../../queries";
-import * as Linking from "expo-linking";
+import { EDIT_PASSWORD } from "../../queries";
 import { ProgressContext } from "../../contexts/Progress";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
-import { Icon } from "../../components/Icon";
-import { TouchableOpacity } from "react-native-gesture-handler";
-
-const ConfirmButton = styled.TouchableOpacity`
-  width: ${pixelScaler(65)}px;
-  height: ${pixelScaler(35)}px;
-  border-radius: ${pixelScaler(10)}px;
-  border-width: ${pixelScaler(1)}px;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: ${pixelScaler(75)}px;
-  padding-top: ${pixelScaler(1.3)}px;
-`;
 
 const TemporaryTextContainer = styled.View`
   height: ${pixelScaler(15)}px;
@@ -97,14 +69,13 @@ const ChangePassword = () => {
     setStatusBarStyle("dark");
     navigation.setOptions({
       headerTitle: () => <BldText16>비밀번호 재설정</BldText16>,
-      headerLeft: () =>
-        null,
-        // <TouchableOpacity onPress={() => navigation.pop()}>
-        //   <Icon
-        //     name="close"
-        //     style={{ width: pixelScaler(11), height: pixelScaler(11) }}
-        //   />
-        // </TouchableOpacity>
+      headerLeft: () => null,
+      // <TouchableOpacity onPress={() => navigation.pop()}>
+      //   <Icon
+      //     name="close"
+      //     style={{ width: pixelScaler(11), height: pixelScaler(11) }}
+      //   />
+      // </TouchableOpacity>
       headerRight: () =>
         validatePassword(password) &&
         passwordConfirm !== "" &&

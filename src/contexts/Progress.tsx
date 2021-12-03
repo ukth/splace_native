@@ -25,7 +25,7 @@ const ProgressProvider = ({ children }: { children: any }) => {
       if (setTimeOut !== false) {
         setTimer(
           setTimeout(() => {
-            Alert.alert("요청시간 초과");
+            Alert.alert("", "요청시간이 초과되었습니다.");
             setInProgress(false);
           }, timeOut * 1000)
         );

@@ -8,7 +8,7 @@ const TagContainer = styled.TouchableOpacity`
   height: ${pixelScaler(25)}px;
   padding: 0 10px;
   border-radius: ${pixelScaler(12.5)}px;
-  border-width: ${pixelScaler(0.8)}px;
+  border-width: ${pixelScaler(1)}px;
   border-color: ${({ color, theme }: { color?: string; theme: ThemeType }) =>
     color ?? theme.tagBorder};
   align-items: center;

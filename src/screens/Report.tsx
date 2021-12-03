@@ -29,11 +29,12 @@ const Report = () => {
 
   const onCompleted = (data: any) => {
     if (data?.reportResources?.ok) {
-      Alert.alert("신고가 접수되었습니다.\n검토에 24-72시간이 소요됩니다.");
+      Alert.alert("신고가 접수되었습니다.", "검토에 24-72시간이 소요됩니다.");
       navigation.pop();
     } else {
       Alert.alert(
-        "신고에 실패했습니다.\n별도의 문의사항이 있는 경우\ncontact@lunen.co.kr로 문의 바랍니다."
+        "신고에 실패했습니다.",
+        "별도의 문의사항이 있는 경우\ncontact@lunen.co.kr로 문의 바랍니다."
       );
     }
 
@@ -52,7 +53,7 @@ const Report = () => {
         <HeaderRightConfirm
           onPress={() => {
             if (reason.length < 10) {
-              Alert.alert("10자 이상의 사유를 입력해주세요.");
+              Alert.alert("", "10자 이상의 사유를 입력해주세요.");
             } else if (!loading) {
               spinner.start();
               mutation({

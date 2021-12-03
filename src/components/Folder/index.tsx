@@ -2,6 +2,7 @@ import styled from "styled-components/native";
 import React from "react";
 import { pixelScaler } from "../../utils";
 import { ThemeType } from "../../types";
+import { GestureResponderEvent, TouchableWithoutFeedback } from "react-native";
 
 export const DeleteButton = styled.TouchableOpacity`
   position: absolute;
@@ -53,10 +54,10 @@ export const NewFolderButton = styled.TouchableOpacity`
   padding-top: ${pixelScaler(1.3)}px;
   height: ${pixelScaler(20)}px;
   border-radius: ${pixelScaler(30)}px;
-  border-width: ${pixelScaler(0.7)}px;
+  border-width: ${pixelScaler(0.67)}px;
 `;
 
-export const Item = styled.TouchableOpacity`
+export const ItemContainer = styled.View`
   width: ${pixelScaler(145)}px;
   height: ${pixelScaler(145)}px;
   border-radius: ${pixelScaler(10)}px;
@@ -64,3 +65,17 @@ export const Item = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
 `;
+
+export const Item = ({
+  onPress,
+  children,
+}: {
+  onPress: (event: GestureResponderEvent) => void;
+  children: React.ReactNode;
+}) => {
+  return (
+    <TouchableWithoutFeedback onPress={onPress}>
+      <ItemContainer>{children}</ItemContainer>
+    </TouchableWithoutFeedback>
+  );
+};

@@ -9,13 +9,14 @@ import { RegText13 } from "../Text";
 const Container = styled.View`
   height: ${pixelScaler(20)}px;
   padding: 0 ${pixelScaler(30)}px;
+  padding-left: ${pixelScaler(29)}px;
   flex-direction: row;
-  margin-bottom: ${pixelScaler(8)}px;
+  margin-bottom: ${pixelScaler(11)}px;
 `;
 
 const Tag = styled.TouchableOpacity`
   height: ${pixelScaler(20)}px;
-  border-width: ${pixelScaler(0.8)}px;
+  border-width: ${pixelScaler(0.67)}px;
   border-radius: ${pixelScaler(10)}px;
   border-color: ${({ theme }: { theme: ThemeType }) => theme.tagGrey};
   margin-right: ${pixelScaler(5)}px;

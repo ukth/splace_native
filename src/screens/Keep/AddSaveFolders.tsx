@@ -49,7 +49,7 @@ import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { ProgressContext } from "../../contexts/Progress";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE_FOLDER } from "../../constants";
+import { BLANK_IMAGE_FOLDER, NO_THUMBNAIL } from "../../constants";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -83,12 +83,14 @@ const Folder = ({
         {folder.saves.length > 0 ? (
           <Image
             source={{
-              uri: folder.saves[0]?.splace.thumbnail ?? BLANK_IMAGE_FOLDER,
+              uri: folder.saves[0]?.splace.thumbnail ?? NO_THUMBNAIL,
             }}
             style={{
               width: pixelScaler(145),
               height: pixelScaler(145),
               borderRadius: pixelScaler(10),
+              borderWidth: pixelScaler(0.4),
+              borderColor: theme.imageBorder,
             }}
           />
         ) : (

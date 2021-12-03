@@ -5,7 +5,7 @@ import { SeriesType, StackGeneratorParamList } from "../../types";
 import { pixelScaler, showFlashMessage } from "../../utils";
 import BottomSheetModal from "../BottomSheetModal";
 import Image from "../Image";
-import { BldText20, RegText20 } from "../Text";
+import { BldText18, BldText20, RegText20 } from "../Text";
 import Header from "./Header";
 import ModalButtonBox from "../ModalButtonBox";
 import { useNavigation } from "@react-navigation/core";
@@ -170,7 +170,7 @@ const Series = ({ item }: { item: SeriesType }) => {
           });
         }}
       >
-        <BldText20>{item.title}</BldText20>
+        <BldText18>{item.title}</BldText18>
       </TitleContianer>
 
       <FlatList

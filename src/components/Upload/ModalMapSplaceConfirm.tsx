@@ -57,7 +57,7 @@ const InfosContainer = styled.View`
   /* background-color: #f01030; */
 `;
 
-const ConfirmButton = styled.TouchableOpacity`
+const ConfirmButton = styled.View`
   position: absolute;
   height: ${pixelScaler(35)}px;
   border-width: ${pixelScaler(1)}px;
@@ -134,7 +134,7 @@ const ModalMapSplaceConfirm = ({
         panY.setValue(gestureState.dy);
       },
       onPanResponderRelease: (event, gestureState) => {
-        if (gestureState.dy > 0 && gestureState.vy > 1.5) {
+        if (gestureState.dy > 0 && gestureState.vy > 0) {
           closeModal();
         } else {
           resetBottomSheet.start();
@@ -283,15 +283,19 @@ const ModalMapSplaceConfirm = ({
                 )}
               </InfosContainer>
             </SplaceInfoContainer>
-            <ConfirmButton
+            <TouchableWithoutFeedback
               onPress={() => {
                 if (splace) {
                   onConfirm(splace);
                 }
               }}
             >
-              <RegText16 style={{ color: theme.textHighlight }}>완료</RegText16>
-            </ConfirmButton>
+              <ConfirmButton>
+                <RegText16 style={{ color: theme.textHighlight }}>
+                  완료
+                </RegText16>
+              </ConfirmButton>
+            </TouchableWithoutFeedback>
           </SplaceContainer>
         </Animated.View>
       </View>

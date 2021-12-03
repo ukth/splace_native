@@ -88,6 +88,7 @@ import { setStatusBarStyle } from "expo-status-bar";
 import useMe from "../hooks/useMe";
 import { ImagePickerContext } from "../contexts/ImagePicker";
 import { HeaderBackButton } from "../components/HeaderBackButton";
+import MainfeedHeader from "../components/MainfeedHeader";
 
 const ProfileImage = styled.TouchableOpacity`
   margin-right: 10px;
@@ -112,6 +113,7 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
   useEffect(() => {
     if (
       [
+        "Chatrooms",
         "Chatroom",
         "MomentView",
         "Filter",
@@ -201,7 +203,11 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
       }}
     >
       {screenName === "Mainfeed" ? (
-        <Stack.Screen name="Mainfeed" component={Mainfeed} />
+        <Stack.Screen
+          name="Mainfeed"
+          component={Mainfeed}
+          options={{ header: MainfeedHeader }}
+        />
       ) : null}
       {screenName === "Search" ? (
         <Stack.Screen

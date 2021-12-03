@@ -33,7 +33,8 @@ const PickerContainer = styled.View`
 
 const ButtonsContainer = styled.View`
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  justify-content: center;
   position: absolute;
   bottom: ${pixelScaler(20)}px;
   left: ${pixelScaler(30)}px;
@@ -120,6 +121,11 @@ const NumberLabelContainer = styled.View`
   right: ${pixelScaler(10)}px;
   background-color: ${({ theme }: { theme: ThemeType }) =>
     theme.themeBackground};
+`;
+
+const HeaderTitleContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
 `;
 
 const NumberLabel = ({ ids, id }: { ids: string[]; id: string }) => {
@@ -366,9 +372,24 @@ const ModalImagePicker = () => {
           />
         </TouchableOpacity>
       ),
-      headerTitle: () => <BldText16>사진 선택</BldText16>,
+      headerTitle: () => (
+        <HeaderTitleContainer>
+          <BldText16 numberOfLines={1} onPress={() => openModal()}>
+            {album?.title ?? "사진 선택"}
+          </BldText16>
+          <Icon
+            name="arrow_right"
+            style={{
+              width: pixelScaler(6),
+              height: pixelScaler(12),
+              marginLeft: pixelScaler(10),
+              transform: [{ rotate: "90deg" }],
+            }}
+          />
+        </HeaderTitleContainer>
+      ),
     });
-  }, [selectedImages]);
+  }, [selectedImages, album]);
 
   useEffect(() => {
     if (focusedSize === 2 && selectedImages[focusedImageIndex]?.uri) {
@@ -415,9 +436,6 @@ const ModalImagePicker = () => {
         setLoadedImage(assets.assets);
         setFocusedImageIndex(0);
         if (images.length === 0) {
-          // setSelectedImages([
-          //   { ...assets.assets[0], zoom: 1, offset_x: 0, offset_y: 0 },
-          // ]);
         } else {
           const orgUrls = images.map((image) => image.orgUrl);
           setSelectedImages(
@@ -509,13 +527,13 @@ const ModalImagePicker = () => {
           </View>
         </ImageContainer>
         <ButtonsContainer>
-          <Button
+          {/* <Button
             onPress={() => {
               openModal();
             }}
           >
             <RegText16>{album?.title ?? "최근 항목"}</RegText16>
-          </Button>
+          </Button> */}
           <SizeButtonsContainer>
             <Button
               onPress={() => handleResize(0)}
@@ -656,7 +674,12 @@ const ModalImagePicker = () => {
             >
               <AlbumInfo>
                 <AlbumThumbnail source={{ uri: item.thumbnail }} />
-                <BldText16>{item.title}</BldText16>
+                <BldText16
+                  style={{ width: pixelScaler(200) }}
+                  numberOfLines={1}
+                >
+                  {item.title}
+                </BldText16>
               </AlbumInfo>
               <RegText13 style={{ color: theme.greyTextLight }}>
                 {item.count}

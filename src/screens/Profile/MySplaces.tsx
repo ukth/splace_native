@@ -1,18 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Alert,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-  Image as DefaultImage,
-} from "react-native";
+import { Alert, FlatList, View, Image as DefaultImage } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
 
 import Image from "../../components/Image";
 import {
-  FolderType,
   SaveType,
   SplaceType,
   StackGeneratorParamList,
@@ -20,47 +12,32 @@ import {
 } from "../../types";
 import { RouteProp, useNavigation } from "@react-navigation/core";
 import { HeaderTitle, StackNavigationProp } from "@react-navigation/stack";
-import { Ionicons } from "@expo/vector-icons";
 import {
   DeleteButton,
   EditButtonsContainer,
   Item,
   Minus,
   NewFolderButton,
-  SortButton,
 } from "../../components/Folder";
 import {
   BldText13,
   BldText16,
-  BldText20,
   RegText13,
   RegText16,
-  RegText20,
 } from "../../components/Text";
-import { pixelScaler, shortenAddress, strCmpFunc } from "../../utils";
-import { HeaderRightMenu } from "../../components/HeaderRightMenu";
-import BottomSheetModal from "../../components/BottomSheetModal";
-import ModalButtonBox from "../../components/ModalButtonBox";
+import { pixelScaler, shortenAddress } from "../../utils";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
-import { Splace } from "..";
+
 import {
   ADD_FOLDER_MEMBERS,
-  EDIT_FOLDER,
-  GET_FOLDER_INFO,
   GET_MY_SPLACE,
   LEAVE_FOLDER,
   QUIT_SPLACE_OWNER,
-  REMOVE_SAVE,
 } from "../../queries";
-import { fromPromise, useMutation, useQuery } from "@apollo/client";
-import ModalMapView from "../../components/ModalMapView";
-import { FloatingMapButton } from "../../components/FloatingMapButton";
-import { HeaderBackButton } from "../../components/HeaderBackButton";
-import { Icons } from "../../icons";
-import { HeaderRightEdit } from "../../components/HeaderRightEdit";
-import { Icon } from "../../components/Icon";
+import { useMutation, useQuery } from "@apollo/client";
+
 import { HeaderRightIcon } from "../../components/HeaderRightIcon";
-import { BLANK_IMAGE } from "../../constants";
+import { NO_THUMBNAIL } from "../../constants";
 
 const SplaceItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -81,10 +58,11 @@ const BadgesContainer = styled.View`
 const AddressBadge = styled.TouchableOpacity`
   border-width: ${pixelScaler(0.7)}px;
   height: ${pixelScaler(20)}px;
-  width: ${pixelScaler(74)}px;
+  padding: 0 ${pixelScaler(9)}px;
   align-items: center;
   justify-content: center;
   margin-right: ${pixelScaler(10)}px;
+  flex-direction: row;
 `;
 
 const SplaceItem = ({
@@ -161,7 +139,7 @@ const SplaceItem = ({
       >
         <Image
           source={{
-            uri: splace.thumbnail ?? BLANK_IMAGE,
+            uri: splace.thumbnail?.length ? splace.thumbnail : NO_THUMBNAIL,
           }}
           style={{
             width: pixelScaler(145),
@@ -174,6 +152,14 @@ const SplaceItem = ({
         <BldText13>{splace.name}</BldText13>
         <BadgesContainer>
           <AddressBadge>
+            <DefaultImage
+              source={require("../../../assets/images/icons/positionpin_small.png")}
+              style={{
+                width: pixelScaler(8.3),
+                height: pixelScaler(12),
+                marginRight: pixelScaler(6),
+              }}
+            />
             <RegText13>{shortenAddress(splace.address)}</RegText13>
           </AddressBadge>
         </BadgesContainer>
@@ -259,7 +245,7 @@ const MySplaces = ({
     }
   );
 
-  const { data, refetch } = useQuery(GET_MY_SPLACE);
+  const { data, refetch, fetchMore } = useQuery(GET_MY_SPLACE);
 
   navigation.addListener("focus", async () => {
     await refetch();

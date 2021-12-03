@@ -6,10 +6,6 @@ const colors = {
   red: "#ff0000",
   grey_76: "#767577",
   grey_8e: "#8e8e93",
-  grey_a: "#a0a0a0",
-  grey_b: "#b0b0b0",
-  grey_c: "#c0c0c0",
-  grey_d: "#d0d0d0",
   grey_d1: "#d1d1d6",
   grey_e: "#e0e0e0",
   grey_f: "#f0f0f0",
@@ -39,7 +35,9 @@ export const theme = {
     searchBarPlaceholder: colors.grey_c7,
     dots: colors.black,
 
-    modalDragBar: colors.grey_ae,
+    imageBorder: colors.grey_e5,
+
+    modalDragBar: colors.grey_c7,
     modalDragBarLight: colors.grey_d1,
 
     greyTextLight: colors.grey_ae,
@@ -153,8 +151,6 @@ export const theme = {
     text: colors.black,
     errorText: colors.red,
     theme: colors.theme,
-
-    imageBackground: colors.grey_c,
     tabActive: colors.black,
     tabInactive: colors.black,
   },
