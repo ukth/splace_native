@@ -149,7 +149,7 @@ const SplaceItem = ({
         />
       </Item>
       <InfoContainer>
-        <BldText13>{splace.name}</BldText13>
+        <BldText13 numberOfLines={1}>{splace.name}</BldText13>
         <BadgesContainer>
           <AddressBadge>
             <DefaultImage
