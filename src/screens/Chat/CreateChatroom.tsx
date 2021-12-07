@@ -300,6 +300,8 @@ const CreateChatroom = ({
             setKeyword(text);
           }}
           autoCapitalize={"none"}
+          style={{ width: pixelScaler(370) }}
+          selectionColor={theme.chatSelection}
         />
       </FollowerSearchEntry>
       {loading ? null : (

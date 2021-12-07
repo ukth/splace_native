@@ -249,6 +249,8 @@ const AddMembers = ({
             setKeyword(text);
           }}
           autoCapitalize={"none"}
+          style={{ width: pixelScaler(370) }}
+          selectionColor={theme.chatSelection}
         />
       </FollowerSearchEntry>
       {loading ? null : (

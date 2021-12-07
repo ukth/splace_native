@@ -5,6 +5,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  Image as DefaultImage,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
@@ -80,9 +81,10 @@ const BadgesContainer = styled.View`
 const AddressBadge = styled.View`
   border-width: ${pixelScaler(0.67)}px;
   height: ${pixelScaler(20)}px;
-  width: ${pixelScaler(74)}px;
+  padding: 0 ${pixelScaler(9)}px;
   align-items: center;
   justify-content: center;
+  flex-direction: row;
   margin-right: ${pixelScaler(10)}px;
   padding-top: ${pixelScaler(1.3)}px;
 `;
@@ -178,6 +180,14 @@ const SaveItem = ({
         <BldText13>{save.splace.name}</BldText13>
         <BadgesContainer>
           <AddressBadge>
+            <DefaultImage
+              source={require("../../../assets/images/icons/positionpin_small.png")}
+              style={{
+                width: pixelScaler(8.3),
+                height: pixelScaler(12),
+                marginRight: pixelScaler(6),
+              }}
+            />
             <RegText13>{shortenAddress(save.splace.address)}</RegText13>
           </AddressBadge>
           {save.splace.bigCategories?.length ? (

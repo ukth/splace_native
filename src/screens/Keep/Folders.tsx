@@ -103,6 +103,14 @@ const Folder = ({
     }
   );
 
+  const saves_thumbnail = folder?.saves?.filter(
+    (save) => save?.splace?.thumbnail?.length
+  );
+  const thumbnail =
+    saves_thumbnail.length > 0
+      ? saves_thumbnail[saves_thumbnail.length - 1].splace.thumbnail
+      : NO_THUMBNAIL;
+
   return (
     <FolderConatiner>
       {editing ? (
@@ -133,7 +141,7 @@ const Folder = ({
         {folder?.saves?.length === 0 ? (
           <Image
             source={{
-              uri: NO_THUMBNAIL,
+              uri: thumbnail ?? NO_THUMBNAIL,
             }}
             style={{
               width: pixelScaler(145),
@@ -146,7 +154,10 @@ const Folder = ({
         ) : (
           <Image
             source={{
-              uri: folder?.saves[0]?.splace?.thumbnail ?? NO_THUMBNAIL,
+              uri:
+                folder?.saves?.filter(
+                  (save) => save?.splace?.thumbnail?.length
+                )[0].splace.thumbnail ?? NO_THUMBNAIL,
             }}
             style={{
               width: pixelScaler(145),

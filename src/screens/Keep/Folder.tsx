@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Image as DefaultImage,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
@@ -51,6 +52,7 @@ import ModalMapView from "../../components/ModalMapView";
 import { FloatingMapButton } from "../../components/FloatingMapButton";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
+import { NO_THUMBNAIL } from "../../constants";
 
 const SaveItemContainer = styled.View`
   width: ${pixelScaler(170)}px;
@@ -71,9 +73,10 @@ const BadgesContainer = styled.View`
 const AddressBadge = styled.View`
   border-width: ${pixelScaler(0.67)}px;
   height: ${pixelScaler(20)}px;
-  width: ${pixelScaler(74)}px;
+  padding: 0 ${pixelScaler(9)}px;
   align-items: center;
   justify-content: center;
+  flex-direction: row;
   margin-right: ${pixelScaler(9)}px;
   padding-top: ${pixelScaler(1.3)}px;
 `;
@@ -166,34 +169,33 @@ const SaveItem = ({
           </DeleteButton>
         ) : null}
         <View style={{ marginTop: pixelScaler(15) }}>
-          {save.splace.thumbnail ? (
-            <Image
-              source={{
-                uri: save.splace.thumbnail,
-              }}
-              style={{
-                width: pixelScaler(145),
-                height: pixelScaler(145),
-                borderRadius: pixelScaler(10),
-                borderWidth: pixelScaler(0.4),
-                borderColor: theme.imageBorder,
-              }}
-            />
-          ) : (
-            <View
-              style={{
-                width: pixelScaler(145),
-                height: pixelScaler(145),
-                borderRadius: pixelScaler(10),
-                backgroundColor: theme.blankFolderBackground,
-              }}
-            />
-          )}
+          <Image
+            source={{
+              uri: save.splace.thumbnail?.length
+                ? save.splace.thumbnail
+                : NO_THUMBNAIL,
+            }}
+            style={{
+              width: pixelScaler(145),
+              height: pixelScaler(145),
+              borderRadius: pixelScaler(10),
+              borderWidth: pixelScaler(0.4),
+              borderColor: theme.imageBorder,
+            }}
+          />
         </View>
         <InfoContainer>
           <BldText13>{save.splace.name}</BldText13>
           <BadgesContainer>
             <AddressBadge>
+              <DefaultImage
+                source={require("../../../assets/images/icons/positionpin_small.png")}
+                style={{
+                  width: pixelScaler(8.3),
+                  height: pixelScaler(12),
+                  marginRight: pixelScaler(6),
+                }}
+              />
               <RegText13>{shortenAddress(save.splace.address)}</RegText13>
             </AddressBadge>
             {save.splace.bigCategories?.length ? (
