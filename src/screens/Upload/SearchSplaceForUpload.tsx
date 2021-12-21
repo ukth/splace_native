@@ -16,8 +16,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { BldTextInput16 } from "../../components/TextInput";
 import axios from "axios";
-import { API_URL } from "../../apollo";
-import { Alert, FlatList, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Keyboard,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { BldText16, RegText13, RegText16 } from "../../components/Text";
 import * as Location from "expo-location";
 import { GET_SPLACE_BY_KAKAOID, REPORT, UPLOAD_MOMENT } from "../../queries";
@@ -95,6 +100,11 @@ const SearchSplaceForUpload = () => {
   const [splaceSelected, setSplaceSelected] = useState(false);
 
   const [lastKeyword, setLastKeyword] = useState("");
+
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  Keyboard.addListener("keyboardWillShow", () => setFooterHeight(300));
+  Keyboard.addListener("keyboardWillHide", () => setFooterHeight(0));
 
   useEffect(() => {
     navigation.setOptions({
@@ -272,7 +282,9 @@ const SearchSplaceForUpload = () => {
             </InfoContainer>
           </AddressItemContainer>
         )}
-        ListFooterComponent={<View style={{ height: pixelScaler(200) }} />}
+        ListFooterComponent={
+          <View style={{ height: pixelScaler(footerHeight) }} />
+        }
       />
       <ModalMapSplaceConfirm
         splace={splace}

@@ -17,7 +17,7 @@ import { Image } from "react-native";
 
 const Container = styled.View`
   flex-direction: row;
-  width: ${pixelScaler(350)}px;
+  width: ${pixelScaler(330)}px;
   flex-wrap: wrap;
 `;
 

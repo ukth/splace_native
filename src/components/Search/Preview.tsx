@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useContext } from "react";
-import { FlatList, TouchableWithoutFeedback, View } from "react-native";
+import React, { useContext, useState } from "react";
+import { Alert, FlatList, TouchableWithoutFeedback, View } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import useBigCategories from "../../hooks/useBigCategories";
 import { GET_RECOMMENDED_CATEGORIES, GET_RECOMMENDED_LOG } from "../../queries";
@@ -41,7 +41,20 @@ const Preview = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
-  const { data: recommendedLogs } = useQuery(GET_RECOMMENDED_LOG);
+  const { data: recommendedLogs, refetch } = useQuery(GET_RECOMMENDED_LOG);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refresh = async () => {
+    setRefreshing(true);
+    const timer = setTimeout(() => {
+      Alert.alert("", "요청시간이 초과되었습니다.");
+      setRefreshing(false);
+    }, 10000);
+    await refetch();
+    clearTimeout(timer);
+    setRefreshing(false);
+  };
 
   // useEffect(() => {
   //   console.log(recommendedLogs);
@@ -50,6 +63,8 @@ const Preview = () => {
   return (
     <ScreenContainer>
       <FlatList
+        refreshing={refreshing}
+        onRefresh={refresh}
         data={recommendedLogs?.getSuggestLogs?.logs}
         numColumns={2}
         ListHeaderComponent={() => (

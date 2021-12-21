@@ -71,7 +71,17 @@ const Tag = styled.TouchableOpacity`
   padding-top: ${pixelScaler(1.3)}px;
 `;
 
-const MainfeedHeader = () => {
+const MainfeedHeader = ({
+  pushLog,
+  pushSeries,
+  pushMoment,
+  pushManual,
+}: {
+  pushLog: any;
+  pushSeries: any;
+  pushMoment: any;
+  pushManual: any;
+}) => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
@@ -134,7 +144,7 @@ const MainfeedHeader = () => {
   return (
     <Container>
       <HeaderLeftContainer>
-        {menualChecked % 2 === 1 ? (
+        {1 === 1 ? (
           <Icon
             name="super"
             style={{
@@ -146,14 +156,15 @@ const MainfeedHeader = () => {
           />
         ) : (
           <TouchableOpacity
-            onPress={() => {
-              const mainStack = navigation
-                .getParent()
-                ?.getParent<StackNavigationProp<RootStackParamList>>();
-              if (mainStack?.push) {
-                mainStack.push("Manual", { n: 0 });
-              }
-            }}
+            onPress={pushManual}
+            // onPress={() => {
+            //   const mainStack = navigation
+            //     .getParent()
+            //     ?.getParent<StackNavigationProp<RootStackParamList>>();
+            //   if (mainStack?.push) {
+            //     mainStack.push("Manual", { n: 0 });
+            //   }
+            // }}
           >
             <Icon
               name="super_clickme"
@@ -182,6 +193,7 @@ const MainfeedHeader = () => {
                 ?.getParent<StackNavigationProp<RootStackParamList>>();
               if (mainStack?.push) {
                 mainStack.push("Manual", { n: 1 });
+                return;
               }
             }
             if (showButtons) {
@@ -236,10 +248,11 @@ const MainfeedHeader = () => {
           }}
         >
           <Tag
-            onPress={() => {
-              // closeButtons();
-              navigation.push("UploadLog");
-            }}
+            onPress={pushLog}
+            // onPress={() => {
+            //   // closeButtons();
+            //   navigation.push("UploadLog");
+            // }}
           >
             <BldText16>로그</BldText16>
           </Tag>
@@ -251,9 +264,10 @@ const MainfeedHeader = () => {
           }}
         >
           <Tag
-            onPress={() => {
-              navigation.push("UploadSeries");
-            }}
+            onPress={pushSeries}
+            // onPress={() => {
+            //   navigation.push("UploadSeries");
+            // }}
           >
             <BldText16>시리즈</BldText16>
           </Tag>
@@ -264,9 +278,10 @@ const MainfeedHeader = () => {
           }}
         >
           <Tag
-            onPress={() => {
-              navigation.push("UploadMoment");
-            }}
+            onPress={pushMoment}
+            // onPress={() => {
+            //   navigation.push("UploadMoment");
+            // }}
           >
             <BldText16>모먼트</BldText16>
           </Tag>

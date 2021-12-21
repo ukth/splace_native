@@ -211,7 +211,7 @@ const Folders = ({
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <BldText16>저장소</BldText16>,
+      headerTitle: () => <BldText16>공간 저장소</BldText16>,
     });
     if (menualChecked < 4) {
       const mainStack = navigation

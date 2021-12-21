@@ -7,6 +7,7 @@ import {
   useWindowDimensions,
   Animated,
   FlatList,
+  Alert,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { ThemeType } from "../types";
@@ -337,6 +338,8 @@ const ModalImagePicker = () => {
         } else {
           setAlbum(tmp[0]);
         }
+      } else {
+        Alert.alert("앨범을 불러올 수 없습니다.");
       }
 
       // albumsList);

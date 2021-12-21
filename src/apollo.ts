@@ -135,6 +135,28 @@ export const cache = new InMemoryCache({
             };
           },
         },
+        seeFollowings: {
+          keyArgs: ["keyword", "userId"],
+          merge(existing, incoming) {
+            if (!existing) {
+              return incoming;
+            }
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.followings
+                ?.map((following: any) => following.__ref)
+                ?.includes(incoming.followings[0]?.__ref)
+            ) {
+              return existing;
+            }
+
+            return {
+              ...existing,
+              followings: [...existing.followings, ...incoming.followings],
+            };
+          },
+        },
         getUserLogs: {
           keyArgs: ["userId"],
           merge(existing, incoming) {
@@ -185,7 +207,6 @@ export const cache = new InMemoryCache({
             };
           },
         },
-
         getLogsBySplace: {
           keyArgs: ["splaceId", "orderBy"],
           merge(existing, incoming) {
@@ -207,6 +228,49 @@ export const cache = new InMemoryCache({
             };
           },
         },
+        getLogsByCategory: {
+          keyArgs: ["tagId"],
+          merge(existing, incoming) {
+            if (!existing) {
+              return incoming;
+            }
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.logs
+                ?.map((log: any) => log.__ref)
+                ?.includes(incoming.logs[0]?.__ref)
+            ) {
+              return existing;
+            }
+            return {
+              ...existing,
+              logs: [...existing.logs, ...incoming.logs],
+            };
+          },
+        },
+        getLogsByBigCategory: {
+          keyArgs: ["tagId"],
+          merge(existing, incoming) {
+            if (!existing) {
+              return incoming;
+            }
+            if (
+              !incoming ||
+              !incoming.ok ||
+              existing?.logs
+                ?.map((log: any) => log.__ref)
+                ?.includes(incoming.logs[0]?.__ref)
+            ) {
+              return existing;
+            }
+            return {
+              ...existing,
+              logs: [...existing.logs, ...incoming.logs],
+            };
+          },
+        },
+
         searchCategories: {
           keyArgs: ["keyword"],
         },

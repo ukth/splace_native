@@ -39,7 +39,10 @@ const Navigation = () => {
       {isLoggedIn ? (
         showFlash ? (
           <Image
-            source={require("../../assets/images/maintab_splash.png")}
+            source={{
+              uri: "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/splash.png",
+            }}
+            resizeMode={"contain"}
             style={{
               position: "absolute",
               left: -1,

@@ -483,12 +483,12 @@ const Chatroom = () => {
           // data={data?.getRoomMessages?.messages}
           data={messages}
           keyExtractor={(message: any) => "" + message.id}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => {
             // DateSectioningLine
             var date;
             if (item.createdAt.includes("-")) {
               date = new Date(item.createdAt);
-              console.log(date);
             } else {
               date = new Date(Number(item.createdAt));
             }
@@ -535,7 +535,7 @@ const Chatroom = () => {
                     {item.isMine ? null : (
                       <Username>
                         <RegText13>
-                          {item.author.name.length
+                          {item.author.name?.length
                             ? item.author.name
                             : item.author.username}
                         </RegText13>
@@ -569,6 +569,9 @@ const Chatroom = () => {
               </View>
             );
           }}
+          ListHeaderComponent={() =>
+            isSuper ? <View style={{ height: pixelScaler(50) }} /> : null
+          }
         />
       )}
       {!isSuper ? (

@@ -206,7 +206,23 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
         <Stack.Screen
           name="Mainfeed"
           component={Mainfeed}
-          options={{ header: MainfeedHeader }}
+          options={({ navigation }) => ({
+            header: () => (
+              <MainfeedHeader
+                pushLog={() => navigation.push("UploadLog")}
+                pushSeries={() => navigation.push("UploadSeries")}
+                pushMoment={() => navigation.push("UploadMoment")}
+                pushManual={() => {
+                  const mainStack = navigation
+                    .getParent()
+                    ?.getParent<StackNavigationProp<RootStackParamList>>();
+                  if (mainStack?.push) {
+                    mainStack.push("Manual", { n: 0 });
+                  }
+                }}
+              />
+            ),
+          })}
         />
       ) : null}
       {screenName === "Search" ? (
