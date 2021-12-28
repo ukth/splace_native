@@ -70,7 +70,6 @@ const TitleContainer = styled.View`
   justify-content: space-between;
   /* align-items: center; */
   margin-bottom: ${pixelScaler(20)}px;
-  background
 `;
 
 const ButtonsContainer = styled.View`

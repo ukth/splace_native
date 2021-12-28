@@ -44,9 +44,6 @@ const ButtonsContainer = styled.View`
 const ImageContainer = styled.View`
   width: ${pixelScaler(315)}px;
   height: ${pixelScaler(315)}px;
-  border-radius: ${pixelScaler(15)}px;
-  border-width: ${pixelScaler(0.4)}px;
-  border-color: ${({ theme }: { theme: ThemeType }) => theme.greyTextAlone};
   align-items: center;
   justify-content: center;
 `;
@@ -514,6 +511,8 @@ const ModalImagePicker = () => {
                 borderRadius: pixelScaler(15),
                 width: pixelScaler(focusedSize === 2 ? 236.25 : 315),
                 height: pixelScaler(focusedSize === 0 ? 236.25 : 315),
+                borderWidth: pixelScaler(0.4),
+                borderColor: theme.greyTextAlone,
               }}
               scrollEnabled={false}
             >

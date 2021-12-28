@@ -18,7 +18,6 @@ import {
   RoomType,
   StackGeneratorParamList,
   ThemeType,
-  UserType,
 } from "../../types";
 import { pixelScaler } from "../../utils";
 import * as Clipboard from "expo-clipboard";
