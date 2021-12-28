@@ -18,6 +18,7 @@ import {
   RoomType,
   StackGeneratorParamList,
   ThemeType,
+  UserType,
 } from "../../types";
 import { pixelScaler } from "../../utils";
 import * as Clipboard from "expo-clipboard";
@@ -38,6 +39,7 @@ import { ApolloCache, gql, useMutation, useQuery } from "@apollo/client";
 import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { HeaderRightMenu } from "../../components/HeaderRightMenu";
+import useMe from "../../hooks/useMe";
 
 const Entry = styled.View`
   width: 100%;
@@ -128,7 +130,10 @@ const Chatroom = () => {
   const [title, setTitle] = useState<string>("");
   const titleRef = useRef<any>();
 
+  const me = useMe();
+
   const isSuper =
+    me.id !== 1 &&
     chatroom.members.length === 2 &&
     chatroom.members.map((member) => member.id).includes(1);
 

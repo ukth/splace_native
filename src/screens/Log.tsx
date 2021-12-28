@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ScrollView, useWindowDimensions } from "react-native";
+import {
+  Alert,
+  RefreshControl,
+  ScrollView,
+  useWindowDimensions,
+} from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import ScreenContainer from "../components/ScreenContainer";
 import PhotoLog from "../components/Contents/Photolog";
@@ -15,16 +20,35 @@ const Log = () => {
   const { id } = useRoute<RouteProp<StackGeneratorParamList, "Log">>().params;
   const [item, setItem] = useState<PhotologType>();
 
-  const onCompleted = (data: any) => {
+  // const onCompleted = (data: any) => {
+  //   if (data?.seePhotolog?.ok) {
+  //     setItem(data?.seePhotolog?.log);
+  //   }
+  // };
+
+  const { data, loading, refetch } = useQuery(GET_LOG, {
+    variables: { photologId: id },
+    // onCompleted,
+  });
+
+  useEffect(() => {
     if (data?.seePhotolog?.ok) {
       setItem(data?.seePhotolog?.log);
     }
-  };
+  }, [data]);
 
-  const { data, loading } = useQuery(GET_LOG, {
-    variables: { photologId: id },
-    onCompleted,
-  });
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refresh = async () => {
+    setRefreshing(true);
+    const timer = setTimeout(() => {
+      Alert.alert("", "요청시간이 초과되었습니다.");
+      setRefreshing(false);
+    }, 10000);
+    await refetch();
+    clearTimeout(timer);
+    setRefreshing(false);
+  };
 
   const [log_getLog, _1] = useMutation(LOG_GETPHOTOLOG);
 
@@ -39,7 +63,12 @@ const Log = () => {
 
   return (
     <ScreenContainer>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+        }
+        showsVerticalScrollIndicator={false}
+      >
         {item ? <PhotoLog item={item} /> : null}
       </ScrollView>
     </ScreenContainer>

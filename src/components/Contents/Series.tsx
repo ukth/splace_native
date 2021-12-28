@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Alert, FlatList, Share, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Share,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import styled from "styled-components/native";
 import { SeriesType, StackGeneratorParamList } from "../../types";
 import { pixelScaler, showFlashMessage } from "../../utils";
@@ -179,17 +185,25 @@ const Series = ({ item }: { item: SeriesType }) => {
         ListHeaderComponent={() => <View style={{ width: pixelScaler(30) }} />}
         ListFooterComponent={() => <View style={{ width: pixelScaler(20) }} />}
         keyExtractor={(item) => "" + item.id}
-        renderItem={({ item, index }) =>
-          item.photolog ? (
-            <Image
-              source={{ uri: item.photolog.imageUrls[0] }}
-              style={{
-                width: pixelScaler(100),
-                height: pixelScaler(100),
-                marginRight: pixelScaler(10),
-                borderRadius: pixelScaler(10),
+        renderItem={({ item: logItem, index }) =>
+          logItem.photolog ? (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                navigation.push("Series", {
+                  id: item.id,
+                });
               }}
-            />
+            >
+              <Image
+                source={{ uri: logItem.photolog.imageUrls[0] }}
+                style={{
+                  width: pixelScaler(100),
+                  height: pixelScaler(100),
+                  marginRight: pixelScaler(10),
+                  borderRadius: pixelScaler(10),
+                }}
+              />
+            </TouchableWithoutFeedback>
           ) : null
         }
         showsHorizontalScrollIndicator={false}

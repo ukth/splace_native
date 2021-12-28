@@ -20,6 +20,7 @@ import { HeaderBackButton } from "../../components/HeaderBackButton";
 import { Icon } from "../../components/Icon";
 import { BldText16, RegText13 } from "../../components/Text";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
+import * as Linking from "expo-linking";
 
 const ProfileImageContainer = styled.TouchableOpacity`
   height: ${pixelScaler(195)}px;
@@ -135,6 +136,12 @@ const EditProfile = () => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => <BldText16>프로필 편집</BldText16>,
+      headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
+    });
+  }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
       headerRight: () => {
         return valueChanged ? (
           <HeaderRightConfirm
@@ -192,17 +199,8 @@ const EditProfile = () => {
           <></>
         );
       },
-      headerLeft: () => <HeaderBackButton onPress={() => navigation.pop()} />,
     });
 
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("편집을 위해선 카메라 권한이 필요합니다.");
-        navigation.pop();
-      }
-    })();
     // console.log("localuri:", localUri, name, valueChanged);
     if (
       localUri !== "" ||
@@ -231,6 +229,17 @@ const EditProfile = () => {
         <ProfileImageContainer
           onPress={() => {
             (async () => {
+              const { status } =
+                await ImagePicker.requestMediaLibraryPermissionsAsync();
+              if (status !== "granted") {
+                Alert.alert("", "편집을 위해서 사진 접근 허용이 필요합니다.", [
+                  {
+                    text: "권한 설정",
+                    onPress: () => Linking.openURL("app-settings:"),
+                  },
+                ]);
+                return;
+              }
               let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,

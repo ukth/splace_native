@@ -1,11 +1,11 @@
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import useCachedResources from "./hooks/useCachedResources";
 import Navigation from "./navigation";
-import { Text, TextInput, View } from "react-native";
+import { Alert, Text, TextInput, View } from "react-native";
 import { ThemeProvider } from "styled-components";
 import { theme } from "../theme";
 import client from "./apollo";
@@ -17,6 +17,17 @@ import { UploadContentProvider } from "./contexts/UploadContent";
 import { FilterProvider } from "./contexts/Filter";
 import { pixelScaler } from "./utils";
 import { RegText16 } from "./components/Text";
+
+import * as Notifications from "expo-notifications";
+import useMe from "./hooks/useMe";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: true,
+  }),
+});
 
 export default function App() {
   const isLoadingComplete = useCachedResources();

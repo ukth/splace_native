@@ -195,8 +195,6 @@ const ProfileInfo = ({
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   const theme = useContext<ThemeType>(ThemeContext);
 
-  console.log(user);
-
   const onFollowCompleted = ({
     followUser: { ok, error },
   }: {

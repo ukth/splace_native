@@ -21,6 +21,8 @@ import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import { CREATE_LOG } from "../../queries";
 import RatingModal from "../../components/Upload/RatingModal";
 import { Icon } from "../../components/Icon";
+import * as ImagePicker from "expo-image-picker";
+import * as Linking from "expo-linking";
 
 const LabelsContainer = styled.View`
   padding: 0 ${pixelScaler(30)}px;
@@ -237,7 +239,24 @@ const UploadLog = () => {
               >
                 <SelectImageButton
                   style={{ position: "absolute", bottom: 0 }}
-                  onPress={() => setShowPicker(true)}
+                  onPress={async () => {
+                    const { status } =
+                      await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (status !== "granted") {
+                      Alert.alert(
+                        "",
+                        "편집을 위해서 사진 접근 허용이 필요합니다.",
+                        [
+                          {
+                            text: "권한 설정",
+                            onPress: () => Linking.openURL("app-settings:"),
+                          },
+                        ]
+                      );
+                      return;
+                    }
+                    setShowPicker(true);
+                  }}
                 >
                   <Icon
                     name="gallery_black"

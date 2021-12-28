@@ -18,7 +18,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
 import clustering from "density-clustering";
 import { Image } from "react-native";
-import * as Linking from "expo-linking";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
 import { Icons } from "../../icons";

@@ -16,10 +16,9 @@ import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
 import { BldText13, BldText16, RegText13, RegText16 } from "../components/Text";
 import { ZoomableImage } from "../components/ImagePicker/ZoomableImageComponent";
 import ScreenContainer from "../components/ScreenContainer";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
+import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ImagePickerContext } from "../contexts/ImagePicker";
-import { Icons } from "../icons";
 import * as MediaLibrary from "expo-media-library";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { ProgressContext } from "../contexts/Progress";
@@ -45,6 +44,9 @@ const ButtonsContainer = styled.View`
 const ImageContainer = styled.View`
   width: ${pixelScaler(315)}px;
   height: ${pixelScaler(315)}px;
+  border-radius: ${pixelScaler(15)}px;
+  border-width: ${pixelScaler(0.4)}px;
+  border-color: ${({ theme }: { theme: ThemeType }) => theme.greyTextAlone};
   align-items: center;
   justify-content: center;
 `;
@@ -281,6 +283,7 @@ const ModalImagePicker = () => {
       const albumsList = await MediaLibrary.getAlbumsAsync({
         includeSmartAlbums: true,
       });
+
       if (albumsList) {
         var tmp = [];
         for (let i = 0; i < albumsList.length; i++) {
@@ -603,8 +606,9 @@ const ModalImagePicker = () => {
             onPress={() => {
               const imageIds = selectedImages.map((image) => image.id);
               const ind = imageIds.indexOf(item.id);
+
+              var tmp = [...selectedImages];
               if (ZoomableRef?.current?.state) {
-                const tmp = [...selectedImages];
                 tmp[focusedImageIndex] = {
                   ...tmp[focusedImageIndex],
                   zoom: ZoomableRef?.current?.state.zoom,
@@ -612,9 +616,10 @@ const ModalImagePicker = () => {
                   offset_y: ZoomableRef?.current?.state.offset_y,
                 };
                 setSelectedImages(tmp);
+                // console.log(tmp);
               }
+
               if (ind === -1 && selectedImages.length < 16) {
-                const tmp = selectedImages;
                 setSelectedImages([
                   ...tmp,
                   { ...item, zoom: 1, offset_x: 0, offset_y: 0 },
@@ -622,12 +627,9 @@ const ModalImagePicker = () => {
                 setFocusedImageIndex(tmp.length);
               } else {
                 if (selectedImages[focusedImageIndex].id === item.id) {
-                  if (selectedImages.length > 1) {
-                    setFocusedImageIndex(selectedImages.length - 2);
-                    const tmp = [...selectedImages];
-                    tmp.splice(ind, 1);
-                    setSelectedImages(tmp);
-                  }
+                  setFocusedImageIndex(selectedImages.length - 2);
+                  tmp.splice(ind, 1);
+                  setSelectedImages(tmp);
                 } else if (ind !== -1) {
                   setFocusedImageIndex(imageIds.indexOf(item.id));
                 }

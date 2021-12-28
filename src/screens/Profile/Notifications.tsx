@@ -8,6 +8,7 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
@@ -82,13 +83,15 @@ const FollowButton = ({ user }: { user: UserType }) => {
           ? { borderWidth: pixelScaler(1) }
           : { backgroundColor: theme.themeBackground }
       }
-      onPress={() =>
-        mutation({
-          variables: {
-            targetId: user.id,
-          },
-        })
-      }
+      onPress={() => {
+        if (!isFollowing) {
+          mutation({
+            variables: {
+              targetId: user.id,
+            },
+          });
+        }
+      }}
     >
       <BldText13 style={isFollowing ? {} : { color: theme.white }}>
         {isFollowing ? "팔로잉" : "팔로우"}
@@ -217,30 +220,36 @@ const Notification = () => {
                   </RegText13>
                 </ContentContainer>
               ) : item?.__typename === "LikeLog" ? (
-                <ContentContainer>
-                  <RegText13
-                    style={{
-                      width: pixelScaler(212),
-                      lineHeight: pixelScaler(17),
-                    }}
-                  >
-                    <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
-                    회원님의 게시물을 좋아합니다.{" "}
-                    <RegText13 style={{ color: theme.greyTextAlone }}>
-                      {timeText}
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    navigation.push("Log", { id: item?.target?.id });
+                  }}
+                >
+                  <ContentContainer>
+                    <RegText13
+                      style={{
+                        width: pixelScaler(212),
+                        lineHeight: pixelScaler(17),
+                      }}
+                    >
+                      <BldText13>{item?.requestUser?.username}</BldText13>님이{" "}
+                      회원님의 게시물을 좋아합니다.{" "}
+                      <RegText13 style={{ color: theme.greyTextAlone }}>
+                        {timeText}
+                      </RegText13>
                     </RegText13>
-                  </RegText13>
-                  <Image
-                    source={{ uri: item?.target?.imageUrls[0] }}
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      width: pixelScaler(45),
-                      height: pixelScaler(45),
-                      borderRadius: pixelScaler(10),
-                    }}
-                  />
-                </ContentContainer>
+                    <Image
+                      source={{ uri: item?.target?.imageUrls[0] }}
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        width: pixelScaler(45),
+                        height: pixelScaler(45),
+                        borderRadius: pixelScaler(10),
+                      }}
+                    />
+                  </ContentContainer>
+                </TouchableWithoutFeedback>
               ) : null}
             </ItemContainer>
           );

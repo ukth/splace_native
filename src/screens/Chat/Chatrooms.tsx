@@ -214,6 +214,7 @@ const RoomItem = ({ room }: { room: RoomType }) => {
           <RegText13
             style={{
               color: readed ? theme.chatPreviewTextRead : "#000000",
+              width: pixelScaler(220),
             }}
             numberOfLines={1}
           >
@@ -280,6 +281,7 @@ const Chatrooms = () => {
   );
 
   useEffect(() => {
+    // Notifications.setBadgeCountAsync(0);
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={() => navigation.push("CreateChatroom")}>

@@ -23,8 +23,7 @@ import useMe from "../hooks/useMe";
 import * as Linking from "expo-linking";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { ImagePickerContext } from "../contexts/ImagePicker";
-import MainfeedHeader from "../components/MainfeedHeader";
+import * as Notifications from "expo-notifications";
 
 const Container = styled.View`
   background-color: ${({ theme }: { theme: ThemeType }) => theme.background};
@@ -36,6 +35,28 @@ const Mainfeed = () => {
 
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
+
+  const _handleNotificationResponse = ({
+    notification,
+  }: {
+    notification: Notifications.Notification;
+  }) => {
+    const data = notification.request.content.data;
+    console.log("RESPONSE:", data.route);
+    if (data.route === "Chatrooms") {
+      navigation.navigate("Chatrooms");
+    } else if (data.route === "Notification") {
+      navigation.navigate("Notification");
+    } else if (data.route === "Log" && data.params?.id) {
+      navigation.navigate("Log", { id: data.params.id });
+    }
+  };
+
+  useEffect(() => {
+    Notifications.addNotificationResponseReceivedListener(
+      _handleNotificationResponse
+    );
+  }, []);
 
   const me = useMe();
 

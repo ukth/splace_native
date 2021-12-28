@@ -68,8 +68,9 @@ const UpperContainer = styled.View`
 const TitleContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  /* align-items: center; */
   margin-bottom: ${pixelScaler(20)}px;
+  background
 `;
 
 const ButtonsContainer = styled.View`
@@ -461,7 +462,12 @@ const Splace = ({
             )}
             <UpperContainer>
               <TitleContainer>
-                <BldText24 style={{ width: pixelScaler(287) }}>
+                <BldText24
+                  style={{
+                    width: pixelScaler(287),
+                    lineHeight: pixelScaler(30),
+                  }}
+                >
                   {splace?.name}
                 </BldText24>
                 <TouchableOpacity
@@ -474,7 +480,8 @@ const Splace = ({
                     style={{
                       width: pixelScaler(16),
                       height: pixelScaler(24),
-                      marginBottom: pixelScaler(2),
+                      marginTop: pixelScaler(4),
+                      // marginBottom: pixelScaler(2),
                     }}
                   />
                 </TouchableOpacity>

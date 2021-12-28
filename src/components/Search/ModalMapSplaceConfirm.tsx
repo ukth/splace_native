@@ -11,18 +11,11 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import BottomSheetModal from "../BottomSheetModal";
 import { coords2address, pixelScaler } from "../../utils";
 import { BldText16, RegText13, RegText16 } from "../Text";
-import { Ionicons } from "@expo/vector-icons";
 import { SplaceType, StackGeneratorParamList, ThemeType } from "../../types";
-import clustering from "density-clustering";
-import { Image } from "react-native";
-import * as Linking from "expo-linking";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/core";
-import { Icons } from "../../icons";
-import { UploadContentContext } from "../../contexts/UploadContent";
 import { Icon } from "../Icon";
 import { FilterContext } from "../../contexts/Filter";
 
