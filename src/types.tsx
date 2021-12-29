@@ -440,8 +440,17 @@ export type ThemeType = {
   searchBarPlaceholder: string;
   dots: string;
 
+  greyBackgroundText: string;
+
+  imageBorder: string;
+
+  modalDragBar: string;
+  modalDragBarLight: string;
+
   greyTextLight: string;
+  greyTextLighter: string;
   greyTextAlone: string;
+  cameraButtonOutline: string;
 
   switchTrackFalse: string;
 
@@ -450,7 +459,6 @@ export type ThemeType = {
 
   editSplacePlaceholder: string;
   editSplaceOperationTimeDayIndicator: string;
-  modalDragBarLight: string;
 
   editSplaceBreakDayRedBackground: string;
 
@@ -464,7 +472,6 @@ export type ThemeType = {
   tabInactive: string;
   searchedItemBorder: string;
 
-  ratingtag: string;
   textHighlight: string;
   borderHighlight: string;
 
@@ -474,8 +481,6 @@ export type ThemeType = {
   chatPreviewTimeText: string;
 
   chatRoomBackground: string;
-
-  imageBorder: string;
 
   chatDateText: string;
 
@@ -491,8 +496,6 @@ export type ThemeType = {
   chatEntryInputBackground: string;
   chatEntryPlaceholder: string;
   chatSelection: string;
-
-  cameraButtonOutline: string;
 
   chatSendText: string;
 
@@ -522,7 +525,6 @@ export type ThemeType = {
   chatInviteConfirmText: string;
 
   headerConfirmText: string;
-  notificationSeperator: string;
 
   folderDeleteButtonBackground: string;
   folderDeleteMinus: string;
@@ -538,10 +540,11 @@ export type ThemeType = {
   editProfileSeperator: string;
   editProfileTextGrey: string;
 
+  notificationSeperator: string;
+
   modalHighlight: string;
   modalInputSubmitButton: string;
   modalEntry: string;
-  modalDragBar: string;
 
   modalButtonRedText: string;
 
@@ -549,7 +552,6 @@ export type ThemeType = {
 
   white: string;
   black: string;
-  greyTextLighter: string;
 };
 
 export type IconName =

@@ -13,7 +13,13 @@ import styled, { ThemeContext } from "styled-components/native";
 import { ThemeType } from "../types";
 import { AlbumTitleKor, pixelScaler } from "../utils";
 import { HeaderRightConfirm } from "../components/HeaderRightConfirm";
-import { BldText13, BldText16, RegText13, RegText16 } from "../components/Text";
+import {
+  BldText13,
+  BldText16,
+  RegText13,
+  RegText16,
+  RegText9,
+} from "../components/Text";
 import { ZoomableImage } from "../components/ImagePicker/ZoomableImageComponent";
 import ScreenContainer from "../components/ScreenContainer";
 import { useNavigation } from "@react-navigation/core";
@@ -26,9 +32,9 @@ import { Icon } from "../components/Icon";
 import { BLANK_IMAGE } from "../constants";
 
 const PickerContainer = styled.View`
-  padding: 0 ${pixelScaler(30)}px;
-  padding-top: ${pixelScaler(30)}px;
-  height: ${pixelScaler(410)}px;
+  height: ${pixelScaler(290)}px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ButtonsContainer = styled.View`
@@ -36,9 +42,7 @@ const ButtonsContainer = styled.View`
   /* justify-content: space-between; */
   justify-content: center;
   position: absolute;
-  bottom: ${pixelScaler(20)}px;
-  left: ${pixelScaler(30)}px;
-  width: ${pixelScaler(315)}px;
+  right: ${pixelScaler(0)}px;
 `;
 
 const ImageContainer = styled.View`
@@ -46,18 +50,25 @@ const ImageContainer = styled.View`
   height: ${pixelScaler(315)}px;
   align-items: center;
   justify-content: center;
+  background-color: #910;
 `;
 
 const SizeButtonsContainer = styled.View`
-  flex-direction: row;
+  right: ${pixelScaler(15)}px;
+  top: ${pixelScaler(60)}px;
+  width: ${pixelScaler(33)}px;
+  height: ${pixelScaler(100)}px;
+  background-color: ${({ theme }: { theme: ThemeType }) =>
+    theme.greyBackground};
+  border-radius: ${pixelScaler(33)}px;
+  justify-content: space-around;
+  padding: ${pixelScaler(5)}px 0;
+  align-items: center;
 `;
 
 const Button = styled.TouchableOpacity`
   height: ${pixelScaler(25)}px;
-  border-width: ${pixelScaler(0.67)}px;
-  padding: 0 ${pixelScaler(10)}px;
   justify-content: center;
-  border-radius: ${pixelScaler(25)}px;
   padding-top: ${pixelScaler(1.3)}px;
 `;
 
@@ -128,14 +139,29 @@ const HeaderTitleContainer = styled.View`
   align-items: center;
 `;
 
+const ImageMonthContainer = styled.View`
+  height: ${pixelScaler(20)}px;
+  padding: 0 ${pixelScaler(10)}px;
+  border-radius: ${pixelScaler(20)}px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: ${pixelScaler(10)}px;
+  left: ${pixelScaler(10)}px;
+  padding-top: ${pixelScaler(1.3)}px;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+`;
+
 const NumberLabel = ({ ids, id }: { ids: string[]; id: string }) => {
   const idx = ids.indexOf(id);
   const theme = useContext<ThemeType>(ThemeContext);
-  return idx !== -1 ? (
+  return (
     <NumberLabelContainer>
       <BldText13 style={{ color: theme.background }}>{idx + 1}</BldText13>
     </NumberLabelContainer>
-  ) : null;
+  );
 };
 
 type AlbumType = {
@@ -172,6 +198,10 @@ const ModalImagePicker = () => {
       offset_y: number;
     })[]
   >([]);
+
+  const [albumScrollIndex, setAlbumScrollIndex] = useState(0);
+
+  const scrollIndicator = useRef(new Animated.Value(0)).current;
 
   const [size, setSize] = useState<{ width: number; height: number }>();
 
@@ -219,9 +249,9 @@ const ModalImagePicker = () => {
     setImageSize(focusedSize);
 
     const frameWidth =
-      focusedSize === 2 ? pixelScaler(236.25) : pixelScaler(315);
+      focusedSize === 2 ? pixelScaler(187.5) : pixelScaler(250);
     const frameHeight =
-      focusedSize === 0 ? pixelScaler(236.25) : pixelScaler(315);
+      focusedSize === 0 ? pixelScaler(187.5) : pixelScaler(250);
     let tmp = [];
     spinner.start(false);
 
@@ -291,6 +321,7 @@ const ModalImagePicker = () => {
           const assets = await MediaLibrary.getAssetsAsync({
             album: album.id,
             first: 1,
+            sortBy: "creationTime",
           });
           var title = album.title;
           if (album.type === "smartAlbum") {
@@ -397,31 +428,31 @@ const ModalImagePicker = () => {
   useEffect(() => {
     if (focusedSize === 2 && selectedImages[focusedImageIndex]?.uri) {
       Image.getSize(selectedImages[focusedImageIndex].uri, (img_w, img_h) => {
-        if (img_w / 236.25 > img_h / 315) {
+        if (img_w / 187.5 > img_h / 250) {
           setSize({
-            width: (pixelScaler(315) / img_h) * img_w,
-            height: pixelScaler(315),
+            width: (pixelScaler(250) / img_h) * img_w,
+            height: pixelScaler(250),
           });
         } else {
           setSize({
-            width: pixelScaler(236.25),
-            height: (pixelScaler(236.25) / img_w) * img_h,
+            width: pixelScaler(187.5),
+            height: (pixelScaler(187.5) / img_w) * img_h,
           });
         }
       });
     } else {
-      const height_px = focusedSize === 0 ? 236.25 : 315;
+      const height_px = focusedSize === 0 ? 187.5 : 250;
       if (selectedImages[focusedImageIndex]?.uri) {
         Image.getSize(selectedImages[focusedImageIndex].uri, (img_w, img_h) => {
-          if (img_w / 315 > img_h / height_px) {
+          if (img_w / 250 > img_h / height_px) {
             setSize({
               width: (pixelScaler(height_px) / img_h) * img_w,
               height: pixelScaler(height_px),
             });
           } else {
             setSize({
-              width: pixelScaler(315),
-              height: (pixelScaler(315) / img_w) * img_h,
+              width: pixelScaler(250),
+              height: (pixelScaler(250) / img_w) * img_h,
             });
           }
         });
@@ -434,7 +465,8 @@ const ModalImagePicker = () => {
       (async () => {
         const assets = await MediaLibrary.getAssetsAsync({
           album: album.id,
-          first: 30,
+          first: 300,
+          sortBy: "creationTime",
         });
         setLoadedImage(assets.assets);
         setFocusedImageIndex(0);
@@ -463,8 +495,9 @@ const ModalImagePicker = () => {
       (async () => {
         const assets = await MediaLibrary.getAssetsAsync({
           album: album.id,
-          first: 30,
+          first: 300,
           after: loadedImage[loadedImage.length - 1].id,
+          sortBy: "creationTime",
         });
         setLoadedImage([
           ...loadedImage,
@@ -497,20 +530,73 @@ const ModalImagePicker = () => {
     setFocusedSize(n);
   };
 
+  const animatedValue = useRef(new Animated.Value(1)).current;
+  const animatedContainerHeight = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [187.5, 250],
+    extrapolate: "clamp",
+  });
+  const animatedFrameHeight = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [227.5, 290],
+    extrapolate: "clamp",
+  });
+  const [shortened, setShortened] = useState(false);
+
+  const widen = () => {
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: false,
+    }).start(() => setShortened(false));
+  };
+
+  const shorten = () => {
+    Animated.timing(animatedValue, {
+      toValue: 0,
+      duration: 400,
+      useNativeDriver: false,
+    }).start(() => setShortened(true));
+  };
+
+  useEffect(() => {
+    if (focusedSize === 0) {
+      if (!shortened) {
+        setTimeout(() => shorten(), 200);
+      }
+    } else {
+      if (shortened) {
+        setTimeout(() => widen(), 200);
+      }
+    }
+  }, [focusedSize]);
+
   return (
     <ScreenContainer>
-      <PickerContainer>
-        <ImageContainer>
-          <View
+      <Animated.View
+        style={{
+          height: animatedFrameHeight,
+          alignItems: "center",
+          paddingTop: pixelScaler(20),
+        }}
+      >
+        {/* <ImageContainer> */}
+        <View
+          style={{
+            height: pixelScaler(focusedSize === 0 ? 187.5 : 250),
+          }}
+        >
+          <Animated.View
             style={{
-              height: pixelScaler(focusedSize === 0 ? 236.25 : 315),
+              height: animatedContainerHeight,
             }}
           >
             <ScrollView
               style={{
                 borderRadius: pixelScaler(15),
-                width: pixelScaler(focusedSize === 2 ? 236.25 : 315),
-                height: pixelScaler(focusedSize === 0 ? 236.25 : 315),
+                width: pixelScaler(focusedSize === 2 ? 187.5 : 250),
+                height: pixelScaler(focusedSize === 0 ? 187.5 : 250),
+                // height: animatedContainerHeight,
                 borderWidth: pixelScaler(0.4),
                 borderColor: theme.greyTextAlone,
               }}
@@ -524,13 +610,14 @@ const ModalImagePicker = () => {
                     initialData={selectedImages[focusedImageIndex]}
                     imageHeight={size.height}
                     imageWidth={size.width}
-                    frameWidth={pixelScaler(focusedSize === 2 ? 236.25 : 315)}
-                    frameHeight={pixelScaler(focusedSize === 0 ? 236.25 : 315)}
+                    frameWidth={pixelScaler(focusedSize === 2 ? 187.5 : 250)}
+                    frameHeight={pixelScaler(focusedSize === 0 ? 187.5 : 250)}
                   />
                 )}
             </ScrollView>
-          </View>
-        </ImageContainer>
+          </Animated.View>
+        </View>
+        {/* </ImageContainer> */}
         <ButtonsContainer>
           {/* <Button
             onPress={() => {
@@ -542,116 +629,151 @@ const ModalImagePicker = () => {
           <SizeButtonsContainer>
             <Button
               onPress={() => handleResize(0)}
-              style={{
-                borderColor:
-                  focusedSize === 0 ? theme.borderHighlight : theme.text,
-                marginLeft: pixelScaler(10),
-                paddingTop: pixelScaler(2),
+              hitSlop={{
+                top: pixelScaler(5),
+                bottom: pixelScaler(5),
+                left: pixelScaler(5),
+                right: pixelScaler(5),
               }}
             >
-              <RegText16
-                style={focusedSize === 0 ? { color: theme.textHighlight } : {}}
+              <BldText13
+                style={
+                  focusedSize === 0 ? {} : { color: theme.greyBackgroundText }
+                }
               >
                 4:3
-              </RegText16>
+              </BldText13>
             </Button>
             <Button
               onPress={() => handleResize(1)}
-              style={{
-                borderColor:
-                  focusedSize === 1 ? theme.borderHighlight : theme.text,
-                marginLeft: pixelScaler(10),
-                paddingTop: pixelScaler(2),
+              hitSlop={{
+                top: pixelScaler(5),
+                bottom: pixelScaler(5),
+                left: pixelScaler(5),
+                right: pixelScaler(5),
               }}
             >
-              <RegText16
-                style={focusedSize === 1 ? { color: theme.textHighlight } : {}}
+              <BldText13
+                style={
+                  focusedSize === 1 ? {} : { color: theme.greyBackgroundText }
+                }
               >
                 1:1
-              </RegText16>
+              </BldText13>
             </Button>
             <Button
               onPress={() => handleResize(2)}
-              style={{
-                borderColor:
-                  focusedSize === 2 ? theme.borderHighlight : theme.text,
-                marginLeft: pixelScaler(10),
-                paddingTop: pixelScaler(2),
+              hitSlop={{
+                top: pixelScaler(5),
+                bottom: pixelScaler(5),
+                left: pixelScaler(5),
+                right: pixelScaler(5),
               }}
             >
-              <RegText16
-                style={focusedSize === 2 ? { color: theme.textHighlight } : {}}
+              <BldText13
+                style={
+                  focusedSize === 2 ? {} : { color: theme.greyBackgroundText }
+                }
               >
                 3:4
-              </RegText16>
+              </BldText13>
             </Button>
           </SizeButtonsContainer>
         </ButtonsContainer>
-      </PickerContainer>
-      <FlatList
-        maxToRenderPerBatch={10}
-        initialNumToRender={10}
-        ref={flatListRef}
-        data={loadedImage}
-        renderItem={({
-          item,
-          index,
-        }: {
-          item: MediaLibrary.Asset;
-          index: number;
-        }) => (
-          <ImageItemContainer
-            key={index}
-            onPress={() => {
-              const imageIds = selectedImages.map((image) => image.id);
-              const ind = imageIds.indexOf(item.id);
+      </Animated.View>
 
-              var tmp = [...selectedImages];
-              if (ZoomableRef?.current?.state) {
-                tmp[focusedImageIndex] = {
-                  ...tmp[focusedImageIndex],
-                  zoom: ZoomableRef?.current?.state.zoom,
-                  offset_x: ZoomableRef?.current?.state.offset_x,
-                  offset_y: ZoomableRef?.current?.state.offset_y,
-                };
-                setSelectedImages(tmp);
-                // console.log(tmp);
-              }
+      <View>
+        <FlatList
+          // maxToRenderPerBatch={10}
+          // initialNumToRender={10}
+          bounces={false}
+          ref={flatListRef}
+          data={loadedImage}
+          renderItem={({
+            item,
+            index,
+          }: {
+            item: MediaLibrary.Asset;
+            index: number;
+          }) => {
+            const creationTime = new Date(item.creationTime);
+            const month = creationTime.getMonth() + 1;
+            const year = creationTime.getFullYear();
+            const prevTime = loadedImage[index - 1]?.creationTime
+              ? new Date(loadedImage[index - 1]?.creationTime)
+              : null;
 
-              if (ind === -1 && selectedImages.length < 16) {
-                setSelectedImages([
-                  ...tmp,
-                  { ...item, zoom: 1, offset_x: 0, offset_y: 0 },
-                ]);
-                setFocusedImageIndex(tmp.length);
-              } else {
-                if (selectedImages[focusedImageIndex].id === item.id) {
-                  setFocusedImageIndex(selectedImages.length - 2);
-                  tmp.splice(ind, 1);
-                  setSelectedImages(tmp);
-                } else if (ind !== -1) {
-                  setFocusedImageIndex(imageIds.indexOf(item.id));
-                }
-              }
-            }}
-          >
-            <ImageItem source={{ uri: item.uri }} />
-            {selectedImages[focusedImageIndex]?.id === item.id ? (
-              <ImageItemFocused />
-            ) : null}
-            {
-              <NumberLabel
-                ids={selectedImages.map((image) => image.id)}
-                id={item.id}
-              />
-            }
-          </ImageItemContainer>
-        )}
-        showsVerticalScrollIndicator={false}
-        numColumns={3}
-        onEndReached={fetchLoadImage}
-        onEndReachedThreshold={2}
-      />
+            return (
+              <ImageItemContainer
+                key={index}
+                onPress={() => {
+                  const imageIds = selectedImages.map((image) => image.id);
+                  const ind = imageIds.indexOf(item.id);
+
+                  var tmp = [...selectedImages];
+                  if (ZoomableRef?.current?.state) {
+                    tmp[focusedImageIndex] = {
+                      ...tmp[focusedImageIndex],
+                      zoom: ZoomableRef?.current?.state.zoom,
+                      offset_x: ZoomableRef?.current?.state.offset_x,
+                      offset_y: ZoomableRef?.current?.state.offset_y,
+                    };
+                    setSelectedImages(tmp);
+                    // console.log(tmp);
+                  }
+
+                  if (ind === -1 && selectedImages.length < 16) {
+                    setSelectedImages([
+                      ...tmp,
+                      { ...item, zoom: 1, offset_x: 0, offset_y: 0 },
+                    ]);
+                    setFocusedImageIndex(tmp.length);
+                  } else {
+                    if (selectedImages[focusedImageIndex].id === item.id) {
+                      setFocusedImageIndex(selectedImages.length - 2);
+                      tmp.splice(ind, 1);
+                      setSelectedImages(tmp);
+                    } else if (ind !== -1) {
+                      setFocusedImageIndex(imageIds.indexOf(item.id));
+                    }
+                  }
+                }}
+              >
+                <ImageItem source={{ uri: item.uri }} />
+                {selectedImages[focusedImageIndex]?.id === item.id ? (
+                  <ImageItemFocused />
+                ) : null}
+                {selectedImages.map((image) => image.id).includes(item.id) ? (
+                  <NumberLabel
+                    ids={selectedImages.map((image) => image.id)}
+                    id={item.id}
+                  />
+                ) : null}
+                {index === 0 ||
+                (prevTime &&
+                  !(
+                    year === prevTime.getFullYear() &&
+                    month === prevTime.getMonth() + 1
+                  )) ? (
+                  <ImageMonthContainer>
+                    <RegText13>
+                      {year + (month < 10 ? "-0" : "-") + month}
+                    </RegText13>
+                  </ImageMonthContainer>
+                ) : null}
+              </ImageItemContainer>
+            );
+          }}
+          numColumns={3}
+          onEndReached={fetchLoadImage}
+          onEndReachedThreshold={2}
+          // onScroll={Animated.event(
+          //   [{ nativeEvent: { contentOffset: { y: scrollIndicator } } }],
+          //   { useNativeDriver: false }
+          // )}
+          // scrollEventThrottle={16}
+        />
+      </View>
 
       <Animated.View
         style={{

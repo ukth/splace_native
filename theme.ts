@@ -35,6 +35,8 @@ export const theme = {
     searchBarPlaceholder: colors.grey_c7,
     dots: colors.black,
 
+    greyBackgroundText: colors.grey_c7,
+
     imageBorder: colors.grey_e5,
 
     modalDragBar: colors.grey_c7,

@@ -5,9 +5,10 @@ import {
   useReactiveVar,
 } from "@apollo/client";
 import { RouteProp } from "@react-navigation/native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { Component, useContext, useEffect, useState } from "react";
 import {
   Alert,
+  Animated,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
@@ -35,6 +36,7 @@ import {
   RegText13,
   RegText16,
   RegText20,
+  RegText9,
 } from "../../components/Text";
 import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDERS } from "../../queries";
 import Image from "../../components/Image";
@@ -55,6 +57,7 @@ import BottomSheetModal from "../../components/BottomSheetModal";
 import { Icon } from "../../components/Icon";
 import { BLANK_IMAGE, BLANK_IMAGE_FOLDER, NO_THUMBNAIL } from "../../constants";
 import { menualCheckedVar } from "../../apollo";
+import { ScrollView } from "react-native-gesture-handler";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;
@@ -322,6 +325,8 @@ const Folders = ({
       onCompleted: onCreateCompleted,
     }
   );
+
+  const animatedValue = new Animated.Value(1);
 
   return (
     <ScreenContainer>
