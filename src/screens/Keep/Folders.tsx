@@ -10,10 +10,8 @@ import {
   Alert,
   Animated,
   FlatList,
-  Keyboard,
-  KeyboardAvoidingView,
-  Text,
   TouchableOpacity,
+  Image as DefaultImage,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -325,8 +323,6 @@ const Folders = ({
       onCompleted: onCreateCompleted,
     }
   );
-
-  const animatedValue = new Animated.Value(1);
 
   return (
     <ScreenContainer>

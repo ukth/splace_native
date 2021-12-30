@@ -3,8 +3,6 @@ import { Image, PanResponder, PanResponderInstance, View } from "react-native";
 
 export class ZoomableImage extends Component<
   {
-    imageWidth: number;
-    imageHeight: number;
     frameWidth: number;
     frameHeight: number;
     initialData: {
@@ -12,9 +10,14 @@ export class ZoomableImage extends Component<
       zoom: number;
       offset_x: number;
       offset_y: number;
+      imageWidth: number;
+      imageHeight: number;
     };
   },
   {
+    uri: string;
+    imageWidth: number;
+    imageHeight: number;
     frameWidth: number;
     frameHeight: number;
     zoom: number;
@@ -38,16 +41,23 @@ export class ZoomableImage extends Component<
     // this._onLayout = this._onLayout.bind(this);
 
     const offset_x: number =
-      this.props.imageWidth > this.props.imageHeight
-        ? (this.props.imageHeight - this.props.imageWidth) / 2
+      this.props.initialData.imageWidth > this.props.initialData.imageHeight
+        ? (this.props.initialData.imageHeight -
+            this.props.initialData.imageWidth) /
+          2
         : 0;
 
     const offset_y: number =
-      this.props.imageHeight > this.props.imageWidth
-        ? (this.props.imageWidth - this.props.imageHeight) / 2
+      this.props.initialData.imageHeight > this.props.initialData.imageWidth
+        ? (this.props.initialData.imageWidth -
+            this.props.initialData.imageHeight) /
+          2
         : 0;
 
     this.state = {
+      uri: this.props.initialData.uri,
+      imageWidth: this.props.initialData.imageWidth,
+      imageHeight: this.props.initialData.imageHeight,
       isMoving: false,
       isZooming: false,
       frameWidth: this.props.frameWidth,
@@ -103,14 +113,16 @@ export class ZoomableImage extends Component<
       this.setState({
         zoom,
         offset_x:
-          offset_x + this.props.imageWidth * zoom < this.props.frameWidth
-            ? this.props.frameWidth - this.props.imageWidth * zoom
+          offset_x + this.props.initialData.imageWidth * zoom <
+          this.props.frameWidth
+            ? this.props.frameWidth - this.props.initialData.imageWidth * zoom
             : offset_x < 0
             ? offset_x
             : 0,
         offset_y:
-          offset_y + this.props.imageHeight * zoom < this.props.frameHeight
-            ? this.props.frameHeight - this.props.imageHeight * zoom
+          offset_y + this.props.initialData.imageHeight * zoom <
+          this.props.frameHeight
+            ? this.props.frameHeight - this.props.initialData.imageHeight * zoom
             : offset_y < 0
             ? offset_y
             : 0,
@@ -135,26 +147,24 @@ export class ZoomableImage extends Component<
 
       this.setState({
         offset_x:
-          offset_x + this.props.imageWidth * this.state.zoom <
+          offset_x + this.props.initialData.imageWidth * this.state.zoom <
           this.props.frameWidth
-            ? this.props.frameWidth - this.props.imageWidth * this.state.zoom
+            ? this.props.frameWidth -
+              this.props.initialData.imageWidth * this.state.zoom
             : offset_x < 0
             ? offset_x
             : 0,
         offset_y:
-          offset_y + this.props.imageHeight * this.state.zoom <
+          offset_y + this.props.initialData.imageHeight * this.state.zoom <
           this.props.frameHeight
-            ? this.props.frameHeight - this.props.imageHeight * this.state.zoom
+            ? this.props.frameHeight -
+              this.props.initialData.imageHeight * this.state.zoom
             : offset_y < 0
             ? offset_y
             : 0,
       });
     }
   }
-
-  // _onLayout(event) {
-
-  // }
 
   public _panResponder: PanResponderInstance = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => true,
@@ -165,9 +175,6 @@ export class ZoomableImage extends Component<
     onPanResponderMove: (evt, gestureState) => {
       let touches = evt.nativeEvent.touches;
       if (touches.length == 2) {
-        let touch1 = touches[0];
-        let touch2 = touches[1];
-
         this.processPinch(
           { x: touches[0].pageX, y: touches[0].pageY },
           { x: touches[1].pageX, y: touches[1].pageY }
@@ -203,22 +210,37 @@ export class ZoomableImage extends Component<
       zoom: number;
       offset_x: number;
       offset_y: number;
+      imageWidth: number;
+      imageHeight: number;
     };
   }) {
     if (prevProps.initialData.uri !== this.props.initialData.uri) {
       this.setState({
-        isMoving: false,
-        isZooming: false,
+        uri: this.props.initialData.uri,
+        imageWidth: this.props.initialData.imageWidth,
+        imageHeight: this.props.initialData.imageHeight,
+        zoom: this.props.initialData.zoom,
+        initialZoom: this.props.initialData.zoom,
+        offset_x: this.props.initialData.offset_x,
+        offset_y: this.props.initialData.offset_y,
+        initialDistance: 1,
+        initialX: 0,
+        initialY: 0,
+      });
+    } else if (
+      prevProps.frameWidth !== this.props.frameWidth ||
+      prevProps.frameHeight !== this.props.frameHeight
+    ) {
+      this.setState({
+        uri: this.props.initialData.uri,
+        imageWidth: this.props.initialData.imageWidth,
+        imageHeight: this.props.initialData.imageHeight,
         zoom: this.props.initialData.zoom,
         frameWidth: this.props.frameWidth,
         frameHeight: this.props.frameHeight,
         initialZoom: this.props.initialData.zoom,
         offset_x: this.props.initialData.offset_x,
         offset_y: this.props.initialData.offset_y,
-        initialCenter_x: 0,
-        initialCenter_y: 0,
-        initialOffset_x: 0,
-        initialOffset_y: 0,
         initialDistance: 1,
         initialX: 0,
         initialY: 0,
@@ -241,8 +263,8 @@ export class ZoomableImage extends Component<
             position: "absolute",
             left: this.state.offset_x,
             top: this.state.offset_y,
-            width: this.props.imageWidth * this.state.zoom,
-            height: this.props.imageHeight * this.state.zoom,
+            width: this.state.imageWidth * this.state.zoom,
+            height: this.state.imageHeight * this.state.zoom,
           }}
           source={{
             uri: this.props.initialData.uri,

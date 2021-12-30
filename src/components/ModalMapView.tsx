@@ -540,13 +540,18 @@ const ModalMapView = ({
                   Alert.alert("지도 앱 선택", "", [
                     {
                       text: "Google Maps",
-                      onPress: () =>
-                        Linking.openURL(
-                          "https://maps.google.com/?q=@" +
-                            splaces[selectedSplaceIndex].lat +
-                            "," +
-                            splaces[selectedSplaceIndex].lon
-                        ),
+                      onPress: async () => {
+                        try {
+                          await Linking.openURL(
+                            "https://maps.google.com/?q=@" +
+                              splaces[selectedSplaceIndex].lat +
+                              "," +
+                              splaces[selectedSplaceIndex].lon
+                          );
+                        } catch {
+                          Alert.alert("구글 지도를 열 수 없습니다.");
+                        }
+                      },
                     },
                     {
                       text: "Apple Maps",
@@ -562,10 +567,10 @@ const ModalMapView = ({
                     },
                     {
                       text: "카카오맵",
-                      onPress: () => async () => {
+                      onPress: async () => {
                         try {
                           await Linking.openURL(
-                            "kakaomap://look?&p=" +
+                            "kakaomap://look?p=" +
                               splaces[selectedSplaceIndex].lat +
                               "," +
                               splaces[selectedSplaceIndex].lon
@@ -578,6 +583,7 @@ const ModalMapView = ({
                     {
                       text: "네이버 지도",
                       onPress: async () => {
+                        console.log(123432);
                         try {
                           await Linking.openURL(
                             "nmap://place?name=" +
