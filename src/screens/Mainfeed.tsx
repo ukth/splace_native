@@ -1,11 +1,8 @@
-// import { feed } from "../../data";
-
 import React, { useEffect, useContext, useMemo } from "react";
-import { Dimensions, FlatList, useWindowDimensions } from "react-native";
+import { FlatList } from "react-native";
 
-import { GET_FEED, LIKE_PHOTOLOG, UNLIKE_PHOTOLOG } from "../queries";
+import { GET_FEED } from "../queries";
 
-import { ScrollView } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 import { ThemeContext } from "styled-components";
 import { useState } from "react";

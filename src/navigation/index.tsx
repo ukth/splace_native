@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useReactiveVar } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -16,7 +16,7 @@ import Spinner from "../components/Spinner";
 import ModalImagePicker from "../screens/ModalImagePicker";
 import Manual from "../screens/Manual";
 import { RootStackParamList } from "../types";
-import { Alert, Image, useWindowDimensions } from "react-native";
+import { Alert, Animated, Image, useWindowDimensions } from "react-native";
 import useMe from "../hooks/useMe";
 import * as Notifications from "expo-notifications";
 
@@ -53,9 +53,34 @@ const Navigation = () => {
   //   }
   // })();
 
+  const animatedValue = useRef(new Animated.Value(0)).current;
+  // animatedValue.addListener((v) => console.log(v.value));
+
+  const popSplash = () => {
+    setShowFlash(true);
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const hideFlash = () => {
+    Animated.timing(animatedValue, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => setShowFlash(false));
+  };
+  // const shorten = () => {};
+
   useEffect(() => {
+    popSplash();
+    // setTimeout(() => {
+    //   setShowFlash(false);
+    // }, 2500);
     setTimeout(() => {
-      setShowFlash(false);
+      hideFlash();
     }, 2500);
   }, []);
 
@@ -63,7 +88,7 @@ const Navigation = () => {
     <NavigationContainer>
       {isLoggedIn ? (
         showFlash ? (
-          <Image
+          <Animated.Image
             source={{
               uri: "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/splash.png",
             }}
@@ -73,6 +98,7 @@ const Navigation = () => {
               left: -1,
               width: width + 2,
               height,
+              opacity: animatedValue,
             }}
           />
         ) : (
