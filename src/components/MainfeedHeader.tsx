@@ -89,7 +89,7 @@ const MainfeedHeader = ({
 
   const menualChecked = useReactiveVar(menualCheckedVar);
 
-  var [timer, setTimer] = useState<NodeJS.Timeout>();
+  let [timer, setTimer] = useState<NodeJS.Timeout>();
 
   const [showButtons, setShowButtons] = useState(false);
   const openAnim = useRef(new Animated.Value(0)).current;

@@ -490,7 +490,7 @@ const Chatroom = () => {
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => {
             // DateSectioningLine
-            var date;
+            let date;
             if (item.createdAt.includes("-")) {
               date = new Date(item.createdAt);
             } else {

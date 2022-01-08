@@ -226,7 +226,7 @@ const ModalImagePicker = () => {
       const image = selectedImages[i];
       const r = focusedSize === 0 ? 3 / 4 : focusedSize === 1 ? 1 : 4 / 3;
 
-      var pixR;
+      let pixR;
       if (frameHeight / frameWidth < image.height / image.width) {
         pixR = image.width / (frameWidth * image.zoom);
       } else {
@@ -279,18 +279,18 @@ const ModalImagePicker = () => {
       });
 
       if (albumsList) {
-        var tmp = [];
+        let tmp = [];
         for (let i = 0; i < albumsList.length; i++) {
           const album: MediaLibrary.Album = albumsList[i];
-          var recents;
-          var favorites;
+          let recents;
+          let favorites;
 
           const assets = await MediaLibrary.getAssetsAsync({
             album: album.id,
             first: 1,
             sortBy: "creationTime",
           });
-          var title = album.title;
+          let title = album.title;
           if (album.type === "smartAlbum") {
             if (title in AlbumTitleKor) {
               //@ts-ignore
@@ -499,7 +499,7 @@ const ModalImagePicker = () => {
   };
 
   const handleResize = (n: 0 | 1 | 2) => {
-    var tmp = [...selectedImages];
+    let tmp = [...selectedImages];
     tmp = tmp.map((image, index) => {
       return {
         ...image,
@@ -675,7 +675,7 @@ const ModalImagePicker = () => {
                   const imageIds = selectedImages.map((image) => image.id);
                   const ind = imageIds.indexOf(item.id);
 
-                  var tmp = [...selectedImages];
+                  let tmp = [...selectedImages];
                   if (ZoomableRef?.current?.state) {
                     tmp[focusedImageIndex] = {
                       ...tmp[focusedImageIndex],

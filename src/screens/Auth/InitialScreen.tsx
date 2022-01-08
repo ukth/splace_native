@@ -18,7 +18,7 @@ const Button = styled.TouchableOpacity`
 `;
 
 const InitialScreen = () => {
-  var timerId: NodeJS.Timer;
+  let timerId: NodeJS.Timer;
   const [backgroundIndex, setBackgroundIndex] = useState(-1);
   const { width, height } = useWindowDimensions();
 

@@ -81,7 +81,7 @@ const MomentView = () => {
   const { width, height } = useWindowDimensions();
   const [length, setLength] = useState(0);
 
-  var isLoaded = false;
+  let isLoaded = false;
 
   useEffect(() => {
     navigation.setOptions({

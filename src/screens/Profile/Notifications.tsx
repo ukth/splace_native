@@ -127,7 +127,7 @@ const Notification = () => {
 
   useEffect(() => {
     if (data?.getMyActivityLogs?.ok) {
-      var tmp = [
+      let tmp = [
         ...(data?.getMyActivityLogs?.followLogs ?? []),
         ...(data?.getMyActivityLogs?.editFolderLogs ?? []),
         ...(data?.getMyActivityLogs?.likeLogs ?? []),

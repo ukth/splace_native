@@ -351,7 +351,7 @@ const Splace = ({
     if (!loading && data?.seeSplace?.ok && data.seeSplace.splace.categories) {
       setSplace(data?.seeSplace?.splace);
       if (data?.seeSplace?.splace?.timeSets?.length === 7) {
-        var timeSets = data?.seeSplace?.splace?.timeSets
+        let timeSets = data?.seeSplace?.splace?.timeSets
           .slice()
           .sort((a: TimeSetType, b: TimeSetType) => a.day - b.day);
 

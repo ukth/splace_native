@@ -595,7 +595,7 @@ const Profile = () => {
 
   const [splaces, setSplaces] = useState<SplaceType[]>([]);
 
-  var updating = false;
+  let updating = false;
 
   useEffect(() => {
     (async () => {

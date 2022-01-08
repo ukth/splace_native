@@ -73,17 +73,17 @@ const StackPickerAlbums = () => {
         includeSmartAlbums: true,
       });
       if (albumsList) {
-        var tmp = [];
+        let tmp = [];
         for (let i = 0; i < albumsList.length; i++) {
           const album: MediaLibrary.Album = albumsList[i];
-          var recents;
-          var favorites;
+          let recents;
+          let favorites;
           // console.log(album);
           const assets = await MediaLibrary.getAssetsAsync({
             album: album.id,
             first: 1,
           });
-          var title = album.title;
+          let title = album.title;
           if (album.type === "smartAlbum") {
             if (title in AlbumTitleKor) {
               //@ts-ignore

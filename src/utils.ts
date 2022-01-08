@@ -239,12 +239,12 @@ export const calcDistanceByCoords = (
     return 0;
   }
 
-  var radLat1 = (Math.PI * coord1.lat) / 180;
-  var radLat2 = (Math.PI * coord2.lat) / 180;
-  var theta = coord1.lon - coord2.lon;
-  var radTheta = (Math.PI * theta) / 180;
+  let radLat1 = (Math.PI * coord1.lat) / 180;
+  let radLat2 = (Math.PI * coord2.lat) / 180;
+  let theta = coord1.lon - coord2.lon;
+  let radTheta = (Math.PI * theta) / 180;
 
-  var dist =
+  let dist =
     Math.sin(radLat1) * Math.sin(radLat2) +
     Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
 
@@ -441,7 +441,7 @@ export const getNotificationsChecked = async () => {
 };
 
 export const checkMenual = async (n: 0 | 1 | 2) => {
-  var v = menualCheckedVar();
+  let v = menualCheckedVar();
   if (v % 2 ** (n + 1) < 2 ** n) {
     v += 2 ** n;
     menualCheckedVar(v);

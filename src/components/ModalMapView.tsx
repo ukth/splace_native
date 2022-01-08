@@ -229,11 +229,10 @@ const ModalMapView = ({
   };
 
   useEffect(() => {
-    var dataset = splaces.map((splace) => [splace?.lat ?? 0, splace?.lon ?? 0]);
-    var optics = new clustering.OPTICS();
+    let dataset = splaces.map((splace) => [splace?.lat ?? 0, splace?.lon ?? 0]);
+    let optics = new clustering.OPTICS();
     // parameters: 6 - neighborhood radius, 2 - number of points in neighborhood to form a cluster
-    var clusters = optics.run(dataset, delta / 20, 1);
-    // var plot = optics.getReachabilityPlot();
+    let clusters = optics.run(dataset, delta / 20, 1);
 
     setClustered(clusters);
   }, [delta]);
