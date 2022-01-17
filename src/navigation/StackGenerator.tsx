@@ -4,6 +4,7 @@ import {
   createStackNavigator,
   StackHeaderInterpolationProps,
   StackHeaderInterpolatedStyle,
+  StackNavigationProp,
 } from "@react-navigation/stack";
 import {
   Mainfeed,
@@ -80,7 +81,11 @@ import {
   getFocusedRouteNameFromRoute,
   useRoute,
 } from "@react-navigation/native";
-import { StackGeneratorParamList, StackGeneratorProps } from "../types";
+import {
+  RootStackParamList,
+  StackGeneratorParamList,
+  StackGeneratorProps,
+} from "../types";
 import { pixelScaler } from "../utils";
 import { RegText13 } from "../components/Text";
 import { useWindowDimensions } from "react-native";
@@ -206,7 +211,11 @@ const StackGenerator = ({ screenName }: StackGeneratorProps) => {
         <Stack.Screen
           name="Mainfeed"
           component={Mainfeed}
-          options={({ navigation }) => ({
+          options={({
+            navigation,
+          }: {
+            navigation: StackNavigationProp<StackGeneratorParamList>;
+          }) => ({
             header: () => (
               <MainfeedHeader
                 pushLog={() => navigation.push("UploadLog")}

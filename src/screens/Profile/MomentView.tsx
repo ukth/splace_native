@@ -70,13 +70,14 @@ const MomentView = () => {
 
   const { moments, index } = route.params;
 
-  const video = useRef<any>(null);
+  const video = useRef<Video | null>(null);
   const position = useRef(new Animated.Value(0)).current;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const [momentIndex, setMomentIndex] = useState(index);
 
-  const [indicatorPosition, setIndicatorPosition] = useState<any>(null);
+  const [indicatorPosition, setIndicatorPosition] =
+    useState<Animated.AnimatedInterpolation>();
 
   const { width, height } = useWindowDimensions();
   const [length, setLength] = useState(0);
@@ -87,9 +88,8 @@ const MomentView = () => {
     navigation.setOptions({
       headerShown: false,
     });
-    if (video.current) {
-      video.current.playAsync();
-    }
+
+    video.current?.playAsync();
   }, []);
 
   let timer = 0;
@@ -125,7 +125,7 @@ const MomentView = () => {
   }
 
   useEffect(() => {
-    if (length === 0 && !isLoaded) {
+    if (length === 0 && !isLoaded && video.current) {
       video.current.playAsync();
     }
   }, [isLoaded, length]);
@@ -207,10 +207,10 @@ const MomentView = () => {
       </ProgressContainer>
       <Pressable
         onPressIn={(e) => {
-          (async () => await video.current.pauseAsync())();
+          (async () => await video.current?.pauseAsync())();
         }}
         onPressOut={async (e) => {
-          await video.current.playAsync();
+          await video.current?.playAsync();
         }}
       >
         <Video
@@ -230,9 +230,9 @@ const MomentView = () => {
             }
             if (!isLoaded && e.isLoaded && e.shouldPlay && e.durationMillis) {
               if (!isLoaded && length === 0) {
-                video.current.setPositionAsync(0);
+                video.current?.setPositionAsync(0);
                 isLoaded = true;
-                video.current.playAsync();
+                video.current?.playAsync();
                 setLength(e.durationMillis);
                 setIndicatorPosition(
                   position.interpolate({
