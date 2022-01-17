@@ -9,6 +9,7 @@ import Carousel, {
 } from "react-native-snap-carousel";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RegText13 } from "../Text";
 
 const Swiper = ({ item }: { item: PhotologType }) => {
   const scrollInterpolator = (

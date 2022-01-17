@@ -47,10 +47,12 @@ export default function useCachedResources() {
           "NanumSquareRound-EB": require("../../assets/fonts/NanumSquareRoundOTFEB.otf"),
           "NanumSquareRound-L": require("../../assets/fonts/NanumSquareRoundOTFL.otf"),
           "NotoSansKR-Bold": require("../../assets/fonts/NotoSansKR-Medium.otf"),
+          "NotoSansKR-Medium": require("../../assets/fonts/NotoSansKR-Medium.otf"),
           "NotoSansKR-Regular": require("../../assets/fonts/NotoSansKR-Regular.otf"),
         });
 
         cacheImages([
+          "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/splash.png",
           require("../../assets/images/menual/log.jpg"),
           require("../../assets/images/icons/positionpin_small.png"),
         ]);

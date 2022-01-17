@@ -38,7 +38,7 @@ const UploadContentContext = createContext<{
   setContent: () => {},
 });
 
-const UploadContentProvider = ({ children }: { children: any }) => {
+const UploadContentProvider = ({ children }: { children: React.ReactNode }) => {
   const [content, setContent] = useState<{
     isPrivate?: boolean;
     splace?: SplaceType;

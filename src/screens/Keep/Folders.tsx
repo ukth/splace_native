@@ -1,20 +1,7 @@
-import {
-  useLazyQuery,
-  useMutation,
-  useQuery,
-  useReactiveVar,
-} from "@apollo/client";
+import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { RouteProp } from "@react-navigation/native";
-import React, { Component, useContext, useEffect, useState } from "react";
-import {
-  Alert,
-  Animated,
-  FlatList,
-  TouchableOpacity,
-  Image as DefaultImage,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Alert, FlatList, TouchableOpacity } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import ScreenContainer from "../../components/ScreenContainer";
 import {
@@ -23,39 +10,32 @@ import {
   StackGeneratorParamList,
   ThemeType,
 } from "../../types";
-import { pixelScaler, strCmpFunc } from "../../utils";
+import { pixelScaler } from "../../utils";
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
-import { BldTextInput16 } from "../../components/TextInput";
 import {
   BldText13,
   BldText16,
   RegText13,
   RegText16,
   RegText20,
-  RegText9,
 } from "../../components/Text";
 import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDERS } from "../../queries";
 import Image from "../../components/Image";
-import { abs } from "react-native-reanimated";
-import Navigation from "../../navigation";
-import { HeaderBackButton } from "../../components/HeaderBackButton";
 import {
   DeleteButton,
   EditButtonsContainer,
   Item,
   Minus,
-  NewFolderButton,
   SortButton,
 } from "../../components/Folder";
 import { HeaderRightConfirm } from "../../components/HeaderRightConfirm";
 import ModalButtonBox from "../../components/ModalButtonBox";
 import BottomSheetModal from "../../components/BottomSheetModal";
 import { Icon } from "../../components/Icon";
-import { BLANK_IMAGE, BLANK_IMAGE_FOLDER, NO_THUMBNAIL } from "../../constants";
+import { NO_THUMBNAIL } from "../../constants";
 import { menualCheckedVar } from "../../apollo";
-import { ScrollView } from "react-native-gesture-handler";
 
 const FolderConatiner = styled.View`
   width: ${pixelScaler(170)}px;

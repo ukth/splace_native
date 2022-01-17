@@ -29,7 +29,7 @@ const ImagePickerContext = createContext<{
   setImageSize: () => {},
 });
 
-const ImagePickerProvider = ({ children }: { children: any }) => {
+const ImagePickerProvider = ({ children }: { children: React.ReactNode }) => {
   const [images, setImages] = useState<
     {
       edited: boolean;

@@ -6,7 +6,7 @@ const ScreenContainer = ({
   children,
   style,
 }: {
-  children?: any;
+  children?: React.ReactNode;
   style?: ViewStyle;
 }) => {
   const theme = useContext(ThemeContext);

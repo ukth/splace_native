@@ -43,7 +43,7 @@ const FilterContext = createContext<{
   setFilterActivated: () => {},
 });
 
-const FilterProvider = ({ children }: { children: any }) => {
+const FilterProvider = ({ children }: { children: React.ReactNode }) => {
   const [filter, setFilter] = useState<{
     lat?: number;
     lon?: number;

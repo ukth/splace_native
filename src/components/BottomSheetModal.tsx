@@ -30,7 +30,7 @@ const BottomSheetModal = ({
   children,
   ...props
 }: {
-  children: any;
+  children: React.ReactNode;
   modalVisible: boolean;
   setModalVisible: any;
   style?: any;

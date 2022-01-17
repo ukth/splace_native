@@ -19,7 +19,6 @@ import { pixelScaler } from "./utils";
 import { RegText16 } from "./components/Text";
 
 import * as Notifications from "expo-notifications";
-import useMe from "./hooks/useMe";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

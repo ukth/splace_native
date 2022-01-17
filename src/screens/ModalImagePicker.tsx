@@ -147,6 +147,9 @@ type AlbumType = {
   thumbnail: string;
 };
 
+const IMAGE_FRAME_WIDTH_WIDE = 250;
+const IMAGE_FRAME_WIDTH_SHORT = IMAGE_FRAME_WIDTH_WIDE * (3 / 4);
+
 const ModalImagePicker = () => {
   const theme = useContext<ThemeType>(ThemeContext);
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -216,9 +219,13 @@ const ModalImagePicker = () => {
     setImageSize(focusedSize);
 
     const frameWidth =
-      focusedSize === 2 ? pixelScaler(187.5) : pixelScaler(250);
+      focusedSize === 2
+        ? pixelScaler(IMAGE_FRAME_WIDTH_SHORT)
+        : pixelScaler(IMAGE_FRAME_WIDTH_WIDE);
     const frameHeight =
-      focusedSize === 0 ? pixelScaler(187.5) : pixelScaler(250);
+      focusedSize === 0
+        ? pixelScaler(IMAGE_FRAME_WIDTH_SHORT)
+        : pixelScaler(IMAGE_FRAME_WIDTH_WIDE);
     let tmp = [];
     spinner.start(false);
 
@@ -393,15 +400,19 @@ const ModalImagePicker = () => {
       if (!selectedImages[focusedImageIndex].imageWidth) {
         Image.getSize(selectedImages[focusedImageIndex].uri, (img_w, img_h) => {
           let tmp: any = {};
-          if (img_w / 187.5 > img_h / 250) {
+          if (
+            img_w / IMAGE_FRAME_WIDTH_SHORT >
+            img_h / IMAGE_FRAME_WIDTH_WIDE
+          ) {
             tmp = {
-              imageWidth: (pixelScaler(250) / img_h) * img_w,
-              imageHeight: pixelScaler(250),
+              imageWidth: (pixelScaler(IMAGE_FRAME_WIDTH_WIDE) / img_h) * img_w,
+              imageHeight: pixelScaler(IMAGE_FRAME_WIDTH_WIDE),
             };
           } else {
             tmp = {
-              imageWidth: pixelScaler(187.5),
-              imageHeight: (pixelScaler(187.5) / img_w) * img_h,
+              imageWidth: pixelScaler(IMAGE_FRAME_WIDTH_SHORT),
+              imageHeight:
+                (pixelScaler(IMAGE_FRAME_WIDTH_SHORT) / img_w) * img_h,
             };
           }
           const images = [...selectedImages];
@@ -413,22 +424,24 @@ const ModalImagePicker = () => {
         });
       }
     } else {
-      const height_px = focusedSize === 0 ? 187.5 : 250;
+      const height_px =
+        focusedSize === 0 ? IMAGE_FRAME_WIDTH_SHORT : IMAGE_FRAME_WIDTH_WIDE;
       if (selectedImages[focusedImageIndex]?.uri) {
         if (!selectedImages[focusedImageIndex].imageWidth) {
           Image.getSize(
             selectedImages[focusedImageIndex].uri,
             (img_w, img_h) => {
               let tmp: any = {};
-              if (img_w / 250 > img_h / height_px) {
+              if (img_w / IMAGE_FRAME_WIDTH_WIDE > img_h / height_px) {
                 tmp = {
                   imageWidth: (pixelScaler(height_px) / img_h) * img_w,
                   imageHeight: pixelScaler(height_px),
                 };
               } else {
                 tmp = {
-                  imageWidth: pixelScaler(250),
-                  imageHeight: (pixelScaler(250) / img_w) * img_h,
+                  imageWidth: pixelScaler(IMAGE_FRAME_WIDTH_WIDE),
+                  imageHeight:
+                    (pixelScaler(IMAGE_FRAME_WIDTH_WIDE) / img_w) * img_h,
                 };
               }
               const images = [...selectedImages];
@@ -517,7 +530,7 @@ const ModalImagePicker = () => {
   const animatedValue = useRef(new Animated.Value(1)).current;
   const animatedContainerHeight = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: [187.5, 250],
+    outputRange: [IMAGE_FRAME_WIDTH_SHORT, IMAGE_FRAME_WIDTH_WIDE],
     extrapolate: "clamp",
   });
   const animatedFrameHeight = animatedValue.interpolate({
@@ -574,7 +587,11 @@ const ModalImagePicker = () => {
           <ScrollView
             style={{
               borderRadius: pixelScaler(15),
-              width: pixelScaler(focusedSize === 2 ? 187.5 : 250),
+              width: pixelScaler(
+                focusedSize === 2
+                  ? IMAGE_FRAME_WIDTH_SHORT
+                  : IMAGE_FRAME_WIDTH_WIDE
+              ),
               borderWidth: pixelScaler(0.4),
               borderColor: theme.greyTextAlone,
             }}
@@ -587,8 +604,16 @@ const ModalImagePicker = () => {
                 <ZoomableImage
                   ref={ZoomableRef}
                   initialData={selectedImages[focusedImageIndex]}
-                  frameWidth={pixelScaler(focusedSize === 2 ? 187.5 : 250)}
-                  frameHeight={pixelScaler(focusedSize === 0 ? 187.5 : 250)}
+                  frameWidth={pixelScaler(
+                    focusedSize === 2
+                      ? IMAGE_FRAME_WIDTH_SHORT
+                      : IMAGE_FRAME_WIDTH_WIDE
+                  )}
+                  frameHeight={pixelScaler(
+                    focusedSize === 0
+                      ? IMAGE_FRAME_WIDTH_SHORT
+                      : IMAGE_FRAME_WIDTH_WIDE
+                  )}
                 />
               )}
           </ScrollView>

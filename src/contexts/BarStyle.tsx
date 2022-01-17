@@ -5,7 +5,7 @@ const BarStyleContext = createContext({
   dispatch: (style: string) => {},
 });
 
-const BarStyleProvider = ({ children }: { children: any }) => {
+const BarStyleProvider = ({ children }: { children: React.ReactNode }) => {
   const [barStyle, setBarStyle] = useState("dark-content");
   const dispatch = (style: string) => {
     setBarStyle(style);

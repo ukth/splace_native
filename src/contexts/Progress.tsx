@@ -17,7 +17,7 @@ const ProgressContext = createContext<{
   timer: undefined,
 });
 
-const ProgressProvider = ({ children }: { children: any }) => {
+const ProgressProvider = ({ children }: { children: React.ReactNode }) => {
   const [inProgress, setInProgress] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout>();
   const spinner = {

@@ -9,7 +9,7 @@ const LoggedInContext = createContext<{
   setIsLoggedIn: () => {},
 });
 
-const LoggedInProvider = ({ children }: { children: any }) => {
+const LoggedInProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const value = { isLoggedIn, setIsLoggedIn };
