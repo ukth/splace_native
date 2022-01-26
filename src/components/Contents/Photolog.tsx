@@ -385,4 +385,4 @@ const PhotoLog = ({
   );
 };
 
-export default PhotoLog;
+export default React.memo(PhotoLog);

@@ -1,9 +1,15 @@
 import { useNavigation } from "@react-navigation/core";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useContext } from "react";
 import { GestureResponderEvent } from "react-native";
 import styled, { ThemeContext } from "styled-components/native";
 import { BLANK_PROFILE_IMAGE } from "../../constants";
-import { PhotologType, ThemeType, UserType } from "../../types";
+import {
+  PhotologType,
+  StackGeneratorParamList,
+  ThemeType,
+  UserType,
+} from "../../types";
 import { pixelScaler } from "../../utils";
 import Image from "../Image";
 import { BldText13 } from "../Text";
@@ -30,7 +36,8 @@ const Header = ({
   user: UserType;
   pressThreeDots: (event: GestureResponderEvent) => void;
 }) => {
-  const navigation = useNavigation<any>();
+  const navigation =
+    useNavigation<StackNavigationProp<StackGeneratorParamList>>();
   const theme = useContext<ThemeType>(ThemeContext);
   return (
     <Container>

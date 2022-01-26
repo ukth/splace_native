@@ -266,7 +266,6 @@ export type StackGeneratorParamList = {
     user: UserType;
   };
   UserLogs: {
-    user: UserType;
     initialScrollIndex: number;
     data: any;
     refetch: any;

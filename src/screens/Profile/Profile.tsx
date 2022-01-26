@@ -803,7 +803,13 @@ const Profile = () => {
   }) => (
     <TouchableWithoutFeedback
       onPress={() => {
-        navigation.push("Log", { id: item.id });
+        // navigation.push("Log", { id: item.id });
+        navigation.push("UserLogs", {
+          initialScrollIndex: index,
+          data: logsData,
+          refetch: refetchLogs,
+          fetchMore: fetchMoreLogs,
+        });
       }}
     >
       <View

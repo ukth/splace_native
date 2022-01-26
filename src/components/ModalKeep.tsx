@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { QueryResult, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect } from "react";
 import {
   Alert,
@@ -89,11 +89,14 @@ export const ModalKeep = ({
 }) => {
   const theme = useContext(ThemeContext);
 
-  const { data, refetch, fetchMore } = useQuery(GET_FOLDERS, {
+  const { data, refetch, fetchMore } = useQuery<{
+    getFolders: { folders: FolderType[] };
+  }>(GET_FOLDERS, {
     variables: {
       orderBy: "updatedAt",
     },
   });
+
   // const [];
 
   const onCreateCompleted = (data: any) => {

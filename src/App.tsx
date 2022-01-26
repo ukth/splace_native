@@ -44,12 +44,12 @@ export default function App() {
     return null;
   } else {
     return (
-      <ProgressProvider>
-        <ImagePickerProvider>
-          <UploadContentProvider>
-            <FilterProvider>
-              <ApolloProvider client={client}>
-                <ThemeProvider theme={theme.light}>
+      <ThemeProvider theme={theme.light}>
+        <ProgressProvider>
+          <ImagePickerProvider>
+            <UploadContentProvider>
+              <FilterProvider>
+                <ApolloProvider client={client}>
                   <StatusBar style="dark" />
                   <SafeAreaProvider>
                     <Navigation />
@@ -76,12 +76,12 @@ export default function App() {
                       </View>
                     )}
                   />
-                </ThemeProvider>
-              </ApolloProvider>
-            </FilterProvider>
-          </UploadContentProvider>
-        </ImagePickerProvider>
-      </ProgressProvider>
+                </ApolloProvider>
+              </FilterProvider>
+            </UploadContentProvider>
+          </ImagePickerProvider>
+        </ProgressProvider>
+      </ThemeProvider>
     );
   }
 }

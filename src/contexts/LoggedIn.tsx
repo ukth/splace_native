@@ -1,5 +1,4 @@
 import React, { useState, createContext, useEffect } from "react";
-import { Alert } from "react-native";
 
 const LoggedInContext = createContext<{
   isLoggedIn: boolean;

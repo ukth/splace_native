@@ -1,18 +1,20 @@
-import { useQuery } from "@apollo/client";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, FlatList } from "react-native";
 import PhotoLog from "../../components/Contents/Photolog";
-import { HeaderBackButton } from "../../components/HeaderBackButton";
 import ScreenContainer from "../../components/ScreenContainer";
 import { BldText16 } from "../../components/Text";
-import { GET_USER_LOGS } from "../../queries";
 import { PhotologType, StackGeneratorParamList, UserType } from "../../types";
 
 const UserLogs = () => {
   const route = useRoute<RouteProp<StackGeneratorParamList, "UserLogs">>();
-  const { user, initialScrollIndex, data, fetchMore, refetch } = route.params;
+  const { initialScrollIndex, data, fetchMore, refetch } = route.params;
+  const [logs, setLogs] = useState(
+    data.getUserLogs?.logs.slice(initialScrollIndex) ?? []
+  );
+  const [topIndex, setTopIndex] = useState(initialScrollIndex);
+  var isFetchingPrev = useRef({ value: false }).current;
   // const { data, refetch, fetchMore } = useQuery(GET_USER_LOGS, {
   //   variables: {
   //     userId: user.id,
@@ -22,10 +24,31 @@ const UserLogs = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackGeneratorParamList>>();
 
+  const onTopReached = () => {
+    setLogs((logs) => {
+      console.log("ontop!, ", topIndex);
+      let prevLogs: number[];
+      if (topIndex === 0) {
+        return;
+      }
+      if (topIndex > 7) {
+        prevLogs = data.getUserLogs?.logs.slice(topIndex - 7, topIndex);
+        setTopIndex(topIndex - 7);
+      } else {
+        prevLogs = data.getUserLogs?.logs.slice(0, topIndex);
+        setTopIndex(0);
+      }
+      return [...prevLogs, ...logs];
+    });
+
+    // setLogs(data.getUserLogs?.logs);
+  };
+
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => <BldText16>게시물</BldText16>,
     });
+    setTimeout(onTopReached, 0);
   }, []);
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -43,15 +66,8 @@ const UserLogs = () => {
 
   const flatList = useRef<any>();
 
-  const keyExtractor = (item: any, index: number) => "" + item.id;
-  const onScrollToIndexFailed = ({ index }: { index: number }) => {
-    // Layout doesn't know the exact location of the requested element.
-    // Falling back to calculating the destination manually
-    const wait = new Promise((resolve) => setTimeout(resolve, 500));
-    wait.then(() => {
-      flatList.current?.scrollToIndex({ index: index, animated: true });
-    });
-  };
+  const keyExtractor = (item: any) => "" + item.id;
+
   const onEndReached = async () => {
     await fetchMore({
       variables: {
@@ -66,18 +82,32 @@ const UserLogs = () => {
   }: {
     item: PhotologType;
     index: number;
-  }) => <PhotoLog item={item} key={index} />;
+  }) => <PhotoLog item={item} />;
 
   return (
     <ScreenContainer>
       <FlatList
         ref={flatList}
-        data={data.getUserLogs?.logs}
+        data={logs}
         refreshing={refreshing}
         keyExtractor={keyExtractor}
-        initialScrollIndex={initialScrollIndex}
-        onScrollToIndexFailed={onScrollToIndexFailed}
-        // onEndReached={onEndReached}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+        }}
+        onScroll={({ nativeEvent }) => {
+          if (
+            nativeEvent.contentOffset.y < 500 &&
+            topIndex > 0 &&
+            !isFetchingPrev.value
+          ) {
+            isFetchingPrev.value = true;
+            onTopReached();
+          }
+          if (nativeEvent.contentOffset.y > 500 && isFetchingPrev.value) {
+            isFetchingPrev.value = false;
+          }
+        }}
+        onEndReached={onEndReached}
         onRefresh={refresh}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}

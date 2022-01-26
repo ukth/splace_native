@@ -46,36 +46,18 @@ export default function useCachedResources() {
           "NanumSquareRound-B": require("../../assets/fonts/NanumSquareRoundOTFB.otf"),
           "NanumSquareRound-EB": require("../../assets/fonts/NanumSquareRoundOTFEB.otf"),
           "NanumSquareRound-L": require("../../assets/fonts/NanumSquareRoundOTFL.otf"),
-          "NotoSansKR-Bold": require("../../assets/fonts/NotoSansKR-Medium.otf"),
+          "NotoSansKR-Bold": require("../../assets/fonts/NotoSansKR-Bold.otf"),
           "NotoSansKR-Medium": require("../../assets/fonts/NotoSansKR-Medium.otf"),
           "NotoSansKR-Regular": require("../../assets/fonts/NotoSansKR-Regular.otf"),
+
+          "NotoSans-Bold": require("../../assets/fonts/NotoSans-Bold.ttf"),
+          "NotoSans-Regular": require("../../assets/fonts/NotoSans-Regular.ttf"),
         });
 
         cacheImages([
-          "https://splace-public-images.s3.ap-northeast-2.amazonaws.com/splash.png",
           require("../../assets/images/menual/log.jpg"),
           require("../../assets/images/icons/positionpin_small.png"),
         ]);
-        // require("../../assets/images/registration_images/Find.jpg"),
-        // require("../../assets/images/registration_images/discover.jpg"),
-        // require("../../assets/images/registration_images/enjoy.jpg"),
-        // require("../../assets/images/registration_images/experience.jpg"),
-        // require("../../assets/images/registration_images/Feel.jpg"),
-        // require("../../assets/images/registration_images/plan.jpg"),
-        // require("../../assets/images/registration_images/save.jpg"),
-        // require("../../assets/images/registration_images/share.jpg"),
-        // require("../../assets/images/registration_images/showoff.jpg"),
-        // require("../../assets/images/tasteCup/worldcup1_1.jpg"),
-        // require("../../assets/images/tasteCup/worldcup1_2.jpg"),
-        // require("../../assets/images/tasteCup/worldcup2_1.png"),
-        // require("../../assets/images/tasteCup/worldcup2_2.jpeg"),
-        // require("../../assets/images/tasteCup/worldcup3_1.jpg"),
-        // require("../../assets/images/tasteCup/worldcup3_2.jpeg"),
-        // require("../../assets/images/tasteCup/worldcup4_1.jpg"),
-        // require("../../assets/images/tasteCup/worldcup4_2.jpg"),
-        // require("../../assets/images/tasteCup/worldcup5_1.jpg"),
-        // require("../../assets/images/tasteCup/worldcup5_2.jpg"),
-        // ]);
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);

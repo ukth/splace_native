@@ -1,6 +1,4 @@
-import React, { useState, createContext, useEffect } from "react";
-import { Alert } from "react-native";
-import { SplaceType } from "../types";
+import React, { useState, createContext } from "react";
 
 const FilterContext = createContext<{
   filter: {
