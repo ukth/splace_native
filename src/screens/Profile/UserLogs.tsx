@@ -26,14 +26,13 @@ const UserLogs = () => {
 
   const onTopReached = () => {
     setLogs((logs) => {
-      console.log("ontop!, ", topIndex);
       let prevLogs: number[];
       if (topIndex === 0) {
         return;
       }
-      if (topIndex > 7) {
-        prevLogs = data.getUserLogs?.logs.slice(topIndex - 7, topIndex);
-        setTopIndex(topIndex - 7);
+      if (topIndex > 9) {
+        prevLogs = data.getUserLogs?.logs.slice(topIndex - 9, topIndex);
+        setTopIndex(topIndex - 9);
       } else {
         prevLogs = data.getUserLogs?.logs.slice(0, topIndex);
         setTopIndex(0);
