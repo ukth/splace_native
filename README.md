@@ -1,7 +1,5 @@
 ## splace_native
 
-## splace_native
-
 > Splace is a SNS platform for space curation.
 
 Appstore link: https://apps.apple.com/kr/app/splace-special-place/id1588865031
